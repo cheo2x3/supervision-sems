@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programas SEMS – Base de Datos de Supervisión</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --p627:#002f2a; --p627l:#003d36; --p626:#1e5b4f; --p626l:#2a7a6a;
+  --p7420:#9b2247; --p7421:#611232; --pblk:#161a1d; --pgry:#98989a;
+  --pgryl:#d4d4d4; --p1255:#a57f2c; --p7402:#e6d194;
+  --wh:#fff; --off:#f7f5f0; --surf:#fafaf8;
+  --txt:#161a1d; --txt2:#4a4a4a; --bdr:#d0cdc8;
+  --shd:0 2px 12px rgba(0,0,0,.10); --shdlg:0 8px 32px rgba(0,0,0,.18);
+  --r:4px;
+  --fd:'Cormorant Garamond',Georgia,serif;
+  --fb:'Jost',sans-serif;
+  --hh:88px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{font-family:var(--fb);background:var(--off);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+
+/* ── HEADER ── */
+.app-header{background:var(--p627);height:var(--hh);display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:0 2px 16px rgba(0,0,0,.3);position:sticky;top:0;z-index:200;flex-shrink:0}
+.header-brand h1{font-family:var(--fd);font-weight:700;font-size:22px;color:var(--wh);letter-spacing:.06em;text-transform:uppercase;line-height:1.1}
+.header-brand p{font-size:10px;font-weight:300;color:var(--p7402);letter-spacing:.14em;text-transform:uppercase;margin-top:3px}
+.header-sep{display:none}
+.header-logo{display:flex;align-items:center;gap:10px}
+.header-logo img{height:56px;object-fit:contain;mix-blend-mode:screen}
+.header-logo-text{text-align:right}
+.header-logo-text .l1{font-family:var(--fd);font-weight:700;font-size:17px;color:var(--wh);letter-spacing:.04em;text-transform:uppercase}
+.header-logo-text .l2{font-size:9px;font-weight:300;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+
+/* ── DECO BAND ── */
+.deco-band{height:6px;background:linear-gradient(90deg,var(--p627) 0%,var(--p626) 30%,var(--p1255) 55%,var(--p626) 78%,var(--p627) 100%);flex-shrink:0}
+
+/* ── FOOTER ── */
+.app-footer{background:var(--p7421);color:rgba(255,255,255,.65);font-size:11px;font-weight:300;letter-spacing:.08em;text-align:right;padding:9px 28px;flex-shrink:0;margin-top:auto}
+
+/* ── PAGES ── */
+.page{display:none;flex:1;flex-direction:column}
+.page.active{display:flex}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal-box{background:var(--wh);border-radius:8px;padding:32px 36px;max-width:460px;width:90%;box-shadow:var(--shdlg)}
+.modal-icon{font-size:32px;margin-bottom:12px}
+.modal-title{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--p627);letter-spacing:.04em;margin-bottom:8px}
+.modal-body{font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:24px}
+.modal-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:950;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--pblk);color:var(--wh);padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:400;box-shadow:var(--shdlg);display:flex;align-items:center;gap:9px;animation:slideIn .25s ease;max-width:320px}
+.toast.success{border-left:3px solid #4caf50}
+.toast.error{border-left:3px solid #f44336}
+.toast.info{border-left:3px solid var(--p1255)}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border:none;border-radius:var(--r);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:.07em;cursor:pointer;transition:all .18s;text-transform:uppercase;white-space:nowrap}
+.btn-primary{background:var(--p627);color:var(--wh)}
+.btn-primary:hover{background:var(--p627l)}
+.btn-secondary{background:var(--p626);color:var(--wh)}
+.btn-secondary:hover{background:var(--p626l)}
+.btn-gold{background:var(--p1255);color:var(--wh)}
+.btn-gold:hover{filter:brightness(1.1)}
+.btn-danger{background:var(--p7420);color:var(--wh)}
+.btn-danger:hover{background:var(--p7421)}
+.btn-outline{background:transparent;color:var(--p627);border:1px solid var(--p627)}
+.btn-outline:hover{background:var(--p627);color:var(--wh)}
+.btn-ghost{background:transparent;color:var(--txt2);border:1px solid var(--bdr)}
+.btn-ghost:hover{background:var(--off)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-icon{padding:6px 10px;font-size:14px}
+
+/* ──────────────────────────────────────────
+   PAGE: MENU
+──────────────────────────────────────────*/
+.menu-page{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 28px;gap:36px;background:var(--off)}
+.menu-hero{text-align:center}
+.menu-hero h2{font-family:var(--fd);font-size:38px;font-weight:700;color:var(--p627);letter-spacing:.04em;line-height:1.15}
+.menu-hero p{font-size:12px;color:var(--txt2);letter-spacing:.12em;text-transform:uppercase;margin-top:8px}
+.menu-cards{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.menu-card{background:var(--wh);border:1px solid var(--bdr);border-radius:8px;padding:32px 44px;width:210px;text-align:center;cursor:pointer;transition:all .22s;box-shadow:var(--shd);display:flex;flex-direction:column;align-items:center;gap:13px}
+.menu-card:hover{transform:translateY(-5px);box-shadow:var(--shdlg)}
+.menu-card.c1{border-top:4px solid var(--p627)}
+.menu-card.c2{border-top:4px solid var(--p626)}
+.menu-card.c3{border-top:4px solid var(--p1255)}
+.menu-card:hover.c1{border-color:var(--p627)}
+.mc-icon{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.c1 .mc-icon{background:var(--p627);color:var(--wh)}
+.c2 .mc-icon{background:var(--p626);color:var(--wh)}
+.c3 .mc-icon{background:var(--p1255);color:var(--wh)}
+.mc-label{font-family:var(--fd);font-size:17px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt)}
+.mc-desc{font-size:11.5px;color:var(--txt2);line-height:1.5}
+.menu-stats{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.stat-chip{background:var(--wh);border:1px solid var(--bdr);border-radius:40px;padding:7px 18px;font-size:12px;color:var(--txt2);display:flex;align-items:center;gap:7px;box-shadow:var(--shd)}
+.stat-chip strong{color:var(--p627);font-weight:600}
+.menu-note{font-size:11px;color:var(--pgry);text-align:center;max-width:400px;line-height:1.6}
+
+/* ──────────────────────────────────────────
+   PAGE: CONSULTAR
+──────────────────────────────────────────*/
+.page-content{flex:1;padding:24px 28px;display:flex;flex-direction:column;gap:18px}
+.page-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.page-title h2{font-family:var(--fd);font-size:26px;font-weight:700;color:var(--p627);letter-spacing:.04em;text-transform:uppercase}
+.page-title p{font-size:11px;color:var(--txt2);letter-spacing:.06em;margin-top:2px}
+.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:7px;background:var(--wh);border:1px solid var(--bdr);border-radius:var(--r);padding:6px 12px;font-size:13px}
+.search-box input{border:none;outline:none;font-family:var(--fb);font-size:13px;color:var(--txt);width:175px;background:transparent}
+.search-box span{color:var(--pgry)}
+
+.records-table-wrap{background:var(--wh);border:1px solid var(--bdr);border-radius:6px;overflow:auto;box-shadow:var(--shd)}
+table.rt{width:100%;border-collapse:collapse;font-size:12.5px}
+table.rt thead th{background:var(--p627);color:var(--wh);font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:11px 14px;text-align:left;font-size:11px;white-space:nowrap}
+table.rt thead th:first-child{border-radius:6px 0 0 0}
+table.rt thead th:last-child{border-radius:0 6px 0 0}
+table.rt tbody tr{border-bottom:1px solid var(--pgryl);transition:background .15s;cursor:pointer}
+table.rt tbody tr:last-child{border-bottom:none}
+table.rt tbody tr:hover{background:rgba(0,47,42,.05)}
+table.rt td{padding:10px 14px;vertical-align:middle;color:var(--txt)}
+table.rt td.id-col{font-weight:600;color:var(--p627);width:52px}
+table.rt td.actions{white-space:nowrap;text-align:right;width:110px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--pgry)}
+.empty-state .big{font-size:40px;margin-bottom:12px}
+.empty-state p{font-size:13px;line-height:1.6}
+
+.prog-pills{display:flex;gap:4px;flex-wrap:wrap}
+.prog-pill{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;letter-spacing:.04em}
+.prog-pill.lv1{background:#fde8e8;color:#c0392b}
+.prog-pill.lv2{background:#fef3cd;color:#856404}
+.prog-pill.lv3{background:#d1f0e8;color:#155724}
+.prog-pill.lvN{background:var(--pgryl);color:var(--pgry)}
+
+.completion-bar-wrap{width:90px;background:var(--pgryl);border-radius:8px;height:6px;overflow:hidden}
+.completion-bar{height:100%;border-radius:8px;background:var(--p626);transition:width .3s}
+
+/* ──────────────────────────────────────────
+   PAGE: REGISTRAR
+──────────────────────────────────────────*/
+.reg-page{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.reg-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:var(--wh);border-bottom:1px solid var(--bdr);flex-shrink:0;flex-wrap:wrap;gap:10px}
+.reg-topbar-left h2{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--p627);text-transform:uppercase;letter-spacing:.04em}
+.reg-topbar-left p{font-size:11px;color:var(--txt2);letter-spacing:.05em;margin-top:2px}
+.reg-topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dirty-dot{width:8px;height:8px;border-radius:50%;background:var(--p7420);display:inline-block;margin-right:2px;display:none}
+.dirty-dot.visible{display:inline-block}
+
+.reg-scroll{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:18px}
+
+/* META FIELDS */
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:12px 16px;background:var(--wh);border:1px solid var(--bdr);border-radius:6px;padding:18px 20px;box-shadow:var(--shd)}
+.meta-grid-title{grid-column:1/-1;font-family:var(--fd);font-size:14px;font-weight:600;color:var(--p627);letter-spacing:.08em;text-transform:uppercase;padding-bottom:8px;border-bottom:1px solid var(--pgryl)}
+.form-field label{display:block;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);margin-bottom:5px}
+.form-field input,.form-field select{width:100%;border:1px solid var(--bdr);border-radius:var(--r);padding:7px 10px;font-family:var(--fb);font-size:13px;color:var(--txt);background:var(--wh);outline:none;transition:border-color .18s}
+.form-field input:focus,.form-field select:focus{border-color:var(--p627)}
+
+/* PROGRAM TABS */
+.prog-tabs-bar{display:flex;gap:0;background:var(--wh);border:1px solid var(--bdr);border-radius:6px 6px 0 0;overflow:hidden;flex-shrink:0}
+.prog-tab{flex:1;padding:12px 10px;border:none;background:transparent;cursor:pointer;font-family:var(--fb);font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--txt2);transition:all .18s;border-bottom:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.prog-tab:hover{background:var(--off)}
+.prog-tab.active{color:var(--p627);border-bottom-color:var(--p627);background:var(--off)}
+.prog-tab .tab-icon{font-size:16px}
+.prog-tab .tab-num{font-size:9px;color:var(--pgry)}
+.prog-tab .tab-progress{width:36px;height:3px;background:var(--pgryl);border-radius:4px;overflow:hidden;margin-top:2px}
+.prog-tab .tab-progress-fill{height:100%;background:var(--p626);border-radius:4px;transition:width .3s}
+
+/* PROGRAM CONTENT */
+.prog-panel{display:none;background:var(--wh);border:1px solid var(--bdr);border-top:none;border-radius:0 0 6px 6px;overflow:hidden}
+.prog-panel.active{display:block}
+.prog-panel-header{padding:14px 20px;background:var(--p627);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.prog-panel-header h3{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--wh);letter-spacing:.04em}
+.prog-panel-header span{font-size:11px;color:rgba(255,255,255,.7);letter-spacing:.06em}
+.prog-panel-header .prog-badge{font-size:11px;background:rgba(255,255,255,.15);color:var(--wh);padding:3px 10px;border-radius:10px;font-weight:400}
+
+/* DIRECTIVES TABLE */
+.dir-table-wrap{overflow-x:auto}
+table.dir-table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+table.dir-table thead th{padding:9px 10px;font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;text-align:left;border-bottom:2px solid var(--bdr);white-space:nowrap;color:var(--p627)}
+table.dir-table thead th.th-dir{width:26%;background:#f7f5f0}
+table.dir-table thead th.th-nivel{width:70px;background:#f7f5f0;text-align:center}
+table.dir-table thead th.th-estado{width:22%;background:#e8f4f1}
+table.dir-table thead th.th-logros{background:#e8f1e0;color:#155724}
+table.dir-table thead th.th-retos{background:#fff3cd;color:#856404}
+table.dir-table thead th.th-compromisos{background:#f5f5f5}
+table.dir-table tbody tr{border-bottom:1px solid var(--pgryl)}
+table.dir-table tbody tr:last-child{border-bottom:none}
+table.dir-table tbody tr:hover{background:rgba(0,47,42,.025)}
+table.dir-table td{padding:8px 10px;vertical-align:top}
+table.dir-table td.td-dir{font-size:11.5px;color:var(--txt);line-height:1.5;padding:10px}
+table.dir-table td.td-dir .dir-id{font-weight:600;color:var(--p627);font-size:11px;margin-bottom:3px;display:block}
+table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
+
+.nivel-sel{border:1px solid var(--bdr);border-radius:var(--r);padding:5px 6px;font-family:var(--fb);font-size:12px;width:100%;max-width:68px;outline:none;cursor:pointer;text-align:center;font-weight:600;background:var(--wh);color:var(--txt);transition:all .18s}
+.nivel-sel:focus{border-color:var(--p627)}
+.nivel-sel[data-val="0"]{background:#fde8e8;border-color:#f5c6cb;color:#c0392b}
+.nivel-sel[data-val="1"]{background:#fff8e1;border-color:#ffe082;color:#856404}
+.nivel-sel[data-val="2"]{background:#d1f0e8;border-color:#a3d9c5;color:#155724}
+
+.dir-ta{width:100%;border:1px solid transparent;border-radius:var(--r);padding:6px 8px;font-family:var(--fb);font-size:12px;color:var(--txt);resize:vertical;min-height:54px;outline:none;background:transparent;transition:all .18s;line-height:1.5}
+.dir-ta:hover{border-color:var(--bdr);background:var(--wh)}
+.dir-ta:focus{border-color:var(--p627);background:var(--wh);box-shadow:0 0 0 2px rgba(0,47,42,.08)}
+.dir-ta::placeholder{color:var(--pgryl);font-size:11px}
+
+/* COMMENTS SECTION */
+.prog-comments{padding:14px 20px;border-top:2px solid var(--p627);background:rgba(0,47,42,.03)}
+.prog-comments label{display:block;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p627);margin-bottom:7px}
+.prog-comments textarea{width:100%;border:1px solid var(--bdr);border-radius:var(--r);padding:9px 12px;font-family:var(--fb);font-size:13px;color:var(--txt);resize:vertical;min-height:70px;outline:none;background:var(--wh);transition:border-color .18s}
+.prog-comments textarea:focus{border-color:var(--p627)}
+
+/* FORM ACTIONS */
+.form-actions{display:flex;align-items:center;justify-content:space-between;background:var(--wh);border:1px solid var(--bdr);border-radius:6px;padding:14px 20px;box-shadow:var(--shd);flex-wrap:wrap;gap:10px;flex-shrink:0;position:sticky;bottom:0;z-index:50}
+.form-actions-l{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.form-actions-r{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ──────────────────────────────────────────
+   PRINT STYLES – HOJA MEMBRETADA HORIZONTAL
+──────────────────────────────────────────*/
+/* Elements only visible on screen (hide in print) */
+.plt-header,.plt-footer{display:none}
+/* nivel-print-val: hidden on screen, shown in print */
+.nivel-print-val{display:none}
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm 12mm 42px 12mm; }
+
+  /* ── HIDE: ALL PAGES EXCEPT REGISTRAR, AND ALL UI CHROME ── */
+  #page-menu,
+  #page-consultar { display:none!important; }
+
+  .app-header,.deco-band,.app-footer,.prog-tabs-bar,.form-actions,
+  .reg-topbar,.no-print,.ev-overlay,.ev-drawer,
+  .modal-overlay,.toast-container,.meta-grid { display:none!important }
+
+  /* ── LAYOUT ── */
+  html,body{ background:#fff!important; }
+  #page-registrar{ display:block!important; overflow:visible!important; }
+  .reg-page{ display:block!important; overflow:visible!important; }
+  .reg-scroll{ overflow:visible!important; padding:0!important; margin:0!important; }
+
+  /* ── LETTERHEAD HEADER — static box on page 1 only ── */
+  .plt-header{
+    display:block!important;
+    position:relative;
+    width:100%;
+    background:#6b1232;
+    border-radius:5px;
+    overflow:hidden;
+    margin-bottom:12px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-header-pattern{
+    position:absolute; left:0; top:0; bottom:0; width:80px;
+    background-image:url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.09'%3E%3Crect x='0' y='0' width='9' height='9'/%3E%3Crect x='9' y='9' width='9' height='9'/%3E%3C/g%3E%3C/svg%3E");
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-header-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:13px 18px 13px 28px;
+    position:relative; z-index:1;
+  }
+  .plt-ht1{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; font-size:15pt; color:#fff; letter-spacing:.02em; line-height:1.15; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .plt-ht2{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; font-size:11pt; color:#fff; letter-spacing:.02em; margin-top:2px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .plt-ht3{ font-family:'Jost',sans-serif; font-size:8pt; font-weight:500; color:#e6a832; letter-spacing:.05em; margin-top:4px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .plt-header-logo{
+    background:#6b1232!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    border-radius:3px; overflow:hidden; line-height:0;
+  }
+  .plt-header-logo img{
+    height:60px; object-fit:contain;
+    mix-blend-mode:screen!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    display:block;
+  }
+
+  /* ── LETTERHEAD FOOTER — fixed at bottom of every page ── */
+  .plt-footer{
+    display:block!important;
+    position:fixed; bottom:0; left:0; right:0;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    z-index:9999;
+  }
+  .plt-footer-band{
+    height:13px;
+    background:linear-gradient(135deg,#8b1a35 25%,#6b1232 25%,#6b1232 50%,#8b1a35 50%,#8b1a35 75%,#6b1232 75%);
+    background-size:8px 8px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-footer-text{
+    background:#fff;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:3px 14px 2px;
+    font-family:'Jost',sans-serif; font-size:7pt; color:#555;
+    border-top:1px solid #e0e0e0;
+  }
+
+  /* ── PRINT META TABLE ── */
+  .plt-meta-table{
+    width:100%; border-collapse:collapse; margin-bottom:13px;
+    font-size:8pt; font-family:'Jost',sans-serif;
+    border:1.5px solid #6b1232;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-meta-table td{ padding:4px 9px; border:1px solid #ccc; vertical-align:middle; }
+  .plt-meta-table td.plt-meta-lbl{
+    background:#6b1232; color:#fff; font-weight:600;
+    width:85px; font-size:7pt; letter-spacing:.05em;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-meta-table td.plt-meta-val{ color:#161a1d; font-size:8.5pt; }
+
+  /* ── PROGRAM PANELS — flow without forced page breaks ── */
+  .prog-panel{ display:block!important; margin-bottom:14px; }
+  .prog-panel + .prog-panel{ page-break-before:auto; }
+
+  .prog-panel-header{
+    background:#6b1232!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    padding:8px 14px; margin-bottom:0;
+    display:flex; align-items:center; justify-content:space-between;
+    border-radius:4px 4px 0 0;
+  }
+  .prog-panel-header h3{ font-size:10.5pt!important; color:#fff!important; }
+  .prog-panel-header > div > div:last-child{ color:#e6a832!important; font-size:8.5pt!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .prog-badge{ background:rgba(255,255,255,.18)!important; color:#fff!important; font-size:7.5pt!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  /* ── DIRECTIVE TABLE — landscape column widths ── */
+  .dir-table-wrap{ overflow:visible!important; }
+  table.dir-table{
+    width:100%; font-size:7.5pt; border-collapse:collapse;
+    min-width:unset!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  table.dir-table thead th{
+    padding:6px 8px; font-size:7pt; border:1px solid #ccc;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  table.dir-table td{ padding:5px 8px; border:1px solid #ddd; vertical-align:top; }
+  table.dir-table td.td-dir{ font-size:7.5pt; line-height:1.45; }
+  table.dir-table td.td-dir .dir-id{ font-size:7pt; }
+
+  /* Hide Estado (3rd col) and Evidencias (7th col) */
+  table.dir-table thead th:nth-child(3),
+  table.dir-table tbody td:nth-child(3),
+  table.dir-table thead th:nth-child(7),
+  table.dir-table tbody td:nth-child(7){ display:none!important; }
+
+  /* Landscape column widths — more space for content cols */
+  table.dir-table thead th:nth-child(1){ width:30%; }
+  table.dir-table thead th:nth-child(2){ width:7%; text-align:center; }
+  table.dir-table thead th:nth-child(4){ width:21%; }
+  table.dir-table thead th:nth-child(5){ width:21%; }
+  table.dir-table thead th:nth-child(6){ width:21%; }
+
+  /* Table header colors */
+  table.dir-table thead th.th-dir{ background:#f7f0f3!important; color:#6b1232!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  table.dir-table thead th.th-nivel{ background:#f5f5f5!important; color:#333!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  table.dir-table thead th.th-logros{ background:#1e5b4f!important; color:#fff!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  table.dir-table thead th.th-retos{ background:#d4a017!important; color:#fff!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  table.dir-table thead th.th-compromisos{ background:#e0e0e0!important; color:#333!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  /* Nivel: hide the select, show styled number */
+  .nivel-sel{ display:none!important; }
+  .nivel-print-val{
+    display:block!important;
+    text-align:center; font-weight:700; font-size:11pt;
+    line-height:1; padding:3px 0;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .np-0{ color:#c0392b!important; }
+  .np-1{ color:#856404!important; }
+  .np-2{ color:#155724!important; }
+  .np-empty{ color:#bbb!important; font-size:9pt!important; font-weight:400!important; }
+  table.dir-table td.td-nivel{ text-align:center; vertical-align:middle; }
+
+  /* Text areas */
+  .dir-ta{
+    border:none!important; background:transparent!important;
+    padding:0!important; font-size:7.5pt!important;
+    line-height:1.45!important; width:100%!important; resize:none!important;
+  }
+
+  /* Comments section */
+  .prog-comments{
+    border-top:2px solid #6b1232!important;
+    padding:8px 10px!important; background:#faf5f7!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    page-break-inside:avoid;
+  }
+  .prog-comments label{ font-size:7pt!important; color:#6b1232!important; }
+  .prog-comments textarea{
+    border:none!important; background:transparent!important;
+    font-size:7.5pt!important; width:100%!important; resize:none!important;
+  }
+
+  /* Misc */
+  .records-table-wrap,.meta-grid{ box-shadow:none!important; }
+  a{ color:inherit!important; text-decoration:none!important; }
+}
+
+/* Print-only meta table: hidden on screen */
+.plt-print-only { display: none; }
+@media print { .plt-print-only { display: block !important; margin-bottom: 12px; } }
+
+/* ── MISC ── */
+.badge{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;letter-spacing:.04em;border-radius:10px;padding:2px 8px}
+.badge-green{background:#d1f0e8;color:#155724}
+.badge-amber{background:#fff8e1;color:#856404}
+.badge-red{background:#fde8e8;color:#c0392b}
+.badge-gray{background:var(--pgryl);color:var(--pgry)}
+
+.filter-select{border:1px solid var(--bdr);border-radius:var(--r);padding:6px 10px;font-family:var(--fb);font-size:12px;color:var(--txt);outline:none;background:var(--wh)}
+.filter-select:focus{border-color:var(--p627)}
+
+.record-actions{display:flex;gap:5px;justify-content:flex-end}
+
+/* ─────────────────────────────────────────
+   LOADING OVERLAY
+───────────────────────────────────────── */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,47,42,.75);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.loading-overlay.active{display:flex}
+.loading-spinner{width:42px;height:42px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:ldspin .8s linear infinite}
+@keyframes ldspin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--fb);font-size:13px;color:#fff;letter-spacing:.07em;font-weight:500}
+
+/* ─────────────────────────────────────────
+   LOGIN PAGE
+───────────────────────────────────────── */
+.page-login-wrap{flex:1;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,var(--p627) 0%,var(--p626) 55%,#164d40 100%);
+  padding:30px;min-height:100vh}
+.login-card{background:var(--wh);border-radius:10px;padding:38px 44px 32px;width:100%;max-width:430px;box-shadow:0 20px 60px rgba(0,0,0,.38);display:flex;flex-direction:column;align-items:center}
+.login-logo-wrap{margin-bottom:16px;background:var(--p627);border-radius:5px;padding:5px 12px;line-height:0}
+.login-logo-wrap img{height:48px;object-fit:contain;mix-blend-mode:screen}
+.login-title{font-family:var(--fd);font-size:21px;font-weight:700;color:var(--p627);letter-spacing:.04em;text-align:center;line-height:1.2}
+.login-sub1{font-size:9.5px;font-weight:600;color:var(--p1255);letter-spacing:.13em;text-transform:uppercase;margin-top:4px;text-align:center}
+.login-sub2{font-size:9px;font-weight:400;color:var(--pgry);letter-spacing:.09em;text-transform:uppercase;margin-top:2px;text-align:center;margin-bottom:22px}
+.login-form{width:100%;display:flex;flex-direction:column;gap:13px}
+.login-field{display:flex;flex-direction:column;gap:4px}
+.login-field label{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2)}
+.login-field input{border:1px solid var(--bdr);border-radius:var(--r);padding:10px 13px;font-family:var(--fb);font-size:14px;color:var(--txt);outline:none;transition:border-color .18s,box-shadow .18s;width:100%}
+.login-field input:focus{border-color:var(--p627);box-shadow:0 0 0 3px rgba(0,47,42,.09)}
+.login-err{font-size:12px;color:var(--p7420);min-height:16px;text-align:center;font-weight:500}
+.login-btn{background:var(--p627);color:var(--wh);border:none;border-radius:var(--r);padding:12px;font-family:var(--fb);font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .18s;width:100%;margin-top:4px}
+.login-btn:hover{background:var(--p627l)}
+.login-btn:disabled{background:var(--pgry);cursor:not-allowed}
+.login-contact{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--pgryl);font-size:9.5px;color:var(--pgry);width:100%;line-height:1.7}
+.login-contact a{color:var(--p626);text-decoration:none}
+.login-contact a:hover{text-decoration:underline}
+.login-contact .ldot{color:var(--pgryl)}
+
+/* Logout button in header */
+.header-logout{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85);font-family:var(--fb);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:var(--r);cursor:pointer;transition:background .18s}
+.header-logout:hover{background:rgba(255,255,255,.22)}
+
+/* ── MENU CARD C4 (sumario) ── */
+.menu-card.c4{border-top:4px solid #9b2247}
+.c4 .mc-icon{background:#9b2247;color:var(--wh)}
+
+/* ────────────────────────────────────────────
+   SUMARIO PAGE
+────────────────────────────────────────────*/
+.sm-page{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--off)}
+.sm-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:var(--wh);border-bottom:1px solid var(--bdr);flex-shrink:0;flex-wrap:wrap;gap:10px}
+.sm-topbar-left h2{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--p627);text-transform:uppercase;letter-spacing:.04em}
+.sm-topbar-left p{font-size:11px;color:var(--txt2);letter-spacing:.05em;margin-top:2px}
+
+/* filter bar */
+.sm-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 28px;background:var(--wh);border-bottom:2px solid var(--pgryl);flex-shrink:0}
+.sm-filter-group{display:flex;flex-direction:column;gap:3px;min-width:140px;flex:1;max-width:220px}
+.sm-filter-group label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--txt2)}
+.sm-filter-select{border:1px solid var(--bdr);border-radius:var(--r);padding:6px 10px;font-family:var(--fb);font-size:12px;color:var(--txt);outline:none;background:var(--wh);width:100%}
+.sm-filter-select:focus{border-color:var(--p627)}
+.sm-filter-reset{align-self:flex-end;margin-bottom:0}
+.sm-filter-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 28px 6px;background:var(--wh);border-bottom:1px solid var(--pgryl);flex-shrink:0;min-height:38px}
+.sm-chip{display:inline-flex;align-items:center;gap:5px;background:#eaf2ef;border:1px solid #b2d5c9;border-radius:12px;padding:3px 10px 3px 9px;font-size:11px;color:var(--p626);font-weight:500}
+.sm-chip button{background:none;border:none;cursor:pointer;color:var(--p626);font-size:12px;padding:0;line-height:1;opacity:.7}
+.sm-chip button:hover{opacity:1}
+.sm-chips-label{font-size:11px;color:var(--pgry);font-style:italic}
+.sm-active-count{font-size:11px;color:var(--p626);font-weight:600;margin-left:auto}
+
+/* tabs */
+.sm-scroll{flex:1;overflow-y:auto;padding:16px 28px;display:flex;flex-direction:column;gap:12px}
+.sm-prog-tabs{display:flex;gap:0;background:var(--wh);border:1px solid var(--bdr);border-radius:6px 6px 0 0;overflow:hidden;flex-shrink:0}
+.sm-tab{flex:1;padding:11px 8px;border:none;background:transparent;cursor:pointer;font-family:var(--fb);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2);transition:all .18s;border-bottom:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.sm-tab:hover{background:var(--off)}
+.sm-tab.active{color:var(--p627);border-bottom-color:var(--p627);background:var(--off)}
+.sm-tab .st-icon{font-size:15px}
+.sm-tab .st-sub{font-size:9px;color:var(--pgry)}
+
+/* program panel */
+.sm-panel{display:none;background:var(--wh);border:1px solid var(--bdr);border-top:none;border-radius:0 0 6px 6px;overflow:hidden}
+.sm-panel.active{display:block}
+.sm-panel-header{padding:10px 16px;background:var(--p627);display:flex;align-items:center;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sm-panel-header h3{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--wh)}
+.sm-panel-header .sm-sub{color:var(--p7402);font-size:11px;font-weight:600;margin-top:2px}
+.sm-panel-badge{font-size:10px;background:rgba(255,255,255,.15);color:var(--wh);padding:3px 9px;border-radius:10px}
+
+/* summary stats bar */
+.sm-prog-stats{display:flex;gap:14px;padding:10px 16px 8px;background:rgba(0,47,42,.04);border-bottom:1px solid var(--pgryl);flex-wrap:wrap}
+.sm-pstat{font-size:11px;display:flex;align-items:center;gap:5px;color:var(--txt2)}
+.sm-pstat strong{font-weight:700}
+
+/* directive rows */
+.sm-dir-row{display:flex;align-items:stretch;border-bottom:1px solid var(--pgryl);transition:background .12s}
+.sm-dir-row:last-child{border-bottom:none}
+.sm-dir-row:hover{background:rgba(0,47,42,.03)}
+.sm-dir-cell-id{width:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--p627);border-right:1px solid var(--pgryl);background:rgba(0,47,42,.025);letter-spacing:.04em}
+.sm-dir-cell-text{flex:2;padding:10px 12px;font-size:11.5px;color:var(--txt);line-height:1.5;display:flex;align-items:center;border-right:1px solid var(--pgryl)}
+.sm-dir-cell-bars{flex:3;padding:9px 14px;display:flex;flex-direction:column;gap:5px;justify-content:center}
+.sm-level-row{display:flex;align-items:center;gap:8px}
+.sm-level-label{font-size:9.5px;font-weight:600;width:52px;flex-shrink:0;letter-spacing:.04em}
+.sm-level-label.lv0{color:#c0392b}
+.sm-level-label.lv1{color:#856404}
+.sm-level-label.lv2{color:#155724}
+.sm-level-label.lvN{color:var(--pgry)}
+.sm-bar-track{flex:1;background:var(--pgryl);border-radius:6px;height:8px;overflow:hidden}
+.sm-bar-fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.16,1,.3,1)}
+.sm-bar-fill.lv0{background:#e74c3c}
+.sm-bar-fill.lv1{background:#d4a017}
+.sm-bar-fill.lv2{background:#1e5b4f}
+.sm-bar-fill.lvN{background:#ccc}
+.sm-bar-count{font-size:10px;font-weight:700;width:22px;text-align:right;flex-shrink:0}
+.sm-bar-count.lv0{color:#c0392b}
+.sm-bar-count.lv1{color:#856404}
+.sm-bar-count.lv2{color:#155724}
+.sm-bar-count.lvN{color:var(--pgry)}
+.sm-bar-pct{font-size:9px;color:var(--pgry);width:30px;text-align:right;flex-shrink:0}
+.sm-dir-cell-heat{width:70px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--pgryl)}
+
+/* heat cell */
+.sm-heat{width:40px;height:40px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:'Cormorant Garamond',Georgia,serif}
+.sm-heat.h-none{background:var(--pgryl);color:var(--pgry);font-size:12px}
+.sm-heat.h-0{background:#e74c3c}
+.sm-heat.h-1{background:#d4a017}
+.sm-heat.h-2{background:#1e5b4f}
+
+/* compact bar cols: Planteles | % | (bar hidden on new layout = number cols only) */
+.sm-dir-cell-bars-new{flex:3;padding:0;display:flex;flex-direction:column;border-right:none}
+/* New column header row inside the table */
+.sm-cols-hdr{display:flex;align-items:center;background:rgba(0,47,42,.06);border-bottom:1px solid var(--pgryl);padding:4px 0;font-size:8.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--p627)}
+.sm-col-lbl{width:58px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--pgryl);padding:0 6px}
+.sm-col-lbl-chip{font-size:8.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:3px;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sm-col-lbl-chip.lv0{background:#fde8e8;color:#c0392b}
+.sm-col-lbl-chip.lv1{background:#fff8e1;color:#856404}
+.sm-col-lbl-chip.lv2{background:#d1f0e8;color:#155724}
+.sm-col-lbl-chip.lvN{background:var(--pgryl);color:var(--pgry)}
+.sm-col-n{width:58px;flex-shrink:0;text-align:center;border-right:1px solid var(--pgryl)}
+.sm-col-pct{flex:1;text-align:center;border-right:1px solid var(--pgryl)}
+.sm-col-heat-hdr{width:70px;flex-shrink:0;text-align:center;padding:0 6px;line-height:1.3}
+/* data rows within bars cell */
+.sm-data-row{display:flex;align-items:stretch;border-bottom:1px solid #f0eded}
+.sm-data-row:last-child{border-bottom:none}
+.sm-data-row .sm-col-n{font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;font-weight:700;padding:7px 0;color:var(--txt);display:flex;align-items:center;justify-content:center}
+.sm-data-row .sm-col-n.lv0{color:#c0392b}
+.sm-data-row .sm-col-n.lv1{color:#856404}
+.sm-data-row .sm-col-n.lv2{color:#155724}
+.sm-data-row .sm-col-n.lvN{color:var(--pgry)}
+.sm-data-row .sm-col-pct{font-size:11.5px;color:var(--txt2);padding:7px 0;text-align:center;display:flex;align-items:center;justify-content:center}
+.sm-data-row .sm-col-lbl{display:flex;align-items:center;justify-content:center}
+/* heat cell wrapper in new layout */
+.sm-heat-col{width:70px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--pgryl);padding:6px}
+
+/* kpi strip */
+.sm-kpi-strip{display:flex;gap:0;flex-wrap:wrap;align-items:stretch;background:var(--wh);border:1px solid var(--bdr);border-radius:6px;box-shadow:var(--shd);overflow:hidden}
+.sm-kpi-block{display:flex;align-items:center;gap:16px;padding:14px 22px}
+.sm-kpi{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:72px}
+.sm-kpi-val{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:32px;font-weight:600;line-height:1;
+  font-variant-numeric:oldstyle-nums;
+  font-feature-settings:"onum" 1,"kern" 1;
+  letter-spacing:-.01em;
+}
+.sm-kpi-val.kv-green{color:var(--p626)}
+.sm-kpi-val.kv-amber{color:var(--p1255)}
+.sm-kpi-val.kv-red{color:var(--p7420)}
+.sm-kpi-val.kv-gray{color:var(--pgry)}
+.sm-kpi-val.kv-main{color:var(--p627)}
+.sm-kpi-lbl{font-size:9px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--txt2);text-align:center;line-height:1.4}
+.sm-kpi-sep{width:1px;background:var(--pgryl);align-self:stretch;flex-shrink:0}
+/* Group block for the 4 program percentages */
+.sm-kpi-group{display:flex;flex-direction:column;background:rgba(0,47,42,.03);border-left:1px solid var(--pgryl)}
+.sm-kpi-group-label{
+  font-family:'Jost',sans-serif;font-size:8.5px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--p627);padding:7px 18px 4px;
+  border-bottom:1px solid var(--pgryl);
+  white-space:nowrap;
+}
+.sm-kpi-group-inner{display:flex;align-items:stretch;gap:0;padding:8px 10px;flex:1}
+.sm-kpi-group-inner .sm-kpi{min-width:130px;padding:6px 10px;border-right:1px solid var(--pgryl);justify-content:flex-start;align-items:flex-start;gap:2px}
+.sm-kpi-group-inner .sm-kpi:last-child{border-right:none}
+.sm-kpi-group-inner .sm-kpi-val{font-size:28px}
+.sm-kpi-prog-lbl{
+  font-family:'Jost',sans-serif;
+  font-size:9px;font-weight:500;font-style:normal;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--p7421);text-align:left;
+  white-space:nowrap;margin-top:1px;
+}
+
+.sm-empty{text-align:center;padding:48px 20px;color:var(--pgry)}
+.sm-empty .big{font-size:38px;margin-bottom:10px}
+@media print{.sm-page,.sm-filters,.sm-filter-chips,.sm-kpi-strip{display:none!important}}
+/* Print title block: hidden on screen */
+.sm-print-title{display:none}
+@media print {
+  /* ── SUMARIO PRINT MODE (triggered by printSumario) ── */
+  body.print-sumario #page-menu,
+  body.print-sumario #page-consultar,
+  body.print-sumario #page-registrar { display:none!important; }
+  body.print-sumario #page-sumario { display:flex!important; }
+  body.print-sumario .sm-page { display:flex!important; overflow:visible!important; }
+  body.print-sumario .sm-topbar,
+  body.print-sumario .sm-filters,
+  body.print-sumario .sm-filter-chips { display:none!important; }
+  body.print-sumario .sm-scroll { overflow:visible!important; padding:6px 0!important; }
+  body.print-sumario .sm-kpi-strip { display:flex!important; margin-bottom:14px; border:1px solid #ccc; }
+  /* Each program panel on its own page */
+  body.print-sumario .sm-panel { display:block!important; margin-bottom:0; page-break-before:always; page-break-inside:avoid; }
+  body.print-sumario .sm-panel:first-of-type { page-break-before:auto; }
+  body.print-sumario .sm-prog-tabs { display:none!important; }
+  body.print-sumario .sm-panel-header { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body.print-sumario .sm-heat { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body.print-sumario .sm-cols-hdr { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body.print-sumario .sm-bar-fill { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body.print-sumario .sm-prog-stats { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body.print-sumario table.dir-table { display:none!important; }
+  body.print-sumario .sm-kpi-group { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  /* Show print title */
+  body.print-sumario .sm-print-title { display:block!important; margin-bottom:10px; }
+}
+/* ── EVIDENCE DRAWER ── */
+.ev-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
+.ev-overlay.open{opacity:1;pointer-events:all}
+.ev-drawer{position:fixed;top:0;right:0;width:480px;max-width:98vw;height:100%;background:var(--wh);z-index:301;display:flex;flex-direction:column;box-shadow:-6px 0 28px rgba(0,0,0,.22);transform:translateX(100%);transition:transform .32s cubic-bezier(.16,1,.3,1)}
+.ev-drawer.open{transform:none}
+.ev-dh{background:var(--p627);padding:16px 20px;flex-shrink:0}
+.ev-dh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.ev-dh-id{font-family:var(--fd);font-size:19px;font-weight:700;color:var(--wh);letter-spacing:.05em}
+.ev-close{background:rgba(255,255,255,.15);border:none;color:var(--wh);width:29px;height:29px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.ev-close:hover{background:rgba(255,255,255,.28)}
+.ev-dh-text{font-size:11.5px;color:rgba(255,255,255,.78);line-height:1.5;margin-bottom:8px}
+.ev-nivel-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.ev-nivel-badge.lv0{background:#fde8e8;color:#c0392b}
+.ev-nivel-badge.lv1{background:#fff8e1;color:#856404}
+.ev-nivel-badge.lv2{background:#d1f0e8;color:#155724}
+.ev-nivel-badge.lvN{background:rgba(255,255,255,.14);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.2)}
+.ev-body{flex:1;overflow-y:auto}
+.ev-section{padding:16px 18px}
+.ev-section-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p626);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--pgryl)}
+.ev-empty{text-align:center;padding:24px 16px;color:var(--pgry);font-size:12px;line-height:1.7}
+.ev-list{display:flex;flex-direction:column;gap:8px}
+.ev-item{background:var(--off);border:1px solid var(--bdr);border-radius:6px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;transition:box-shadow .15s}
+.ev-item:hover{box-shadow:var(--shd)}
+.ev-icon{font-size:22px;flex-shrink:0;width:30px;text-align:center;padding-top:1px}
+.ev-info{flex:1;min-width:0}
+.ev-name{font-size:12px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-name a{color:var(--p626);text-decoration:none}
+.ev-name a:hover{text-decoration:underline}
+.ev-desc{font-size:11px;color:var(--txt2);margin-top:2px;line-height:1.45}
+.ev-meta{font-size:10px;color:var(--pgry);margin-top:4px;letter-spacing:.03em}
+.ev-del{background:none;border:none;color:var(--pgry);cursor:pointer;font-size:14px;padding:3px 5px;border-radius:3px;flex-shrink:0;transition:color .15s}
+.ev-del:hover{color:var(--p7420)}
+.ev-add-section{border-top:2px solid var(--p627);padding:16px 18px;background:rgba(0,47,42,.025)}
+.ev-add-title{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--p627);margin-bottom:11px}
+.ev-type-toggle{display:flex;background:var(--pgryl);border-radius:var(--r);padding:2px;margin-bottom:12px;gap:0}
+.ev-type-btn{flex:1;padding:6px 10px;border:none;background:transparent;font-family:var(--fb);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2);cursor:pointer;border-radius:3px;transition:all .18s}
+.ev-type-btn.active{background:var(--wh);color:var(--p627);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.ev-row{margin-bottom:10px}
+.ev-row label{display:block;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);margin-bottom:4px}
+.ev-row input,.ev-row textarea{width:100%;border:1px solid var(--bdr);border-radius:var(--r);padding:7px 10px;font-family:var(--fb);font-size:12px;color:var(--txt);outline:none;background:var(--wh);transition:border-color .18s}
+.ev-row input:focus,.ev-row textarea:focus{border-color:var(--p627)}
+.ev-drop{border:2px dashed var(--bdr);border-radius:6px;padding:18px 12px;text-align:center;cursor:pointer;transition:all .18s;background:var(--wh);user-select:none}
+.ev-drop:hover,.ev-drop.drag{border-color:var(--p626);background:rgba(30,91,79,.04)}
+.ev-drop-icon{font-size:24px;margin-bottom:6px}
+.ev-drop p{font-size:12px;color:var(--txt2);margin-bottom:3px}
+.ev-drop-hint{font-size:10px;color:var(--pgry)!important}
+.ev-chosen{font-size:11px;color:var(--p626);margin-top:7px;font-weight:500;min-height:16px}
+.ev-warn{font-size:11px;color:var(--p7420);margin-top:4px;min-height:16px}
+.ev-footer{padding:12px 18px;border-top:1px solid var(--pgryl);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+/* Evidence button in directive table */
+.ev-btn{background:transparent;border:1px solid var(--pgryl);border-radius:14px;padding:3px 8px 3px 6px;font-size:11px;cursor:pointer;color:var(--pgry);display:inline-flex;align-items:center;gap:4px;transition:all .18s;white-space:nowrap;font-family:var(--fb)}
+.ev-btn:hover{border-color:var(--p626);color:var(--p626);background:rgba(30,91,79,.06)}
+.ev-btn.has-ev{border-color:var(--p626);color:var(--p626);background:rgba(30,91,79,.09);font-weight:600}
+.ev-btn .evc{font-weight:600}
+.th-ev{width:88px;background:#eef3f1!important;color:var(--p626)!important}
+@media print{.ev-overlay,.ev-drawer{display:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header class="app-header">
+  <div class="header-brand">
+    <h1>Desarrollo de Programas SEMS por Plantel</h1>
+    <p>Supervisión SEMS en el Estado de México</p>
+  </div>
+  <div class="header-logo">
+    <img id="sepLogo" alt="SEP – Secretaría de Educación Pública" style="height:62px;object-fit:contain;opacity:1">
+  </div>
+</header>
+<div class="deco-band"></div>
+
+<!-- ═══════════════ MODAL ═══════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-icon" id="mIcon">⚠️</div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-body" id="mBody"></div>
+    <div class="modal-buttons" id="mBtns"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ TOAST ═══════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══════════════ PAGE: MENU ═══════════════ -->
+<div class="page active" id="page-menu">
+  <div class="menu-page">
+    <div class="menu-hero">
+      <h2>Fortalecimiento de la<br>Educación Media Superior</h2>
+      <p>Desarrollo de Programas SEMS por plantel</p>
+      <div id="menuWelcome" style="margin-top:12px;font-family:var(--fb);font-size:13px;
+        color:var(--p626);font-weight:600;letter-spacing:.04em"></div>
+    </div>
+    <div class="menu-cards">
+      <div class="menu-card c2" onclick="newRecord()">
+        <div class="mc-icon">✏️</div>
+        <div class="mc-label">Registrar</div>
+        <div class="mc-desc">Capturar un nuevo informe de programas SEMS</div>
+      </div>
+      <div class="menu-card c1" onclick="showPage('consultar')">
+        <div class="mc-icon">🔍</div>
+        <div class="mc-label">Consultar</div>
+        <div class="mc-desc">Ver y gestionar todos los registros guardados</div>
+      </div>
+      <div class="menu-card c4" id="menuCardSumario" onclick="showPage('sumario')">
+        <div class="mc-icon">📊</div>
+        <div class="mc-label">Sumario</div>
+        <div class="mc-desc">Visualizar el avance de los planteles por directriz y programa</div>
+      </div>
+      <div class="menu-card c3" onclick="exportDB()">
+        <div class="mc-icon">💾</div>
+        <div class="mc-label">Respaldar</div>
+        <div class="mc-desc">Exportar la base de datos completa en formato JSON</div>
+      </div>
+    </div>
+    <div class="menu-stats" id="menuStats"></div>
+    <div style="margin-top:4px">
+      <button class="btn btn-ghost btn-sm" onclick="logout()"
+        style="font-size:11px;letter-spacing:.07em;color:var(--pgry);border-color:var(--pgryl)">
+        ⎋ Cerrar sesión
+      </button>
+    </div>
+    <div class="menu-note">
+      Los datos se almacenan localmente en este navegador.<br>
+      Use <strong>Respaldar</strong> para exportar su información o <strong>Importar BD</strong> para restaurar un respaldo.
+      <br><br>
+      <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+        📂 Importar BD
+        <input type="file" accept=".json" style="display:none" onchange="importDB(this)">
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LOADING OVERLAY ═══════════════ -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">Cargando…</div>
+</div>
+
+<!-- ═══════════════ PAGE: LOGIN ═══════════════ -->
+<div class="page" id="page-login">
+  <div class="page-login-wrap">
+    <div class="login-card">
+      <div class="login-logo-wrap">
+        <img id="loginLogoImg" alt="SEP – Secretaría de Educación Pública">
+      </div>
+      <div class="login-title">Sistema de Supervisión SEMS</div>
+      <div class="login-sub1">Estado de México</div>
+      <div class="login-sub2">Desarrollo de Programas SEMS por Plantel</div>
+      <div class="login-form">
+        <div class="login-field">
+          <label>Nombre del supervisor</label>
+          <select id="loginNombre" style="font-family:var(--fb);font-size:14px;color:var(--txt);
+            border:1px solid var(--bdr);border-radius:var(--r);padding:10px 13px;width:100%;
+            outline:none;background:var(--wh);cursor:pointer;appearance:auto"
+            onchange="if(this.value)document.getElementById('loginCodigo').focus()">
+            <option value="">— Selecciona tu nombre —</option>
+          </select>
+        </div>
+        <div class="login-field">
+          <label>Código de acceso</label>
+          <input type="password" id="loginCodigo" placeholder="Código asignado"
+            autocomplete="off" onkeydown="if(event.key==='Enter')doLoginAction()">
+        </div>
+        <div class="login-err" id="loginError"></div>
+        <button class="login-btn" id="loginBtn" onclick="doLoginAction()">Ingresar</button>
+      </div>
+      <div class="login-contact">
+        <span>Eliseo Anaya Dorantes</span>
+        <span class="ldot">·</span>
+        <span>Supervisor SEMS en el Estado de México</span>
+        <span class="ldot">·</span>
+        <a href="mailto:eliseo.anaya@sems.gob.mx">eliseo.anaya@sems.gob.mx</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: SUMARIO ═══════════════ -->
+<div class="page" id="page-sumario">
+  <div class="sm-page">
+
+    <!-- Top bar -->
+    <div class="sm-topbar">
+      <div class="sm-topbar-left">
+        <h2>Sumario de avance</h2>
+        <p id="smSubtitle">Distribución de planteles por nivel de avance en cada directriz</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-gold btn-sm" onclick="printSumario()">🖨 Imprimir Sumario</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportSumarioCSV()">📥 Exportar CSV</button>
+        <button class="btn btn-outline btn-sm" onclick="showPage('menu')">← Menú</button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="sm-filters">
+      <div class="sm-filter-group">
+        <label>Ciclo Escolar</label>
+        <select class="sm-filter-select" id="smFCiclo" onchange="renderSumario()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="sm-filter-group">
+        <label>Subsistema</label>
+        <select class="sm-filter-select" id="smFSubsistema" onchange="renderSumario()">
+          <option value="">Todos</option>
+          <option>BTED</option><option>DGB</option>
+          <option>DGETAyCM</option><option>DGETI</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="sm-filter-group">
+        <label>Plantel</label>
+        <select class="sm-filter-select" id="smFPlantel" onchange="renderSumario()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="sm-filter-group">
+        <label>Supervisor</label>
+        <select class="sm-filter-select" id="smFSupervisor" onchange="renderSumario()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost btn-sm sm-filter-reset" onclick="resetSmFilters()">✕ Limpiar</button>
+    </div>
+    <!-- Active filter chips -->
+    <div class="sm-filter-chips" id="smChips"></div>
+
+    <!-- Scrollable content -->
+    <div class="sm-scroll" id="smScroll">
+      <!-- Print title (hidden on screen, visible only when printing Sumario) -->
+      <div class="sm-print-title" id="smPrintTitle">
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22pt;font-weight:700;color:#002f2a;letter-spacing:.03em;line-height:1.1">Sumario de Avance</div>
+        <div style="font-family:'Jost',sans-serif;font-size:9pt;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#a57f2c;margin-top:4px">Distribución de Planteles por Nivel de Avance por Directriz</div>
+        <div id="smPrintMeta" style="font-family:'Jost',sans-serif;font-size:8pt;color:#666;margin-top:6px;line-height:1.6"></div>
+        <div style="height:2px;background:linear-gradient(90deg,#002f2a,#1e5b4f,#a57f2c);margin-top:10px;border-radius:1px"></div>
+      </div>
+      <!-- KPI strip -->
+      <div class="sm-kpi-strip" id="smKpis"></div>
+      <!-- Program tabs -->
+      <div class="sm-prog-tabs" id="smProgTabs"></div>
+      <!-- Program panels -->
+      <div id="smProgPanels"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: CONSULTAR ═══════════════ -->
+<div class="page" id="page-consultar">
+  <div class="page-content">
+    <div class="page-topbar">
+      <div class="page-title">
+        <h2>Registros guardados</h2>
+        <p id="totalLabel">Cargando…</p>
+      </div>
+      <div class="toolbar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Buscar plantel, supervisor…" oninput="renderTable()">
+        </div>
+        <select class="filter-select" id="filterCiclo" onchange="renderTable()">
+          <option value="">Todos los ciclos</option>
+        </select>
+        <select class="filter-select" id="filterSubsistema" onchange="renderTable()">
+          <option value="">Todos los subsistemas</option>
+          <option value="BTED">BTED</option>
+          <option value="DGB">DGB</option>
+          <option value="DGETAyCM">DGETAyCM</option>
+          <option value="DGETI">DGETI</option>
+          <option value="Otro">Otro</option>
+        </select>
+        <button class="btn btn-secondary" onclick="newRecord()">+ Nuevo registro</button>
+        <button class="btn btn-outline" onclick="showPage('menu')">← Menú</button>
+      </div>
+    </div>
+    <div class="records-table-wrap" id="recordsTableWrap">
+      <div class="empty-state"><div class="big">📋</div><p>No hay registros aún.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE: REGISTRAR ═══════════════ -->
+<div class="page" id="page-registrar">
+  <div class="reg-page">
+    <!-- Top bar -->
+    <div class="reg-topbar">
+      <div class="reg-topbar-left">
+        <h2 id="regTitle">Nuevo registro</h2>
+        <p id="regSubtitle">Complete todos los campos y guarde su informe</p>
+      </div>
+      <div class="reg-topbar-right">
+        <span class="dirty-dot" id="dirtyDot" title="Cambios sin guardar"></span>
+        <button class="btn btn-primary" onclick="saveRecord()">💾 Guardar</button>
+        <button class="btn btn-gold" onclick="printRecord()">🖨 Imprimir / PDF</button>
+        <button class="btn btn-danger no-print" id="deleteBtn" onclick="confirmDelete()" style="display:none">🗑 Eliminar</button>
+        <button class="btn btn-outline" onclick="goToMenu()">← Menú</button>
+      </div>
+    </div>
+
+    <!-- Scrollable form area -->
+    <div class="reg-scroll" id="regScroll">
+
+<!-- ═══════════════ LETTERHEAD PRINT HEADER ═══════════════ -->
+<div class="plt-header" id="pltHeader">
+  <div class="plt-header-pattern"></div>
+  <div class="plt-header-inner">
+    <div class="plt-header-text">
+      <div class="plt-ht1">Fortalecimiento de la Educación Media Superior</div>
+      <div class="plt-ht2">Desarrollo de Programas SEMS por plantel</div>
+      <div class="plt-ht3">Supervisión SEMS en el Estado de México</div>
+    </div>
+    <div class="plt-header-logo" style="background:#6b1232;border-radius:3px;overflow:hidden;line-height:0">
+      <img id="pltLogoImg" alt="SEP" style="mix-blend-mode:screen;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LETTERHEAD PRINT FOOTER ═══════════════ -->
+<div class="plt-footer" id="pltFooter">
+  <div class="plt-footer-band"></div>
+  <div class="plt-footer-text">
+    <span>Eliseo Anaya Dorantes &ndash; Supervisor SEMS en el Estado de México</span>
+    <span id="pltFooterDate"></span>
+  </div>
+</div>
+
+
+      <!-- PRINT META TABLE (portrait, visible only in print) -->
+      <div id="pltPrintMeta" class="plt-print-only"></div>
+
+      <!-- META FIELDS -->
+      <div class="meta-grid" id="metaGrid">
+        <div class="meta-grid-title">🗂 Datos de identificación del registro</div>
+        <div class="form-field">
+          <label>Ciclo Escolar</label>
+          <select id="f_ciclo">
+            <option value="">Seleccionar…</option>
+            <option>2024-2025 (1)</option><option>2024-2025 (2)</option>
+            <option>2025-2026 (1)</option><option>2025-2026 (2)</option>
+            <option>2026-2027 (1)</option><option>2026-2027 (2)</option>
+            <option>2027-2028 (1)</option><option>2027-2028 (2)</option>
+            <option>2028-2029 (1)</option><option>2028-2029 (2)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Entidad Federativa</label>
+          <select id="f_entidad">
+            <option value="">Seleccionar…</option>
+            <option>Aguascalientes</option><option>Baja California</option>
+            <option>Baja California Sur</option><option>Campeche</option>
+            <option>Chiapas</option><option>Chihuahua</option>
+            <option>Ciudad de México</option><option>Coahuila</option>
+            <option>Colima</option><option>Durango</option>
+            <option selected>Estado de México</option>
+            <option>Guanajuato</option><option>Guerrero</option>
+            <option>Hidalgo</option><option>Jalisco</option>
+            <option>Michoacán</option><option>Morelos</option>
+            <option>Nayarit</option><option>Nuevo León</option>
+            <option>Oaxaca</option><option>Puebla</option>
+            <option>Querétaro</option><option>Quintana Roo</option>
+            <option>San Luis Potosí</option><option>Sinaloa</option>
+            <option>Sonora</option><option>Tabasco</option>
+            <option>Tamaulipas</option><option>Tlaxcala</option>
+            <option>Veracruz</option><option>Yucatán</option>
+            <option>Zacatecas</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Subsistema</label>
+          <select id="f_subsistema">
+            <option value="">Seleccionar…</option>
+            <option>BTED</option><option>DGB</option>
+            <option>DGETAyCM</option><option>DGETI</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Plantel</label>
+          <input type="text" id="f_plantel" placeholder="Ej. CBTis 203 – Toluca">
+        </div>
+        <div class="form-field">
+          <label>Nombre del Supervisor</label>
+          <input type="text" id="f_supervisor" placeholder="Nombre completo">
+        </div>
+        <div class="form-field">
+          <label>Fecha de Captura</label>
+          <input type="date" id="f_fecha">
+        </div>
+      </div>
+
+      <!-- PROGRAM TABS -->
+      <div id="progTabsBar" class="prog-tabs-bar no-print"></div>
+
+      <!-- PROGRAM PANELS (generated by JS) -->
+      <div id="progPanels"></div>
+
+      <!-- FORM ACTIONS (bottom sticky) -->
+      <div class="form-actions no-print">
+        <div class="form-actions-l">
+          <button class="btn btn-primary" onclick="saveRecord()">💾 Guardar</button>
+          <button class="btn btn-gold" onclick="printRecord()">🖨 Imprimir / PDF</button>
+          <button class="btn btn-danger" id="deleteBtnBottom" onclick="confirmDelete()" style="display:none">🗑 Eliminar</button>
+        </div>
+        <div class="form-actions-r">
+          <button class="btn btn-outline" onclick="goToMenu()">← Menú Principal</button>
+        </div>
+      </div>
+
+    </div><!-- /reg-scroll -->
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="app-footer">Eliseo Anaya Dorantes &ndash; Supervisor SEMS en el Estado de México</footer>
+
+<!-- ═══════════════ EVIDENCE DRAWER ═══════════════ -->
+<div class="ev-overlay" id="evOverlay" onclick="closeEvDrawer()"></div>
+<div class="ev-drawer" id="evDrawer">
+  <div class="ev-dh">
+    <div class="ev-dh-top">
+      <div class="ev-dh-id" id="evDirId">—</div>
+      <button class="ev-close" onclick="closeEvDrawer()">✕</button>
+    </div>
+    <div class="ev-dh-text" id="evDirText"></div>
+    <div id="evNivelBadge"></div>
+  </div>
+  <div class="ev-body">
+    <div class="ev-section">
+      <div class="ev-section-title">Evidencias registradas</div>
+      <div id="evList"></div>
+    </div>
+    <div class="ev-add-section">
+      <div class="ev-add-title">➕ Agregar nueva evidencia</div>
+      <div class="ev-type-toggle">
+        <button class="ev-type-btn active" id="evTypeFile" onclick="setEvType('file')">📁 Archivo</button>
+        <button class="ev-type-btn" id="evTypeLink" onclick="setEvType('link')">🔗 Enlace / URL</button>
+      </div>
+      <div id="evFileArea">
+        <div class="ev-row">
+          <div class="ev-drop" id="evFileDrop"
+               onclick="document.getElementById('evFileInput').click()"
+               ondragover="evDragOver(event)" ondragleave="evDragLeave(event)" ondrop="evDrop(event)">
+            <div class="ev-drop-icon">📂</div>
+            <p>Haga clic o arrastre un archivo aquí</p>
+            <p class="ev-drop-hint">Word · Excel · PowerPoint · PDF · Imágenes &nbsp;|&nbsp; Máx. 5 MB</p>
+            <div class="ev-chosen" id="evFileChosen"></div>
+            <div class="ev-warn" id="evSizeWarn"></div>
+          </div>
+          <input type="file" id="evFileInput" style="display:none"
+                 accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png,.gif,.webp,.bmp,.svg"
+                 onchange="evFileSelected(this)">
+        </div>
+      </div>
+      <div id="evLinkArea" style="display:none">
+        <div class="ev-row">
+          <label>URL del enlace o video</label>
+          <input type="url" id="evLinkInput" placeholder="https://…">
+        </div>
+      </div>
+      <div class="ev-row">
+        <label>Descripción de la evidencia</label>
+        <textarea id="evDesc" rows="2" placeholder="Breve descripción de esta evidencia…"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="ev-footer">
+    <button class="btn btn-ghost btn-sm" onclick="closeEvDrawer()">Cerrar</button>
+    <button class="btn btn-secondary btn-sm" onclick="addEvidence()">✅ Agregar evidencia</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA: 4 PROGRAMS, 42 DIRECTIVES
+// ══════════════════════════════════════════════
+const PROGRAMAS = [
+  {
+    id:'p1', num:1, icon:'🏫',
+    nombre:'Programa de mejora de la infraestructura escolar',
+    subtitulo:'"Mi escuela me gusta"',
+    color:'#9b2247',
+    directrices:[
+      {id:'1.1', texto:'Verificar la dignificación de los espacios sanitarios.'},
+      {id:'1.2', texto:'Dar seguimiento a la inversión en la infraestructura para la integración de canchas, cafeterías, auditorios o salas de usos múltiples; talleres y/o laboratorios a través de los avances en los proyectos LEEN u otros.'},
+      {id:'1.3', texto:'Medición del Ambiente Escolar a través de instrumento propuesto para la valoración de las dimensiones: aula, relaciones, actitudes y relaciones entre el personal y hacia los estudiantes, gestión del espacio, seguridad y limpieza.'},
+      {id:'1.4', texto:'Verificar y promover el derecho a las condiciones dignas de servicios públicos y acceso a las personas con condiciones de discapacidad.'}
+    ]
+  },
+  {
+    id:'p2', num:2, icon:'🤝',
+    nombre:'Programa de integración y cuidado comunitario',
+    subtitulo:'"Mi escuela me cuida"',
+    color:'#1e5b4f',
+    directrices:[
+      {id:'2.1',  texto:'Supervisar que se realicen actividades con instancias locales de seguridad pública.'},
+      {id:'2.2',  texto:'Dar seguimiento a la conformación y capacitación de las brigadas escolares de evacuación, primeros auxilios y comunicación.'},
+      {id:'2.3',  texto:'Solicitar reportes de atención de estudiantes con discapacidad y enfermedades degenerativas.'},
+      {id:'2.4',  texto:'Dar seguimiento al conocimiento del reglamento escolar con enfoque en derechos humanos y en las adolescencias, así como para constatar la existencia y aplicación de acuerdos de convivencia.'},
+      {id:'2.5',  texto:'Documentar las acciones de difusión de la Declaratoria de "Cero Tolerancia" frente a las manifestaciones de violencia en los planteles de Educación Media Superior.'},
+      {id:'2.6',  texto:'Verificar la implementación, difusión y apropiación de los Protocolos de Seguridad, Convivencia Armónica y Revisión de útiles escolares con estudiantes de nuevo ingreso.'},
+      {id:'2.7',  texto:'Verificar la conformación y operación de los Comités de Cultura de Paz y otras acciones que favorezcan la plena garantía de los Derechos Humanos.'},
+      {id:'2.8',  texto:'Supervisar la integración del programa federal "Vida Saludable" a través de actividades relacionadas con la salud integral, nutrición equilibrada y actividad física.'},
+      {id:'2.9',  texto:'Verificar la aplicación de la Estrategia Nacional para la Prevención de Adicciones u otras acciones que favorezcan el bienestar físico, emocional, mental y social de las comunidades estudiantiles.'},
+      {id:'2.10', texto:'Monitorear el fomento del cuidado de la salud mental, mediante la vinculación con los servicios impulsados por la Comisión Nacional de Salud Mental y Adicciones (CONASAMA) y con otras instituciones, a través de mecanismos de capacitación, canalización y/o difusión de redes de apoyo.'},
+      {id:'2.11', texto:'Supervisar la ejecución de proyectos transversales en el aula, la escuela y/o la comunidad, vinculados con los contenidos del programa "Vida Saludable", que se integren en las asignaturas del plan de estudios de Educación Media Superior (particularmente en las áreas de ciencias, tutoría, orientación y desarrollo humano).'},
+      {id:'2.12', texto:'Dar seguimiento a los informes de reprobación y programa de tutorías y asesorías académicas para fortalecer los aprendizajes de la comunidad estudiantil.'},
+      {id:'2.13', texto:'Impulsar la vinculación con instituciones de educación superior para la promoción de servicio social, orientado a la asesoría académica en asignaturas con altos índices de reprobación.'},
+      {id:'2.14', texto:'Verificar las estrategias del plantel para atender la desafiliación escolar, con enfoque preventivo, de permanencia, derechos humanos, inclusión y atención socioemocional.'},
+      {id:'2.15', texto:'Propiciar condiciones y supervisar que los mecanismos de reincorporación favorezcan la permanencia de las y los estudiantes en el plantel.'},
+      {id:'2.16', texto:'Solicitar evidencias de la validación por parte del plantel, de datos en la plataforma del Sistema Integral para la Operación de Becas Benito Juárez (SINOB) y difusión de medios de atención para dudas en el programa.'}
+    ]
+  },
+  {
+    id:'p3', num:3, icon:'📚',
+    nombre:'Programa de fortalecimiento académico',
+    subtitulo:'"La prepa me interesa"',
+    color:'#a57f2c',
+    directrices:[
+      {id:'3.1',  texto:'Impulsar mecanismos de valoración, dignificación del personal docente, administrativo, de servicios (PAAE), directivo.'},
+      {id:'3.2',  texto:'Dar seguimiento al desarrollo de talleres o cursos de actualización del personal.'},
+      {id:'3.3',  texto:'Dar seguimiento a la oferta y difusión de concursos de reconocimiento, procesos de regularización y esquemas de promoción a plazas u otros puestos.'},
+      {id:'3.4',  texto:'Detectar las necesidades formativas para el personal educativo, la gestión, difusión y promoción de programas de formación continua y desarrollo profesional (cursos, talleres, diplomados) que ofrece la autoridad educativa, enfocados en competencias pedagógicas y actualización disciplinar.'},
+      {id:'3.5',  texto:'Dar seguimiento a los avances en la Implementación del MCCEMS (Currículum fundamental, ampliado y laboral) con acciones de participación de la comunidad escolar.'},
+      {id:'3.6',  texto:'Verificar el desarrollo de proyectos escolares en el marco del Programa Aula Escuela Comunidad (PAEC).'},
+      {id:'3.7',  texto:'Supervisar acciones de fortalecimiento de los conocimientos matemáticos, las habilidades lingüísticas, la cultura científica y humanística, así como de los recursos socioemocionales para el desarrollo integral.'},
+      {id:'3.8',  texto:'Monitorear las actividades de orientación vocacional dirigidas a las y los estudiantes, con el propósito de apoyar la toma de decisiones informadas sobre su trayectoria académica y profesional.'},
+      {id:'3.9',  texto:'Verificar la ejecución de Jornadas de Ciencia y Humanidades o Cátedras, con la participación de invitadas e invitados de Instituciones de Educación Superior u otras acciones que impulsen la formación integral del estudiantado.'},
+      {id:'3.10', texto:'Supervisar la incorporación de materiales de investigación en el aula, como repositorios digitales de artículos científicos, publicaciones y materiales de divulgación.'},
+      {id:'3.11', texto:'Comprobar la existencia de actividades alusivas al Programa Nacional de Lectura, tales como jornadas, clubes o círculos de lectura, a través de programas de las Direcciones Generales como PRONAFOLE o mediante actividades vinculadas a concursos como Leamos la Ciencia para Todos.'},
+      {id:'3.12', texto:'Constatar la promoción de la Biblioteca Digital Nacional de la Educación Media Superior, así como dar seguimiento a las condiciones de infraestructura tecnológica de bibliotecas o espacios virtuales gestionados por el plantel, para garantizar el uso continuo de repositorios académicos en línea.'},
+      {id:'3.13', texto:'Confirmar la existencia de diagnósticos de infraestructura cultural cercana a los planteles así como de mecanismos de colaboración vigentes para su uso en actividades formativas y artísticas.'},
+      {id:'3.14', texto:'Participar en la coordinación de las jornadas de discusión del MCCEMS y en el análisis colaborativo de los resultados, con la participación de las comunidades docentes, estudiantiles y del personal con funciones de dirección.'}
+    ]
+  },
+  {
+    id:'p4', num:4, icon:'🚪',
+    nombre:'Programa de impulso a las trayectorias académicas y laborales',
+    subtitulo:'"La prepa me abre las puertas"',
+    color:'#002f2a',
+    directrices:[
+      {id:'4.1', texto:'Impulsar estrategias de colaboración que propicie la generación y difusión de convenios con Instituciones de Educación Superior (IES) para garantizar los beneficios de orientación, preparación e ingreso preferente.'},
+      {id:'4.2', texto:'Constatar la promoción y la existencia de un padrón de empresas e instituciones públicas vinculadas a la Educación Dual.'},
+      {id:'4.3', texto:'Verificar la implementación de la Educación Dual, a fin de comprobar su congruencia con la metodología y los criterios establecidos para su planeación y formalización.'},
+      {id:'4.4', texto:'Supervisar la promoción y el desarrollo de la Educación Dual, con base en los principios de igualdad sustantiva y la generación de entornos libres de violencias, acoso sexual, discriminación, racismo o cualquier otra situación que vulnere a las y los estudiantes, tanto en el ámbito escolar como en los espacios de formación laboral (empresas o instituciones públicas).'},
+      {id:'4.5', texto:'Dar seguimiento a las egresadas y egresados que obtienen certificación de competencias laborales, colocación laboral y tránsito exitoso a la educación superior, en las modalidades de Educación Dual, Bachillerato General y Tecnológico.'},
+      {id:'4.6', texto:'Dar seguimiento a las estrategias de certificación de competencias laborales de las comunidades estudiantiles en la modalidad de Educación Dual, así como impulsar acciones que promuevan su incorporación en la bolsa de trabajo.'},
+      {id:'4.7', texto:'Fomentar la capacitación y actualización del personal docente y directivo que participa en el Sistema de Educación Dual, con el propósito de fortalecer los procesos de enseñanza y aprendizaje en esta modalidad educativa.'},
+      {id:'4.8', texto:'Verificar el desarrollo de academias estatales y nacionales que permitan identificar áreas de oportunidad al currículo laboral y a los contenidos de las certificaciones.'}
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════
+//  STATE & DB
+// ══════════════════════════════════════════════
+// ═══════════════════════════════
+//  CONFIGURATION
+// ═══════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeYYLeh5K_dcqKHisDeTvoXx51iqg5bmmQoJ-gJnqXvqiqpjBq5_qAC7ZiEt5ienPx/exec';
+
+// ═══════════════════════════════
+//  SESSION MANAGEMENT
+// ═══════════════════════════════
+let currentUser = null; // { nombre, codigo, rol }
+
+function initSession() {
+  try {
+    const s = sessionStorage.getItem('sems_session');
+    if (s) currentUser = JSON.parse(s);
+  } catch(e) { currentUser = null; }
+}
+
+function setSession(user) {
+  currentUser = user;
+  try { sessionStorage.setItem('sems_session', JSON.stringify(user)); } catch(e){}
+}
+
+function clearSession() {
+  currentUser = null;
+  // Wipe local record cache so the next user can't see this user's data
+  db = [];
+  evStore = {};
+  try { localStorage.removeItem(DB_KEY); } catch(e){}
+  try { localStorage.removeItem('sems_evidencias'); } catch(e){}
+  try { sessionStorage.removeItem('sems_session'); } catch(e){}
+}
+
+// ═══════════════════════════════
+//  LOADING OVERLAY
+// ═══════════════════════════════
+function showLoading(msg) {
+  document.getElementById('loadingText').textContent = msg || 'Cargando…';
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+// ═══════════════════════════════
+//  API CALL
+// ═══════════════════════════════
+async function apiCall(action, data) {
+  const payload = Object.assign({ action, codigo: currentUser?.codigo }, data || {});
+  const resp = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  });
+  if (!resp.ok) throw new Error('Error de red (HTTP ' + resp.status + ')');
+  const result = await resp.json();
+  if (result.error) throw new Error(result.error);
+  return result;
+}
+
+// ═══════════════════════════════
+//  LOCAL DB (cache)
+// ═══════════════════════════════
+const DB_KEY = 'sems_programas_db_v2';
+let db = [];
+let currentId = null;
+let isDirty = false;
+
+function loadDB() {
+  try { db = JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
+  catch(e) { db = []; }
+}
+function saveDB() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch(e){}
+}
+function getNextId() {
+  if (!db.length) return '1';
+  return String(Math.max(...db.map(r => parseInt(r.id)||0)) + 1);
+}
+loadDB();
+
+// ═══════════════════════════════
+//  LOGIN / LOGOUT
+// ═══════════════════════════════
+async function doLoginAction() {
+  const nombre = (document.getElementById('loginNombre')?.value || '').trim();
+  const codigo = (document.getElementById('loginCodigo')?.value || '').trim();
+  const errEl  = document.getElementById('loginError');
+  const btn    = document.getElementById('loginBtn');
+  if (!nombre) { errEl.textContent = 'Por favor escribe tu nombre completo.'; return; }
+  if (!codigo) { errEl.textContent = 'Por favor ingresa tu código de acceso.'; return; }
+  errEl.textContent = '';
+  btn.disabled = true; btn.textContent = 'Verificando…';
+  try {
+    showLoading('Verificando acceso…');
+    const res = await apiCall('login', { nombre, codigo });
+    setSession(res);
+    // Always start with a clean slate so previous user's cached records
+    // are never visible to the new user
+    db = [];
+    evStore = {};
+    try { localStorage.removeItem(DB_KEY); } catch(e){}
+    try { localStorage.removeItem('sems_evidencias'); } catch(e){}
+    await syncFromAPI();
+    hideLoading();
+    updateMenuCards();
+    showPage('menu');
+  } catch(e) {
+    hideLoading();
+    errEl.textContent = e.message;
+    btn.disabled = false; btn.textContent = 'Ingresar';
+  }
+}
+
+async function syncFromAPI() {
+  showLoading('Cargando registros…');
+  try {
+    const res = await apiCall('getRecords');
+    const apiRecords = res.records || [];
+    // API is authoritative: merge with any local-only unsaved records
+    // API is always authoritative — overwrite local cache completely.
+    // Never merge with local cache: that would leak other users' records
+    // when different users share the same browser.
+    db = apiRecords;
+    saveDB();
+  } catch(e) {
+    // use local cache
+    toast('⚠️ Sin conexión. Usando datos locales.', 'info');
+  }
+  // Load evidencias
+  try {
+    const evRes = await apiCall('getEvidencias', { recordId: '' });
+    evStore = {};
+    (evRes.evidencias || []).forEach(ev => {
+      const k = ev.recordId + '::' + ev.dirId.replace('/','_');
+      if (!evStore[k]) evStore[k] = [];
+      // store ev without duplicates
+      if (!evStore[k].find(x => x.id === ev.evId)) {
+        evStore[k].push({ id: ev.evId, tipo: ev.tipo, nombre: ev.nombre,
+          url: ev.url, descripcion: ev.descripcion, fecha: ev.fecha });
+      }
+    });
+    saveEvidencias();
+  } catch(e) {}
+  hideLoading();
+}
+
+function logout() {
+  if (isDirty) {
+    showModal('⚠️', 'Cambios sin guardar',
+      '¿Desea guardar los cambios antes de cerrar sesión?', [
+      { label: 'Guardar y salir', cls: 'btn-primary', action: () => { saveRecord(false); _doLogout(); } },
+      { label: 'Salir sin guardar', cls: 'btn-danger', action: _doLogout },
+      { label: 'Cancelar', cls: 'btn-ghost', action: closeModal }
+    ]);
+  } else { _doLogout(); }
+}
+function _doLogout() {
+  closeModal();
+  clearSession();
+  db = []; evStore = {};
+  isDirty = false;
+  showPage('login');
+}
+
+function updateMenuCards() {
+  const sc = document.getElementById('menuCardSumario');
+  if (sc) sc.style.display = (currentUser?.rol === 'plantel') ? 'none' : '';
+  // Show welcome name in menu
+  const wEl = document.getElementById('menuWelcome');
+  if (wEl && currentUser?.nombre) {
+    wEl.textContent = '👤 ' + currentUser.nombre;
+  }
+}
+
+// ══════════════════════════════════════════════
+//  SUPERVISOR LIST FOR LOGIN DROPDOWN
+// ══════════════════════════════════════════════
+async function loadSupervisorList() {
+  const sel = document.getElementById('loginNombre');
+  if (!sel || sel.tagName !== 'SELECT') return;
+  sel.innerHTML = '<option value="">— Cargando lista… —</option>';
+  sel.disabled = true;
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify({ action: 'getSupervisores' }),
+      redirect: 'follow'
+    });
+    const text = await resp.text();
+    // If the response is HTML (Google login page or error), it's not JSON
+    if (text.trim().startsWith('<')) {
+      throw new Error('El servidor devolvió HTML en lugar de datos. Verifique que el backend esté correctamente implementado.');
+    }
+    const json = JSON.parse(text);
+    const names = (json.supervisores || []).filter(n => n && n.trim());
+    if (names.length === 0) throw new Error('Sin supervisores activos en la hoja de Usuarios.');
+    sel.innerHTML = '<option value="">— Selecciona tu nombre —</option>';
+    names.forEach(nombre => {
+      const opt = document.createElement('option');
+      opt.value = nombre;
+      opt.textContent = nombre;
+      sel.appendChild(opt);
+    });
+  } catch(e) {
+    console.warn('loadSupervisorList:', e.message);
+    sel.innerHTML = `<option value="">⚠️ No se pudo cargar la lista</option>`;
+    // Show a small retry link below the select
+    const retryId = 'loginRetry';
+    if (!document.getElementById(retryId)) {
+      const retryEl = document.createElement('div');
+      retryEl.id = retryId;
+      retryEl.style.cssText = 'font-size:10px;color:var(--pgry);margin-top:4px;text-align:right';
+      retryEl.innerHTML = '<a href="#" onclick="event.preventDefault();loadSupervisorList()" style="color:var(--p626)">↺ Reintentar</a> · Verifique que el backend esté implementado';
+      sel.parentElement.appendChild(retryEl);
+    }
+  } finally {
+    sel.disabled = false;
+  }
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function showPage(name) {
+  // Auth guard – non-login pages require a session
+  if (name !== 'login' && !currentUser) { showPage('login'); return; }
+  // Role guard – sumario requires zona role
+  if (name === 'sumario' && currentUser?.rol !== 'zona') {
+    toast('⚠️ No tiene permisos para acceder al Sumario.', 'error'); return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if (name==='consultar') { renderTable(); populateFilters(); }
+  if (name==='menu') { updateMenuStats(); updateMenuCards(); }
+  if (name==='sumario') { populateSmFilters(); renderSumario(); }
+  if (name==='login') {
+    // Always reset the login form to its initial state
+    const btn = document.getElementById('loginBtn');
+    if (btn) { btn.disabled = false; btn.textContent = 'Ingresar'; }
+    const errEl = document.getElementById('loginError');
+    if (errEl) errEl.textContent = '';
+    const codigoEl = document.getElementById('loginCodigo');
+    if (codigoEl) codigoEl.value = '';
+    const sel = document.getElementById('loginNombre');
+    if (sel) sel.value = '';
+    // Populate supervisor list from API
+    loadSupervisorList();
+  }
+}
+
+function goToMenu() {
+  if (isDirty) {
+    showModal('⚠️','Cambios sin guardar',
+      '¿Desea guardar los cambios antes de regresar al menú principal?', [
+      {label:'Guardar y salir', cls:'btn-primary', action:()=>{ closeModal(); saveRecord(false); isDirty=false; showPage('menu'); }},
+      {label:'Salir sin guardar', cls:'btn-danger', action:()=>{ closeModal(); isDirty=false; showPage('menu'); }},
+      {label:'Cancelar', cls:'btn-ghost', action:closeModal}
+    ]);
+  } else { showPage('menu'); }
+}
+
+// ══════════════════════════════════════════════
+//  BUILD FORM UI
+// ══════════════════════════════════════════════
+function buildProgramUI() {
+  const tabsBar = document.getElementById('progTabsBar');
+  const panels  = document.getElementById('progPanels');
+  tabsBar.innerHTML = '';
+  panels.innerHTML  = '';
+
+  PROGRAMAS.forEach((prog, i) => {
+    // TAB
+    const tab = document.createElement('button');
+    tab.className = 'prog-tab' + (i===0?' active':'');
+    tab.id = 'tab-'+prog.id;
+    tab.innerHTML = `
+      <span class="tab-icon">${prog.icon}</span>
+      <span>Programa ${prog.num}</span>
+      <span class="tab-num">${prog.directrices.length} directrices</span>
+      <div class="tab-progress"><div class="tab-progress-fill" id="tp-${prog.id}" style="width:0%"></div></div>`;
+    tab.onclick = () => switchTab(prog.id);
+    tabsBar.appendChild(tab);
+
+    // PANEL
+    const panel = document.createElement('div');
+    panel.className = 'prog-panel' + (i===0?' active':'');
+    panel.id = 'panel-'+prog.id;
+
+    let rows = '';
+    prog.directrices.forEach(dir => {
+      const fid = `${prog.id}_${dir.id.replace('.','_')}`;
+      const dirTextoEsc = dir.texto.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/'/g,"\\'");
+      rows += `
+        <tr>
+          <td class="td-dir">
+            <span class="dir-id">${dir.id}</span>
+            ${escHtml(dir.texto)}
+          </td>
+          <td class="td-nivel">
+            <select class="nivel-sel" id="niv_${fid}" onchange="onNivelChange(this,'${prog.id}')" data-val="">
+              <option value="">—</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
+          </td>
+          <td><textarea class="dir-ta" id="est_${fid}" placeholder="Estado de la situación…" rows="3" oninput="markDirty()"></textarea></td>
+          <td><textarea class="dir-ta" id="log_${fid}" placeholder="• Logros alcanzados" rows="3" oninput="markDirty()"></textarea></td>
+          <td><textarea class="dir-ta" id="ret_${fid}" placeholder="• Retos identificados" rows="3" oninput="markDirty()"></textarea></td>
+          <td><textarea class="dir-ta" id="com_${fid}" placeholder="• Compromisos asumidos" rows="3" oninput="markDirty()"></textarea></td>
+          <td style="vertical-align:middle;text-align:center;padding:8px 6px">
+            <button class="ev-btn" id="evbtn_${fid}"
+              onclick="openEvDrawer('${prog.id}','${dir.id}','${dirTextoEsc}')">
+              📎 <span class="evc" id="evc_${fid}">0</span>
+            </button>
+          </td>
+        </tr>`;
+    });
+
+    panel.innerHTML = `
+      <div class="prog-panel-header">
+        <div>
+          <h3>${prog.icon} ${prog.nombre}</h3>
+          <div style="color:var(--p7402);font-weight:600;font-size:13px;margin-top:3px;letter-spacing:.03em">${prog.subtitulo}</div>
+        </div>
+        <span class="prog-badge">${prog.directrices.length} directrices</span>
+      </div>
+      <div class="dir-table-wrap">
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th class="th-dir">Directriz del Programa</th>
+              <th class="th-nivel">Nivel de avance</th>
+              <th class="th-estado">Estado de la situación</th>
+              <th class="th-logros">Logros</th>
+              <th class="th-retos">Retos</th>
+              <th class="th-compromisos">Compromisos</th>
+              <th class="th-ev">Evidencias</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div class="prog-comments">
+        <label>💬 Comentarios Generales del Programa ${prog.num}</label>
+        <textarea id="cgp_${prog.id}" placeholder="Observaciones generales sobre el desarrollo de este programa en el plantel…" rows="3" oninput="markDirty()"></textarea>
+      </div>`;
+    panels.appendChild(panel);
+  });
+}
+
+function switchTab(progId) {
+  document.querySelectorAll('.prog-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.prog-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+progId).classList.add('active');
+  document.getElementById('panel-'+progId).classList.add('active');
+}
+
+function onNivelChange(sel, progId) {
+  sel.setAttribute('data-val', sel.value);
+  markDirty();
+  updateTabProgress(progId);
+}
+
+function updateTabProgress(progId) {
+  const prog = PROGRAMAS.find(p => p.id===progId);
+  if (!prog) return;
+  const filled = prog.directrices.filter(d => {
+    const fid = `${progId}_${d.id.replace('.','_')}`;
+    return document.getElementById('niv_'+fid)?.value;
+  }).length;
+  const pct = Math.round(filled/prog.directrices.length*100);
+  const el = document.getElementById('tp-'+progId);
+  if (el) el.style.width = pct+'%';
+}
+
+function updateAllProgress() {
+  PROGRAMAS.forEach(p => updateTabProgress(p.id));
+}
+
+// ══════════════════════════════════════════════
+//  RECORD CRUD
+// ══════════════════════════════════════════════
+function newRecord() {
+  try {
+  currentId = null;
+  isDirty = false;
+  buildProgramUI();
+  document.getElementById('f_ciclo').value      = '';
+  document.getElementById('f_entidad').value    = 'Estado de México';
+  document.getElementById('f_subsistema').value = '';
+  document.getElementById('f_plantel').value    = '';
+  const supInput = document.getElementById('f_supervisor');
+  const fechaInput = document.getElementById('f_fecha');
+  if (currentUser?.rol === 'plantel') {
+    supInput.value = currentUser.nombre;
+    supInput.readOnly = true;
+    supInput.style.background = '#f7f5f0';
+    supInput.style.color = '#666';
+    supInput.title = 'El nombre del supervisor se asigna automáticamente según su acceso';
+    // Lock fecha for plantel users
+    fechaInput.value = todayStr();
+    fechaInput.readOnly = true;
+    fechaInput.style.background = '#f7f5f0';
+    fechaInput.style.color = '#666';
+    fechaInput.title = 'La fecha solo puede ser modificada por un supervisor de zona';
+  } else {
+    supInput.value = currentUser?.nombre || 'Eliseo Anaya Dorantes';
+    supInput.readOnly = false;
+    supInput.style.background = '';
+    supInput.style.color = '';
+    supInput.title = '';
+    fechaInput.value = todayStr();
+    fechaInput.readOnly = false;
+    fechaInput.style.background = '';
+    fechaInput.style.color = '';
+    fechaInput.title = '';
+  }
+  document.getElementById('deleteBtn').style.display       = 'none';
+  document.getElementById('deleteBtnBottom').style.display = 'none';
+  document.getElementById('regTitle').textContent    = 'Nuevo registro';
+  document.getElementById('regSubtitle').textContent = 'Complete los datos y guarde su informe';
+  hideDirty();
+  showPage('registrar');
+  document.getElementById('regScroll').scrollTop = 0;
+  } catch(err) {
+    console.error('newRecord error:', err);
+    toast('❌ Error al abrir formulario: ' + err.message, 'error');
+  }
+}
+
+function editRecord(id) {
+  try {
+  const rec = db.find(r => String(r.id)===String(id));
+  if (!rec) {
+    // Record not in local cache — try syncing from API first
+    toast('⚠️ Sincronizando datos…', 'info');
+    syncFromAPI().then(() => {
+      const r2 = db.find(r => String(r.id)===String(id));
+      if (r2) editRecord(id);
+      else toast('❌ Registro no encontrado. Intente recargar la página.', 'error');
+    });
+    return;
+  }
+  currentId = id;
+  isDirty = false;
+  buildProgramUI();
+  document.getElementById('f_ciclo').value      = rec.cicloEscolar   || '';
+  document.getElementById('f_entidad').value    = rec.entidad         || '';
+  document.getElementById('f_subsistema').value = rec.subsistema      || '';
+  document.getElementById('f_plantel').value    = rec.plantel         || '';
+  const supEl = document.getElementById('f_supervisor');
+  supEl.value = rec.supervisor || '';
+  const fechaEl = document.getElementById('f_fecha');
+  fechaEl.value = rec.fechaCaptura || '';
+  if (currentUser?.rol === 'plantel') {
+    supEl.readOnly = true;
+    supEl.style.background = '#f7f5f0';
+    supEl.style.color = '#666';
+    fechaEl.readOnly = true;
+    fechaEl.style.background = '#f7f5f0';
+    fechaEl.style.color = '#666';
+    fechaEl.title = 'La fecha solo puede ser modificada por un supervisor de zona';
+  } else {
+    supEl.readOnly = false;
+    supEl.style.background = '';
+    supEl.style.color = '';
+    fechaEl.readOnly = false;
+    fechaEl.style.background = '';
+    fechaEl.style.color = '';
+    fechaEl.title = '';
+  }
+
+  // Populate directives
+  if (rec.programas) {
+    PROGRAMAS.forEach(prog => {
+      const pd = rec.programas[prog.id] || {};
+      // Comments
+      const cgEl = document.getElementById('cgp_'+prog.id);
+      if (cgEl) cgEl.value = pd.comentariosGenerales || '';
+      // Directives
+      prog.directrices.forEach(dir => {
+        const fid = `${prog.id}_${dir.id.replace('.','_')}`;
+        const dd = (pd.directrices || {})[dir.id] || {};
+        const nivEl = document.getElementById('niv_'+fid);
+        if (nivEl) {
+          nivEl.value = dd.nivelAvance || '';
+          nivEl.setAttribute('data-val', dd.nivelAvance || '');
+        }
+        setTa('est_'+fid, dd.estadoSituacion || '');
+        setTa('log_'+fid, dd.logros || '');
+        setTa('ret_'+fid, dd.retos  || '');
+        setTa('com_'+fid, dd.compromisos || '');
+      });
+      updateTabProgress(prog.id);
+    });
+  }
+
+  document.getElementById('deleteBtn').style.display       = 'inline-flex';
+  document.getElementById('deleteBtnBottom').style.display = 'inline-flex';
+  document.getElementById('regTitle').textContent    = `Registro #${rec.id}`;
+  document.getElementById('regSubtitle').textContent = `${rec.plantel || '—'} · ${rec.cicloEscolar || '—'}`;
+  hideDirty();
+  showPage('registrar');
+  document.getElementById('regScroll').scrollTop = 0;
+  // Update evidence badges after UI is built
+  setTimeout(updateAllEvBadges, 50);
+  } catch(err) {
+    console.error('editRecord error:', err);
+    toast('❌ Error al abrir el registro: ' + err.message, 'error');
+  }
+}
+
+// Track if a save is already in progress (prevents concurrent saves)
+let _saveInProgress = false;
+
+async function saveRecord(thenMenu) {
+  // Prevent concurrent saves (race condition protection)
+  if (_saveInProgress) {
+    toast('⏳ Guardado en curso, por favor espere…', 'info');
+    return;
+  }
+  const saveBtns = document.querySelectorAll('[onclick="saveRecord()"]');
+  try {
+    const plantel = document.getElementById('f_plantel').value.trim();
+    if (!plantel) {
+      const pEl = document.getElementById('f_plantel');
+      pEl.style.borderColor = '#e74c3c';
+      pEl.focus();
+      setTimeout(()=>{ pEl.style.borderColor = ''; }, 3000);
+      toast('⚠️ Debe ingresar el nombre del Plantel antes de guardar.','error');
+      return;
+    }
+
+    _saveInProgress = true;
+    saveBtns.forEach(b => { b.disabled = true; });
+
+    const now = new Date();
+    const ts  = `${now.toLocaleDateString('es-MX')} ${now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}`;
+
+    const programasData = {};
+    PROGRAMAS.forEach(prog => {
+      programasData[prog.id] = {
+        comentariosGenerales: document.getElementById('cgp_'+prog.id)?.value || '',
+        directrices: {}
+      };
+      prog.directrices.forEach(dir => {
+        const fid = `${prog.id}_${dir.id.replace('.','_')}`;
+        programasData[prog.id].directrices[dir.id] = {
+          nivelAvance:      document.getElementById('niv_'+fid)?.value || '',
+          estadoSituacion:  getTa('est_'+fid),
+          logros:           getTa('log_'+fid),
+          retos:            getTa('ret_'+fid),
+          compromisos:      getTa('com_'+fid)
+        };
+      });
+    });
+
+    const rec = {
+      id:                currentId || 'NEW',  // 'NEW' → server assigns real ID
+      cicloEscolar:      document.getElementById('f_ciclo').value,
+      entidad:           document.getElementById('f_entidad').value,
+      subsistema:        document.getElementById('f_subsistema').value,
+      plantel:           plantel,
+      supervisor:        document.getElementById('f_supervisor').value.trim(),
+      fechaCaptura:      document.getElementById('f_fecha').value,
+      ultimaModificacion: ts,
+      programas:         programasData
+    };
+
+    // ── Step 1: Save locally (instant, always works) ──
+    const isNew = !currentId;
+    if (!isNew) {
+      const idx = db.findIndex(r => String(r.id)===String(currentId));
+      if (idx>=0) db[idx] = rec; else db.push(rec);
+    } else {
+      currentId = rec.id;
+      db.push(rec);
+      document.getElementById('deleteBtn').style.display       = 'inline-flex';
+      document.getElementById('deleteBtnBottom').style.display = 'inline-flex';
+      document.getElementById('regTitle').textContent    = `Registro #${rec.id}`;
+      document.getElementById('regSubtitle').textContent = `${rec.plantel} · ${rec.cicloEscolar || '—'}`;
+    }
+    saveDB();
+
+    // ── Step 2: Sync to API — AWAIT before showing success ──
+    showLoading('Guardando en servidor…');
+    const res = await apiCall('saveRecord', { record: rec });
+    hideLoading();
+
+    // Server always returns the real ID — update local record accordingly
+    const realId = String(res.id || rec.id);
+    if (isNew) {
+      // Replace the temporary 'NEW' entry with the real ID
+      const idx = db.findIndex(r => r.id === 'NEW' || String(r.id) === String(rec.id));
+      if (idx >= 0) db[idx].id = realId;
+      currentId = realId;
+      document.getElementById('regTitle').textContent = `Registro #${realId}`;
+      document.getElementById('regSubtitle').textContent = `${rec.plantel} · ${rec.cicloEscolar || '—'}`;
+    }
+    if (res.ultimaModificacion) {
+      const idx = db.findIndex(r => String(r.id) === realId);
+      if (idx >= 0) db[idx].ultimaModificacion = res.ultimaModificacion;
+    }
+    saveDB();
+
+    // ── Step 3: Declare success ──
+    isDirty = false;
+    hideDirty();
+    toast('✅ Registro guardado correctamente.', 'success');
+    if (thenMenu) { showPage('menu'); }
+
+  } catch(err) {
+    hideLoading();
+    console.error('saveRecord error:', err);
+    toast('❌ Error al guardar: ' + err.message, 'error');
+  } finally {
+    _saveInProgress = false;
+    saveBtns.forEach(b => { b.disabled = false; });
+  }
+}
+
+function confirmDelete() {
+  showModal('🗑','Eliminar registro',
+    '¿Está seguro de que desea eliminar este registro? Esta acción no se puede deshacer.', [
+    {label:'Eliminar', cls:'btn-danger', action:doDelete},
+    {label:'Cancelar', cls:'btn-ghost',  action:closeModal}
+  ]);
+}
+async function doDelete() {
+  const idToDelete = currentId;
+  closeModal();
+  showLoading('Eliminando registro…');
+  try {
+    await apiCall('deleteRecord', { id: idToDelete });
+    deleteEvidenciasForRecord(idToDelete);
+    db = db.filter(r => String(r.id) !== String(idToDelete));
+    saveDB();
+    hideLoading();
+    isDirty = false;
+    toast('🗑 Registro eliminado.', 'info');
+    showPage('menu');
+  } catch(err) {
+    hideLoading();
+    toast('❌ Error al eliminar: ' + err.message, 'error');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  TABLE RENDER (CONSULTAR)
+// ══════════════════════════════════════════════
+function renderTable() {
+  const wrap = document.getElementById('recordsTableWrap');
+  const q    = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const fc   = document.getElementById('filterCiclo')?.value || '';
+  const fs   = document.getElementById('filterSubsistema')?.value || '';
+
+  const rows = db.filter(r => {
+    const match = !q || [r.plantel,r.supervisor,r.subsistema,r.cicloEscolar,r.entidad].some(f=>(f||'').toLowerCase().includes(q));
+    const matchC = !fc || r.cicloEscolar===fc;
+    const matchS = !fs || r.subsistema===fs;
+    return match && matchC && matchS;
+  });
+
+  document.getElementById('totalLabel').textContent =
+    db.length===0 ? 'Sin registros' :
+    `${rows.length} de ${db.length} registro${db.length!==1?'s':''} · Última modificación: ${db.slice(-1)[0]?.ultimaModificacion||'—'}`;
+
+  if (!rows.length) {
+    wrap.innerHTML = `<div class="empty-state"><div class="big">📋</div><p>${db.length?'Sin resultados para este filtro.':'Aún no hay registros.<br>Haga clic en "+ Nuevo registro" para comenzar.'}</p></div>`;
+    return;
+  }
+
+  let html = `<table class="rt"><thead><tr>
+    <th>#</th><th>Ciclo Escolar</th><th>Subsistema</th><th>Plantel</th>
+    <th>Supervisor</th><th>Fecha captura</th><th>Última mod.</th>
+    <th>Avance</th><th style="text-align:right">Acciones</th>
+  </tr></thead><tbody>`;
+
+  let rowNum = 0;
+  rows.forEach(r => {
+    rowNum++;
+    const completion = calcCompletion(r);
+    const pct = completion.pct;
+    html += `<tr onclick="editRecord('${r.id}')">
+      <td class="id-col">${String(rowNum).padStart(2,'0')}</td>
+      <td>${escHtml(r.cicloEscolar||'—')}</td>
+      <td>${escHtml(r.subsistema||'—')}</td>
+      <td><strong>${escHtml(r.plantel||'—')}</strong></td>
+      <td>${escHtml(r.supervisor||'—')}</td>
+      <td>${formatDate(r.fechaCaptura)}</td>
+      <td style="font-size:11px;color:var(--pgry)">${formatDateTime(r.ultimaModificacion)}</td>
+      <td>
+        <div class="completion-bar-wrap" title="${pct}% completado">
+          <div class="completion-bar" style="width:${pct}%;background:${pct>=66?'#1e5b4f':pct>=33?'#a57f2c':'#9b2247'}"></div>
+        </div>
+        <span style="font-size:10px;color:var(--txt2)">${pct}%</span>
+      </td>
+      <td class="actions" onclick="event.stopPropagation()">
+        <div class="record-actions">
+          <button class="btn btn-sm btn-secondary" onclick="editRecord('${r.id}')">✏️ Editar</button>
+          <button class="btn btn-sm btn-ghost" onclick="deleteFromTable('${r.id}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function calcCompletion(rec) {
+  let total = 0, filled = 0;
+  PROGRAMAS.forEach(prog => {
+    prog.directrices.forEach(dir => {
+      total++;
+      const dd = ((rec.programas||{})[prog.id]?.directrices||{})[dir.id] || {};
+      if (dd.nivelAvance) filled++;
+    });
+  });
+  return { filled, total, pct: total? Math.round(filled/total*100) : 0 };
+}
+
+function deleteFromTable(id) {
+  const rec = db.find(r => r.id===id);
+  showModal('🗑','Eliminar registro',
+    `¿Eliminar el registro del plantel "${rec?.plantel||id}"? Esta acción no se puede deshacer.`, [
+    {label:'Eliminar', cls:'btn-danger', action: async ()=>{
+      closeModal();
+      showLoading('Eliminando registro…');
+      try {
+        await apiCall('deleteRecord', { id });
+        deleteEvidenciasForRecord(id);
+        db = db.filter(r => String(r.id) !== String(id));
+        saveDB();
+        hideLoading();
+        renderTable();
+        toast('🗑 Registro eliminado.', 'info');
+      } catch(err) {
+        hideLoading();
+        toast('❌ Error al eliminar: ' + err.message, 'error');
+      }
+    }},
+    {label:'Cancelar', cls:'btn-ghost',  action:closeModal}
+  ]);
+}
+
+function populateFilters() {
+  const ciclos = [...new Set(db.map(r=>r.cicloEscolar).filter(Boolean))].sort();
+  const sel = document.getElementById('filterCiclo');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todos los ciclos</option>' +
+    ciclos.map(c=>`<option ${c===cur?'selected':''}>${escHtml(c)}</option>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  MENU STATS
+// ══════════════════════════════════════════════
+function updateMenuStats() {
+  const el = document.getElementById('menuStats');
+  const total = db.length;
+  const planteles = new Set(db.map(r=>r.plantel).filter(Boolean)).size;
+  const avgPct = total ? Math.round(db.reduce((s,r)=>s+calcCompletion(r).pct,0)/total) : 0;
+  const totalEv = countTotalEvidencias();
+  const showAvance = currentUser?.rol !== 'plantel';
+  el.innerHTML = `
+    <div class="stat-chip">📋 <strong>${total}</strong> registro${total!==1?'s':''}</div>
+    <div class="stat-chip">🏫 <strong>${planteles}</strong> plantel${planteles!==1?'es':''}</div>
+    ${showAvance ? `<div class="stat-chip">📊 <strong>${avgPct}%</strong> avance promedio</div>` : ''}
+    ${totalEv ? `<div class="stat-chip">📎 <strong>${totalEv}</strong> evidencia${totalEv!==1?'s':''}</div>` : ''}
+  `;
+}
+
+// ══════════════════════════════════════════════
+//  PRINT
+// ══════════════════════════════════════════════
+function printRecord() {
+  // Inject logo into letterhead header
+  const logoSrc = document.getElementById('sepLogo')?.src || '';
+  const pltLogo = document.getElementById('pltLogoImg');
+  if (pltLogo && logoSrc) pltLogo.src = logoSrc;
+
+  // Build print meta table (portrait format matching the letterhead)
+  const subsistema  = escHtml(document.getElementById('f_subsistema').value||'—');
+  const plantel     = escHtml(document.getElementById('f_plantel').value||'—');
+  const fecha       = escHtml(formatDate(document.getElementById('f_fecha').value));
+  const ciclo       = escHtml(document.getElementById('f_ciclo').value||'—');
+  const supervisor  = escHtml(document.getElementById('f_supervisor').value||'—');
+  const entidad     = escHtml(document.getElementById('f_entidad').value||'—');
+
+  const metaEl = document.getElementById('pltPrintMeta');
+  if (metaEl) {
+    metaEl.innerHTML = `
+      <table class="plt-meta-table">
+        <tr>
+          <td class="plt-meta-lbl">Subsistema</td>
+          <td class="plt-meta-val">${subsistema}</td>
+          <td class="plt-meta-lbl">Plantel</td>
+          <td class="plt-meta-val" colspan="3">${plantel}</td>
+        </tr>
+        <tr>
+          <td class="plt-meta-lbl">Ciclo Escolar</td>
+          <td class="plt-meta-val">${ciclo}</td>
+          <td class="plt-meta-lbl">Supervisor</td>
+          <td class="plt-meta-val">${supervisor}</td>
+          <td class="plt-meta-lbl">Fecha de captura</td>
+          <td class="plt-meta-val">${fecha}</td>
+        </tr>
+      </table>`;
+  }
+
+  // Footer date
+  const fd = document.getElementById('pltFooterDate');
+  if (fd) fd.textContent = 'Impreso el ' + new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+
+  // Show all panels for print
+  document.querySelectorAll('.prog-panel').forEach(p => p.classList.add('active'));
+
+  // ── Inject nivel-print-val spans (styled number instead of select widget) ──
+  document.querySelectorAll('.nivel-sel').forEach(sel => {
+    const val = sel.value;
+    const span = document.createElement('span');
+    span.className = 'nivel-print-val np-' + (val !== '' ? val : 'empty');
+    span.setAttribute('data-print-span','1');
+    span.textContent = val !== '' ? val : '—';
+    sel.parentNode.insertBefore(span, sel.nextSibling);
+  });
+
+  window.print();
+
+  // ── Remove injected spans ──
+  document.querySelectorAll('[data-print-span]').forEach(el => el.remove());
+
+  // Restore active tab
+  const activeTab = document.querySelector('.prog-tab.active');
+  if (activeTab) {
+    const progId = activeTab.id.replace('tab-','');
+    document.querySelectorAll('.prog-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-'+progId)?.classList.add('active');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  EXPORT / IMPORT
+// ══════════════════════════════════════════════
+function exportDB() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `programas_sems_${todayStr()}.json`;
+  a.click();
+  toast('💾 Base de datos exportada.','success');
+}
+function importDB(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('Formato inválido');
+      showModal('📂','Importar base de datos',
+        `Se importarán ${imported.length} registros. ¿Desea reemplazar los datos actuales o combinarlos?`, [
+        {label:'Reemplazar', cls:'btn-danger', action:()=>{
+          db = imported; saveDB(); closeModal(); updateMenuStats();
+          toast(`✅ ${imported.length} registros importados.`,'success');
+        }},
+        {label:'Combinar', cls:'btn-secondary', action:()=>{
+          const existing = new Set(db.map(r=>r.id));
+          imported.forEach(r=>{ if(!existing.has(r.id)) db.push(r); });
+          saveDB(); closeModal(); updateMenuStats();
+          toast('✅ Base de datos combinada.','success');
+        }},
+        {label:'Cancelar', cls:'btn-ghost', action:closeModal}
+      ]);
+    } catch(err) { toast('❌ Archivo no válido.','error'); }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════════
+//  MODAL / TOAST
+// ══════════════════════════════════════════════
+function showModal(icon, title, body, btns) {
+  document.getElementById('mIcon').textContent  = icon;
+  document.getElementById('mTitle').textContent = title;
+  document.getElementById('mBody').textContent  = body;
+  const c = document.getElementById('mBtns');
+  c.innerHTML = '';
+  btns.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'btn '+b.cls;
+    btn.textContent = b.label;
+    btn.onclick = b.action;
+    c.appendChild(btn);
+  });
+  document.getElementById('modalOverlay').classList.add('active');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+function closeModalOutside(e) { if(e.target.id==='modalOverlay') closeModal(); }
+
+function toast(msg, type='success') {
+  const tc = document.getElementById('toastContainer');
+  const t  = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  tc.appendChild(t);
+  setTimeout(() => t.style.opacity='0', 2800);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ══════════════════════════════════════════════
+//  DIRTY STATE
+// ══════════════════════════════════════════════
+function markDirty() {
+  isDirty = true;
+  document.getElementById('dirtyDot').classList.add('visible');
+}
+function hideDirty() {
+  isDirty = false;
+  document.getElementById('dirtyDot').classList.remove('visible');
+}
+
+// Track changes on meta fields
+['f_ciclo','f_entidad','f_subsistema','f_plantel','f_supervisor','f_fecha']
+  .forEach(id => document.getElementById(id)?.addEventListener('change', markDirty));
+
+// ══════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key==='s') {
+    const regPage = document.getElementById('page-registrar');
+    if (regPage.classList.contains('active')) { e.preventDefault(); saveRecord(); }
+  }
+});
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function getTa(id) {
+  return document.getElementById(id)?.value.trim() || '';
+}
+function setTa(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+function todayStr() {
+  const d = new Date();
+  // Use local time (NOT toISOString which returns UTC causing +1 day at night)
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function formatDate(d) {
+  if (!d) return '—';
+  try {
+    const [y,m,day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  } catch(e) { return d; }
+}
+function formatDateTime(s) {
+  if (!s) return '—';
+  try {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('es-MX', {day:'2-digit',month:'2-digit',year:'numeric'}) +
+             ' ' + d.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'});
+    }
+  } catch(e) {}
+  return String(s);
+}
+
+// ══════════════════════════════════════════════
+//  EVIDENCE MODULE
+// ══════════════════════════════════════════════
+const EV_KEY = 'sems_evidencias_db_v1';
+let evStore = {};
+let evCurrent = {progId:null, dirId:null, dirText:''};
+let evCurrentFile = null;
+let evCurrentType = 'file';
+
+function loadEvidencias() {
+  try { evStore = JSON.parse(localStorage.getItem(EV_KEY)||'{}'); }
+  catch(e) { evStore = {}; }
+}
+function saveEvidencias() {
+  try { localStorage.setItem(EV_KEY, JSON.stringify(evStore)); }
+  catch(e) {
+    toast('⚠️ Espacio de almacenamiento lleno. Los archivos adjuntos no pudieron guardarse. Considere usar enlaces en lugar de archivos.','error');
+  }
+}
+loadEvidencias();
+
+function evKey(recId, progId, dirId) { return recId+'::'+progId+'::'+dirId; }
+function getEvList(recId, progId, dirId) { return evStore[evKey(recId,progId,dirId)]||[]; }
+
+function openEvDrawer(progId, dirId, dirText) {
+  if (!currentId) {
+    showModal('💾','Guarde primero el registro',
+      'Debe guardar el registro al menos una vez antes de poder agregar evidencias.', [
+      {label:'Entendido', cls:'btn-primary', action:closeModal}
+    ]);
+    return;
+  }
+  evCurrent = {progId, dirId, dirText};
+  evCurrentFile = null;
+
+  document.getElementById('evDirId').textContent  = 'Directriz '+dirId;
+  document.getElementById('evDirText').textContent = dirText;
+
+  // Nivel badge
+  const fid = progId+'_'+dirId.replace('.','_');
+  const nivel = document.getElementById('niv_'+fid)?.value||'';
+  const badgeEl = document.getElementById('evNivelBadge');
+  if (nivel!=='') {
+    const labels = {'0':'Nivel 0 — Inicial','1':'Nivel 1 — En proceso','2':'Nivel 2 — Logrado'};
+    badgeEl.innerHTML = `<span class="ev-nivel-badge lv${nivel}">${labels[nivel]||'Nivel '+nivel}</span>`;
+  } else {
+    badgeEl.innerHTML = `<span class="ev-nivel-badge lvN">Sin nivel registrado</span>`;
+  }
+
+  // Reset add form
+  setEvType('file');
+  document.getElementById('evFileChosen').textContent = '';
+  document.getElementById('evSizeWarn').textContent   = '';
+  document.getElementById('evLinkInput').value = '';
+  document.getElementById('evDesc').value      = '';
+  if (document.getElementById('evFileInput')) document.getElementById('evFileInput').value='';
+
+  renderEvList();
+  document.getElementById('evOverlay').classList.add('open');
+  document.getElementById('evDrawer').classList.add('open');
+}
+
+function closeEvDrawer() {
+  document.getElementById('evOverlay').classList.remove('open');
+  document.getElementById('evDrawer').classList.remove('open');
+  evCurrentFile = null;
+}
+
+function setEvType(type) {
+  evCurrentType = type;
+  document.getElementById('evFileArea').style.display = type==='file'?'block':'none';
+  document.getElementById('evLinkArea').style.display = type==='link'?'block':'none';
+  document.getElementById('evTypeFile').classList.toggle('active', type==='file');
+  document.getElementById('evTypeLink').classList.toggle('active', type==='link');
+}
+
+function evFileTypeIcon(mimeType, name) {
+  const ext = (name||'').split('.').pop().toLowerCase();
+  if (mimeType?.includes('pdf') || ext==='pdf')                       return '📄';
+  if (mimeType?.includes('word')  || ['doc','docx'].includes(ext))    return '📝';
+  if (mimeType?.includes('excel') || mimeType?.includes('spreadsheet') || ['xls','xlsx'].includes(ext)) return '📊';
+  if (mimeType?.includes('presentation') || mimeType?.includes('powerpoint') || ['ppt','pptx'].includes(ext)) return '📋';
+  if (mimeType?.startsWith('image/') || ['jpg','jpeg','png','gif','webp','svg','bmp'].includes(ext)) return '🖼';
+  if (mimeType?.startsWith('video/') || ['mp4','mov','avi','mkv'].includes(ext)) return '🎬';
+  return '📎';
+}
+
+function formatBytes(b) {
+  if (!b) return '';
+  if (b<1024) return b+' B';
+  if (b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
+
+function renderEvList() {
+  const list = getEvList(currentId, evCurrent.progId, evCurrent.dirId);
+  const el = document.getElementById('evList');
+  if (!list.length) {
+    el.innerHTML = '<div class="ev-empty">📭<br>Sin evidencias para esta directriz.<br>Agregue archivos o enlaces en el formulario de abajo.</div>';
+    return;
+  }
+  let html = '<div class="ev-list">';
+  list.forEach(ev => {
+    const icon = ev.tipo==='enlace' ? '🔗' : evFileTypeIcon(ev.mimeType, ev.nombre);
+    let nameHtml;
+    if (ev.tipo==='enlace') {
+      nameHtml = `<a href="${escHtml(ev.url)}" target="_blank" rel="noopener">${escHtml(ev.nombre||ev.url)}</a>`;
+    } else if (ev.data) {
+      nameHtml = `<a href="${ev.data}" download="${escHtml(ev.nombre)}">${escHtml(ev.nombre)}</a>`;
+    } else {
+      nameHtml = escHtml(ev.nombre);
+    }
+    const meta = [ev.fecha, ev.tamanio?formatBytes(ev.tamanio):''].filter(Boolean).join(' · ');
+    html += `<div class="ev-item">
+      <div class="ev-icon">${icon}</div>
+      <div class="ev-info">
+        <div class="ev-name">${nameHtml}</div>
+        ${ev.descripcion?`<div class="ev-desc">${escHtml(ev.descripcion)}</div>`:''}
+        ${meta?`<div class="ev-meta">${escHtml(meta)}</div>`:''}
+      </div>
+      <button class="ev-del" onclick="removeEvidence('${ev.id}')" title="Eliminar evidencia">🗑</button>
+    </div>`;
+  });
+  el.innerHTML = html + '</div>';
+}
+
+function evFileSelected(input) {
+  const file = (input.files||[])[0];
+  if (!file) return;
+  const MAX = 5*1024*1024, WARN = 2*1024*1024;
+  if (file.size > MAX) {
+    document.getElementById('evSizeWarn').textContent = '⚠️ El archivo supera los 5 MB. Use "Enlace / URL" para archivos grandes o videos.';
+    document.getElementById('evFileChosen').textContent = '';
+    evCurrentFile = null;
+    if (input.value!==undefined) input.value='';
+    return;
+  }
+  document.getElementById('evSizeWarn').textContent = file.size>WARN ? '⚠️ Archivo grande ('+formatBytes(file.size)+'). Considere usar un enlace.' : '';
+  document.getElementById('evFileChosen').textContent = '✅ '+file.name+' ('+formatBytes(file.size)+')';
+  const reader = new FileReader();
+  reader.onload = e => {
+    evCurrentFile = {name:file.name, size:file.size, mimeType:file.type, data:e.target.result};
+  };
+  reader.readAsDataURL(file);
+}
+
+function evDragOver(e) { e.preventDefault(); document.getElementById('evFileDrop').classList.add('drag'); }
+function evDragLeave() { document.getElementById('evFileDrop').classList.remove('drag'); }
+function evDrop(e) {
+  e.preventDefault();
+  document.getElementById('evFileDrop').classList.remove('drag');
+  const f = e.dataTransfer?.files?.[0];
+  if (f) evFileSelected({files:[f]});
+}
+
+function addEvidence() {
+  const desc = document.getElementById('evDesc').value.trim();
+  if (evCurrentType==='file') {
+    if (!evCurrentFile) { toast('⚠️ Seleccione un archivo primero.','error'); return; }
+    pushEvidence({
+      id:'ev_'+Date.now(), tipo:'archivo',
+      nombre:evCurrentFile.name, mimeType:evCurrentFile.mimeType,
+      tamanio:evCurrentFile.size, data:evCurrentFile.data,
+      descripcion:desc, fecha:todayStr()
+    });
+  } else {
+    const url = document.getElementById('evLinkInput').value.trim();
+    if (!url) { toast('⚠️ Ingrese una URL válida.','error'); return; }
+    // Try to get a short display name from URL
+    let nombre = url;
+    try { nombre = new URL(url).hostname || url; } catch(e){}
+    pushEvidence({
+      id:'ev_'+Date.now(), tipo:'enlace',
+      nombre:nombre, url:url,
+      descripcion:desc, fecha:todayStr()
+    });
+  }
+}
+
+function pushEvidence(ev) {
+  const k = evKey(currentId, evCurrent.progId, evCurrent.dirId);
+  if (!evStore[k]) evStore[k]=[];
+  evStore[k].push(ev);
+  saveEvidencias();
+  // Sync to API async
+  _syncSaveEvidencia(ev);
+  // Reset form
+  evCurrentFile=null;
+  const fi = document.getElementById('evFileInput');
+  if(fi) fi.value='';
+  document.getElementById('evFileChosen').textContent='';
+  document.getElementById('evSizeWarn').textContent='';
+  document.getElementById('evLinkInput').value='';
+  document.getElementById('evDesc').value='';
+  renderEvList();
+  updateEvBadge(evCurrent.progId, evCurrent.dirId);
+  toast('✅ Evidencia agregada correctamente.','success');
+}
+
+async function _syncSaveEvidencia(ev) {
+  if (!currentId) return;
+  try {
+    const key = evKey(currentId, evCurrent.progId, evCurrent.dirId);
+    await apiCall('saveEvidencia', {
+      recordId: currentId, dirId: evCurrent.dirId + '::' + evCurrent.progId,
+      tipo: ev.tipo, nombre: ev.nombre, url: ev.url||'',
+      descripcion: ev.descripcion, fecha: ev.fecha,
+      fileData: ev.data||'', mimeType: ev.mimeType||''
+    });
+  } catch(e) {
+    toast('⚠️ Evidencia guardada localmente, sin sincronización con el servidor.', 'info');
+  }
+}
+
+function removeEvidence(evId) {
+  const k = evKey(currentId, evCurrent.progId, evCurrent.dirId);
+  evStore[k] = (evStore[k]||[]).filter(e=>e.id!==evId);
+  if (!evStore[k].length) delete evStore[k];
+  saveEvidencias();
+  renderEvList();
+  updateEvBadge(evCurrent.progId, evCurrent.dirId);
+  toast('🗑 Evidencia eliminada.','info');
+  apiCall('deleteEvidencia', { evId }).catch(() => {});
+}
+
+function updateEvBadge(progId, dirId) {
+  if (!currentId) return;
+  const fid = progId+'_'+dirId.replace('.','_');
+  const count = getEvList(currentId, progId, dirId).length;
+  const btn = document.getElementById('evbtn_'+fid);
+  const cnt = document.getElementById('evc_'+fid);
+  if (btn) btn.classList.toggle('has-ev', count>0);
+  if (cnt) cnt.textContent = count;
+}
+
+function updateAllEvBadges() {
+  if (!currentId) return;
+  PROGRAMAS.forEach(prog => prog.directrices.forEach(dir => updateEvBadge(prog.id, dir.id)));
+}
+
+function deleteEvidenciasForRecord(recId) {
+  Object.keys(evStore).forEach(k => { if(k.startsWith(recId+'::')) delete evStore[k]; });
+  saveEvidencias();
+}
+
+// Count total evidence across all records (for menu stats)
+function countTotalEvidencias() {
+  return Object.values(evStore).reduce((s,arr)=>s+arr.length,0);
+}
+
+// ══════════════════════════════════════════════
+//  SUMARIO MODULE
+// ══════════════════════════════════════════════
+let smActiveProg = 'p1';
+
+function getSmFilteredRecords() {
+  const fc = document.getElementById('smFCiclo')?.value     || '';
+  const fs = document.getElementById('smFSubsistema')?.value || '';
+  const fp = document.getElementById('smFPlantel')?.value    || '';
+  const fv = document.getElementById('smFSupervisor')?.value || '';
+  return db.filter(r =>
+    (!fc || r.cicloEscolar===fc) &&
+    (!fs || r.subsistema===fs) &&
+    (!fp || r.plantel===fp) &&
+    (!fv || r.supervisor===fv)
+  );
+}
+
+function populateSmFilters() {
+  const ciclos     = [...new Set(db.map(r=>r.cicloEscolar).filter(Boolean))].sort();
+  const planteles  = [...new Set(db.map(r=>r.plantel).filter(Boolean))].sort();
+  const supervisores = [...new Set(db.map(r=>r.supervisor).filter(Boolean))].sort();
+  const curC = document.getElementById('smFCiclo').value;
+  const curP = document.getElementById('smFPlantel').value;
+  const curV = document.getElementById('smFSupervisor').value;
+  const fill = (selId, vals, cur) => {
+    const el = document.getElementById(selId);
+    el.innerHTML = '<option value="">Todos</option>' +
+      vals.map(v=>`<option${v===cur?' selected':''}>${escHtml(v)}</option>`).join('');
+  };
+  fill('smFCiclo',      ciclos,      curC);
+  fill('smFPlantel',    planteles,   curP);
+  fill('smFSupervisor', supervisores, curV);
+}
+
+function resetSmFilters() {
+  ['smFCiclo','smFSubsistema','smFPlantel','smFSupervisor'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value='';
+  });
+  renderSumario();
+}
+
+function renderSmChips() {
+  const pairs = [
+    ['smFCiclo','Ciclo'], ['smFSubsistema','Subsistema'],
+    ['smFPlantel','Plantel'], ['smFSupervisor','Supervisor']
+  ];
+  const chips = [];
+  pairs.forEach(([id,label])=>{
+    const val = document.getElementById(id)?.value;
+    if(val) chips.push({id,label,val});
+  });
+  const container = document.getElementById('smChips');
+  if(!chips.length){
+    container.innerHTML='<span class="sm-chips-label">Sin filtros activos — mostrando todos los registros</span>';
+    return;
+  }
+  container.innerHTML = chips.map(c=>
+    `<span class="sm-chip">🏷 ${escHtml(c.label)}: <strong>${escHtml(c.val)}</strong>
+     <button onclick="clearSmFilter('${c.id}')">✕</button></span>`
+  ).join('') +
+  `<span class="sm-active-count">${getSmFilteredRecords().length} de ${db.length} registros</span>`;
+}
+
+function clearSmFilter(id) {
+  const el = document.getElementById(id);
+  if(el) el.value='';
+  renderSumario();
+}
+
+function renderSmKpis(recs) {
+  const total = recs.length;
+  let totAll=0, totN=0;
+  recs.forEach(r=>{
+    PROGRAMAS.forEach(prog=>{
+      prog.directrices.forEach(dir=>{
+        totAll++;
+        const nv = ((r.programas||{})[prog.id]?.directrices||{})[dir.id]?.nivelAvance;
+        if(!nv) totN++;
+      });
+    });
+  });
+  document.getElementById('smSubtitle').textContent =
+    `${total} plantel${total!==1?'es':''} · ${totAll-totN} directrices capturadas de ${totAll} posibles`;
+
+  // Per-program level-2 percentages
+  const progPcts = PROGRAMAS.map(prog => {
+    let p2=0, pCap=0;
+    recs.forEach(r => {
+      prog.directrices.forEach(dir => {
+        const nv = ((r.programas||{})[prog.id]?.directrices||{})[dir.id]?.nivelAvance;
+        if(nv!==undefined && nv!=='') { pCap++; if(nv==='2') p2++; }
+      });
+    });
+    return { prog, pct: pCap ? Math.round(p2/pCap*100) : 0 };
+  });
+
+  // Order: icon → "PROGRAMA N" label → percentage → subtitle name (no italic, tab-style)
+  const progPctsHtml = progPcts.map(({prog, pct}) =>
+    `<div class="sm-kpi">
+      <div style="font-size:18px;line-height:1;margin-bottom:2px">${prog.icon}</div>
+      <div class="sm-kpi-lbl" style="margin-bottom:1px">Programa ${prog.num}</div>
+      <div class="sm-kpi-val kv-green">${pct}<span style="font-size:15px;font-weight:500">%</span></div>
+      <div class="sm-kpi-prog-lbl">${prog.subtitulo.replace(/"/g,'')}</div>
+    </div>`
+  ).join('');
+
+  document.getElementById('smKpis').innerHTML = `
+    <div class="sm-kpi-block">
+      <div class="sm-kpi">
+        <div class="sm-kpi-val kv-main">${total}</div>
+        <div class="sm-kpi-lbl">Planteles<br>Registrados</div>
+      </div>
+    </div>
+    <div class="sm-kpi-group">
+      <div class="sm-kpi-group-label">📊 Porcentaje de Directrices en Nv.2 por Programa</div>
+      <div class="sm-kpi-group-inner">${progPctsHtml}</div>
+    </div>
+  `;
+}
+
+function renderSumario() {
+  populateSmFilters();
+  const recs = getSmFilteredRecords();
+  renderSmChips();
+  renderSmKpis(recs);
+  buildSmTabs(recs);
+}
+
+function buildSmTabs(recs) {
+  const tabsBar = document.getElementById('smProgTabs');
+  const panels  = document.getElementById('smProgPanels');
+  tabsBar.innerHTML = '';
+  panels.innerHTML  = '';
+
+  PROGRAMAS.forEach((prog, i) => {
+    // TAB
+    const tab = document.createElement('button');
+    tab.className = 'sm-tab' + (prog.id===smActiveProg?' active':'');
+    tab.id = 'smtab-'+prog.id;
+    tab.innerHTML = `<span class="st-icon">${prog.icon}</span><span>Programa ${prog.num}</span><span class="st-sub">${prog.directrices.length} directrices</span>`;
+    tab.onclick = () => { smActiveProg = prog.id; switchSmTab(prog.id); };
+    tabsBar.appendChild(tab);
+
+    // Compute stats for this program
+    const progStats = {t:0,n0:0,n1:0,n2:0,nN:0};
+    recs.forEach(r=>{
+      prog.directrices.forEach(dir=>{
+        progStats.t++;
+        const nv = ((r.programas||{})[prog.id]?.directrices||{})[dir.id]?.nivelAvance;
+        if(nv==='0') progStats.n0++;
+        else if(nv==='1') progStats.n1++;
+        else if(nv==='2') progStats.n2++;
+        else progStats.nN++;
+      });
+    });
+
+    // PANEL
+    const panel = document.createElement('div');
+    panel.className = 'sm-panel' + (prog.id===smActiveProg?' active':'');
+    panel.id = 'smpanel-'+prog.id;
+
+    // Build directive rows
+    let rows = '';
+
+    prog.directrices.forEach(dir => {
+      let n0=0,n1=0,n2=0,nN=0;
+      recs.forEach(r=>{
+        const nv = ((r.programas||{})[prog.id]?.directrices||{})[dir.id]?.nivelAvance;
+        if(nv==='0') n0++;
+        else if(nv==='1') n1++;
+        else if(nv==='2') n2++;
+        else nN++;
+      });
+      const total = recs.length;
+
+      // Averaged heat: mean of registered values (0,1,2), rounded to nearest integer
+      const nReg = n0+n1+n2;
+      let heatCls='h-none', heatTxt='—';
+      if(nReg > 0) {
+        const avg = Math.round((n0*0 + n1*1 + n2*2) / nReg);
+        heatCls = 'h-'+avg; heatTxt = String(avg);
+      }
+
+      const pNames = (lvl) => recs.filter(r=>{
+        const nv = ((r.programas||{})[prog.id]?.directrices||{})[dir.id]?.nivelAvance;
+        return nv===lvl;
+      }).map(r=>r.plantel||r.id).join(', ');
+
+      // Horizontal proportional bars (original design)
+      const bar = (n, cls, label, lvlKey) => {
+        if(n===0) return '';
+        const pct = total ? Math.round(n/total*100) : 0;
+        const tip = pNames(lvlKey)||'—';
+        return `<div class="sm-level-row" title="${escHtml(label+': '+tip)}">
+          <div class="sm-level-label ${cls}">${label}</div>
+          <div class="sm-bar-track"><div class="sm-bar-fill ${cls}" style="width:${pct}%"></div></div>
+          <div class="sm-bar-count ${cls}">${n}</div>
+          <div class="sm-bar-pct">${pct}%</div>
+        </div>`;
+      };
+
+      const bars =
+        bar(n2,'lv2','Nivel 2','2') +
+        bar(n1,'lv1','Nivel 1','1') +
+        bar(n0,'lv0','Nivel 0','0') +
+        (nN>0 ? bar(nN,'lvN','Sin reg.','') : '');
+
+      const emptyBars = !bars
+        ? `<div class="sm-level-row"><div class="sm-level-label lvN" style="width:100%;text-align:center;font-size:11px">Sin datos registrados</div></div>` : '';
+
+      rows += `<div class="sm-dir-row">
+        <div class="sm-dir-cell-id">${escHtml(dir.id)}</div>
+        <div class="sm-dir-cell-text">${escHtml(dir.texto)}</div>
+        <div class="sm-dir-cell-bars">${bars}${emptyBars}</div>
+        <div class="sm-dir-cell-heat"><div class="sm-heat ${heatCls}">${heatTxt}</div></div>
+      </div>`;
+    });
+
+    const pctCapt = progStats.t ? Math.round((progStats.t-progStats.nN)/progStats.t*100) : 0;
+    panel.innerHTML = `
+      <div class="sm-panel-header">
+        <div>
+          <h3>${prog.icon} ${prog.nombre}</h3>
+          <div class="sm-sub">${prog.subtitulo}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:10px;font-weight:500;color:rgba(255,255,255,.75);letter-spacing:.05em;text-align:right;line-height:1.5">
+            ${pctCapt}% de directrices capturadas
+          </div>
+          <span class="sm-panel-badge">${prog.directrices.length} directrices</span>
+        </div>
+      </div>
+      <div class="sm-prog-stats">
+        <div class="sm-pstat">🟢 Nivel 2: <strong>${progStats.n2}</strong></div>
+        <div class="sm-pstat">🟡 Nivel 1: <strong>${progStats.n1}</strong></div>
+        <div class="sm-pstat">🔴 Nivel 0: <strong>${progStats.n0}</strong></div>
+        <div class="sm-pstat">⚪ Sin registrar: <strong>${progStats.nN}</strong></div>
+      </div>
+      <div>${rows}</div>`;
+    panels.appendChild(panel);
+  });
+}
+
+function switchSmTab(progId) {
+  document.querySelectorAll('.sm-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sm-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('smtab-'+progId)?.classList.add('active');
+  document.getElementById('smpanel-'+progId)?.classList.add('active');
+}
+
+function printSumario() {
+  // Populate print title metadata
+  const recs = getSmFilteredRecords();
+  const filters = [
+    document.getElementById('smFCiclo')?.value,
+    document.getElementById('smFSubsistema')?.value,
+    document.getElementById('smFPlantel')?.value,
+    document.getElementById('smFSupervisor')?.value,
+  ].filter(Boolean);
+  const metaEl = document.getElementById('smPrintMeta');
+  if (metaEl) {
+    const dateStr = new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+    const filterStr = filters.length ? '  |  Filtros: ' + filters.join(' · ') : '  |  Sin filtros aplicados';
+    metaEl.textContent = recs.length + ' plantel' + (recs.length!==1?'es':'') + ' incluidos' + filterStr + '  |  Impreso el ' + dateStr;
+  }
+  // Show all panels
+  document.querySelectorAll('.sm-panel').forEach(p => p.classList.add('active'));
+  document.body.classList.add('print-sumario');
+  window.print();
+  document.body.classList.remove('print-sumario');
+  // Restore only active tab
+  document.querySelectorAll('.sm-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('smpanel-'+smActiveProg)?.classList.add('active');
+}
+
+function exportSumarioCSV() {
+  const recs = getSmFilteredRecords();
+  const header = ['Programa','Nº Directriz','Texto Directriz','Nivel 0 (planteles)','Nivel 1 (planteles)','Nivel 2 (planteles)','Sin registrar','Total planteles'];
+  const rows = [header];
+  PROGRAMAS.forEach(prog=>{
+    prog.directrices.forEach(dir=>{
+      let n0=0,n1=0,n2=0,nN=0;
+      recs.forEach(r=>{
+        const nv = ((r.programas||{})[prog.id]?.directrices||{})[dir.id]?.nivelAvance;
+        if(nv==='0') n0++; else if(nv==='1') n1++; else if(nv==='2') n2++; else nN++;
+      });
+      rows.push([
+        `${prog.num}. ${prog.nombre} ${prog.subtitulo}`,
+        dir.id, dir.texto, n0, n1, n2, nN, recs.length
+      ]);
+    });
+  });
+  const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sumario_sems_${todayStr()}.csv`;
+  a.click();
+  toast('📥 CSV exportado correctamente.','success');
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+initSession();
+if (currentUser) {
+  updateMenuCards();
+  showPage('menu');
+} else {
+  showPage('login');
+}
+
+// Inject SEP logo as base64
+(function(){
+  const sepB64 = '/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACDAhsDASIAAhEBAxEB/8QAHQABAAIDAQEBAQAAAAAAAAAAAAcIBQYJBAMBAv/EAE8QAAEDBAECAwUFAwYJCgcBAAECAwQABQYREgchCBMxFCJBUWEVIzJxgQlCkRhWcqGl0xYXMzhSYoKSsSQ3Q3R1hJWistIlNWN2g7O0wf/EABgBAQEBAQEAAAAAAAAAAAAAAAACAwEE/8QAKxEBAQACAgEDAgUEAwAAAAAAAAECEQMhEhMxQSLwBFFhgaEykbHRQsHh/9oADAMBAAIRAxEAPwCmVKUoFKUoFKyVlsV4vLUx22W9+S1BYVIluJHuMNpBJUpR7DsDrZ760N1vGMdObRc3X4UnKYzMpdrRcrfLKCmE8C6G1IUtWlp0raSSkcSlRPYd4yzxx91TG1GtKnC+4w1YYGVW1OMQbVcmLPCvEEON+e4z5brbcoJW4VbSVhZBHYpA12VWcu8S13rLcotmRQILFghyLVIhyUxUM+yee4xyaStIB4qadcPAk/h32IJrP15+X31/tXpq50qdbm3LvDOat5FaFPxLRkDCbbDQ0Gy02hbqno7Hp7vs7ZJSDr3Un1PfUOu7UGPfICbbEtKYEphU+DKgRURw/FdWfKC0JA0tHBSDvudbPcmqx5fK605cNTaOaVvU7p3PGI4jdLemRKueRPPstwEpCle4QUKGvQKSoHR9B729HtquQWW5WG6SLbdY3kSY7qmnAFpWkLTraQpJKSRsb0e1XM8b7VNxsY+lKVThSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBW7dLsIRmCLq6py4LMBDeotvjpekOeZyAcCFKTtCCElWtk7AGt7Hp6T4VfLpfbRfl487cbIzNQt9AUjk+2hY8zy21EKe0AdhIV6aNb5e2L/CtN4GcNRr9aYTZl2O/8+PmLCwBH8xBSri4kqSWt8kEbGgndYcnJ/xxvbTHD5qNMdlXfptn8Z+82qUyWtomQpLJQZEVwFK08Va2FJJ1vtvXyrNyr/ieNpixrPLdyaK2/OLaFtrjeXGkM+X5K1KG1HZKiEjQIJCtqOsLm8655PBYvDFpdh2G0tpgRS6+XVpStbjiUqcWeTitlfoNAJ0AAKxuF4rcMonGPD+7bCvLU6UFQDhbcW2jQ7krLRSNfGu2Szyyc3Z1HrZ6g5WxGZjsXMpbYjOQ2StpDq0RlkEs81gngCOw38x6dq+oaz3No7qptznz4kHgtbl1uYajsc9hGlPrShJOlaAPfR1W1ROmiY0thVtdFwvEK4IccgyVBtmQwnQKUqI98+ahxHJO0kEaO0qA3xuY4m7OxJ8Sa3MmEqag3OGErnOtrUtC2ZTbmnXUlxSQ4hbZAOkpWQEmMuTGf0xUxt90Ut23qcqVCfh3OVdH4AKIfsV6anKZBGiG0tuL0NEjQHzrXcnnX9/IW3stYluS2AhCo0ttTBDSfRsJATwT69kgep+NTvJtFukswZTsdNxS8osIFyKrg7GkPAqZUXEpWp2MoJdRoIQQUnelhKk+aVEC4KoAiuR0xWHWvseQHLlHfksl5LrbaHuKxtYbAXHUopCFFRHqJnL+jtw/V5cJ6tQZTnBpuJaJ8RqWu1tyVAhbriUoZjB4gJbZQG2iSrjy4JSToHl5M3l2jDMS/wAF3WnLsuI+tN1YkQvup819nmJQfPvJSggJSE8SsJJ5EE1gr1gGIzYM2fbMji26ay+WGrYw6JzclZ7NltwKC2krPbi8AofEmtfx3Nr7YEpxu9l0wYz3EIkRUOybaeQ8wxw6Pu1EApI7ep1o96TDG3eP9i5WdV+5504umPQWrnEZly4CYUR6a6pkgRHXmkr8sq1pYBOuQ9NgHRI3otWL+zEZF1BnZzLeiXxc5Tz+O252TuMiIn3faZaj2ZZQOxbOlFe06+cP5pi5gNvXm23KzXW3GUWnl2lTpZiOH3g396AriRvirageJ77FacXJvq+6c8NdxqlKUrdmUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUrYOnmG3/PcriYxjURMm4ytlKVuBCUpSNqUpR9AB3+fy2avt0G8LmH4AGLxkgZybIk6UHHm/+Sxlev3bZ9SD++rv2BATQUytnQ7qVO6c3HPRjzsazQWPaP8AlB8t6Q0COS22z7xSlPvEnQIB0T6VG1dcszznBsXjuN5Xk9ktyVIIUxLlIC1pI7gNk8ldvgAa5SZr9iHMbycZ837EM977O80aV7PzPl738eOqDEUpSgUpSgUpSgUpSgV78etE+/3qNZ7W225NlL4MIceQ0Fq0SE8lkJBOtDZ7nQ+NeCpIwfHsdkdPZM663S2QLlcJ3s8GTNbeU1G8tG/eWyfulrK9grCgQ0e2u9Tnl4x3Gbrco+M5Hc4MC35ti0/HZdpZ4WzJrcwPKhoa2oJkeWePBJCj5gIUk+u+9R1drvZ8n6yN3Wa0pVomXVj2nY4Kea5IS4sgfhUsBSjr0KjWe6nTr/Bx21xrvM53aU24yJVuuDTsa4QivkXVBvupxbhIKyQVeX3G9motIIJBBBHYg1lxY7m6vO66WI6syJN+h3C0WSMlhsuPxJURPssZpn2d4hHNxTu20NoZQQkoT2UtRUAsVtVig2zH7fabXFXa7XEtq0B2Ql95tu5SltqSVErQkvJWDoFsuhKd6GiKhXF+oOV3nIW4dys8fLRNZMWRCRBabkSkHie7rTfmFQKEq5KKvw7NS71GnMs9PLtkzDqMdmyHnW/Kgz9qVI9z3kuJ1zdB204pGwoKIUVFvkPNnhcdYVrjlLvJ7G33Y+bXN95Ub7RahqhusKe9pdaU2kqQhBb5BCPvEjaktpUVEqCVJKV/jkcSJS5t2S6l6aplXs6pCnkQmVPANJSpRASUrO0lIQEkqOtJAHm6a4/OtmFRLUiZbPbCp1chRilYdU8ni4h1RV7yODrW1oAB+77qA75G1IYuSYd1cmTLjAMmLd1sPuBUVllwPKUpSRpttKVRVgKUNDeh3I3ndS9LjAvwUM2W4yEssBmREmvrmsMNrY3FlNOxylC1feJHF/SlhIUlwJ3oGshAgQUXC/2mDGbmth5haYiYAipfWtlCiGkr0lW1hxadKX2O0ce7o+1sePGXaZKPZrchTb8yTJZKg/EUpCSI6UIVySpaEq5LBDgDSdcFgj8nszWLfMdk2Rlz7afVbmohZEdthsMKbZR5fvJcbQByKGyCHilIKiUpT3d9nNMXCiyp11uclaInOTdJcdCIyUvMyQ2rgtDYJ2pagjzFR3SfNSrm2pKxusPmeCxcjt4S0hLMkJQiBMW6pXkqUdNsOrV3cjuHaWnle+2oeU5rWhI0e3WaJCbKWYqITrAbHv6aWgAqA5JA4lOipKgAW9FxASkOtp+7ZaW25FluNSVAOJLshISmQhSg26l8J7JVy4tvgdgotPADvXJyWXcPGWaqruH3I2aVd8UvyH4UW6JECYsqLbkNaXkq5EaPuhSAFp1sjfxArcLfgKBhNydndQ4iMWgynXJJt0dTyVyUBKUtHkWytwgpCdckd1EHRJOU8RGIh+1s5jDQ+p+OURrkXk6dcbO0NOu//USpCmHPmtAOverGdOltdQYON4U9b5E1+A46VsIWI8JpkcSZT/BIW4viS3oKT2Qn3gVHfquflj5z92WtXVRArXI8d8d9t+tflST1yZtj13E21/Y9viRVCBFtUV5C3m2EgqS65xJHJSivY3yT7oV3NRtXowy8ptllNXRSlKpwqXrZ4aettytsW4wsJLkaUyh9lZucNJUhSQpJ0p0EdiOxANRDV5/Bl4gMozjJjgWXNxJTjcFT0Oe00GnD5fEFtaUjifdJIIA1x7732Cv38lzrt/Mb+1oX99T+S512/mN/a0L++rplVCbr4z+p8a6S47Ngw/ymn1oRziySriFEDZD42f0FBozHhY66OOhC8LQyk+q13WGQP4Ok/wBVax1T6NdQemdthXHLrOiLFmOqZadakIeSFgA8VFBISSN6368VfKrq+Ebrxeer0i+27I7da4M+2tsvM+wpWlLqFFYWSlalEcSEfH96td/aO3xMPpbYbAlenbldvOI3+JtltXL/AMzjdBWWyeG7rTebNBvFtwsvQp0duTGcNyiIK21pCknip0KGwR2IBHxFev8Akuddv5jf2tC/vqnTwYeIDKMqymL05ypuJLQISvYJrbQadT5Sd+WtKRxUOAOiACOPfe+1vqDmw34Uety20qVjERskbKVXSPsfQ6WRWGyDw5dabIyt6Vgc6Q2nfeC61KUofRDSlK/q3Ux5d4zcxtuVXS22/E7CqJEmOsNqfLpcUlCykE6WACQK33or4vLLmGSwsbyywfYEua6GY0xqT5sdTiuyUrCgC3s6APvDZG9DvQUOnRJUCW7DnRnoslpXFxl5soWg/IpPcGspg2J5Bm+TRsbxe3KuF1lBZZYDqG9hCCtRKlkJGgk+pHy9SK6e9ZukWHdU7E5Cv8Btu4JbKYlzabAkRlfDSv3k79UHsfodEc8ZBzrw99YpTMR5mNerYVNpeUwHGpLCx2UkLH4Vp13GiO42CDQZz+S512/mN/a0L++p/Jc67fzG/taF/fVebw0dSpfVXpcxk9wgsQp6JLkSS2wT5ZWjR5JB2QCFJ7EnR33r0+IvPZ/TXpHd8utUSNKnxlMtx25IJa5OOpRtQSQSAFE6BHcCg5l9QMKyfAcgNgy21m23INJe8kvNu+4reiFNqUk+h+PwrZOn3RHqhn2P/b+J4uq420vKZD5mx2drTrkAHHEk62O+tfwrDdU+oWT9S8mGQ5XLZkTEMCO0GWEtIbaClKCAEjZG1qOySe/rW8dFfEZnvS+2R7Hb0265WFlaliDKYCSnkoqUUuI0rZJP4uQHyoP6/kuddv5jf2tC/vq1jqR0b6k9OrMxeMyxs2yBIkCM297bHeBdKVKCdNrUR2Qo9xrtXVBuY0q2JuCuSGSyHjsdwnjv/hXMrrX4gM86q2/7IvX2bCsyX0vohQ4wA5pBCVFa+SyQCfQgHfpQRLUidOuiXU/PmG5eO4pMXAc7pmySmOwofNKnCOY/o7qzPhE8Nduj2iFnvUO3IlzZKUv221SEbbYbPdLjqT2UsjRCT2SNb97smU/Eh19svRxMC2otSrze5rRdahofDKGWgeIWtWjoEggADvxV3Gu4Vea8GfVpcYuqnYs2sa0yqc7zO/yaKe351quW+GLrNjrS3zipurCN7XbH0SCfybBDh/RNSrD8cF9TMSqZgNtcjb95DU9aF6+iikj+qrXdHeoVn6n4JEyyysvx2Xlradjv68xlxB0pJ0SD8CD8QQe3pQcnp0SVAluw50Z6LJaVxcZebKFoPyKT3Br4Vc39pWbQhOGoTDZ+2HTJUqQBpYYSGwEK+YKlbG/TidepqmVAqW8b8N3We/Q2JsPDHWor7YcbclS2GdpI2DxUsK7/AJVgPD9hi8+6wY7jRa8yK7LS9NBHb2dv33N/mlJSPqoV1VMuIic3by+0mUtpTqGeQ5FtJSFKA+QKkj9RQcrOrnSPNelqbWcvhxo/2mlwx/IkB3u3x5JUR2BHNNaDXR/xzYSrLeh8u5RWuU7HXRcUaHcsgFLyfy4Hn/8AjFc4KBSlWO8IXh9HUiR/hdljbreKxXShpgEpVcHU+qQfUNpPZRHcn3R6EgIbwDp1nGeyVMYjjNwuvA8VutoCWWz8lOqIQk/QkVMNs8HHV2W0FyHsat6inZRInrJB+X3bahv9dVcnqtnOJdEOmqLk5bW2YTCkxLdbISEtea4QSEJHokAAkn4AH1OgayP+ODIFSipjAbWiPvshc9xS9fLkEgb/AEoI9yHwm9ZrUwXo9nt13SkbUIM9BUP0c4E/puocyXHr9jNxVbshs1wtMxPfyZkdTSiPmAoDY+o7V0n8OHXSz9ZINxQxaX7PdbaG1SYrjwdQpK+QCm1gAqG0ne0jWx67rFeOY2hHh2vTlzhsyJHnx0QFLHvNvKeTtST6g8Av8x2PrQUtxfw8dYsmx+Df7Jh5lW2e0HozxuMVvzEH0PFboUP1ArJfyXOu38xv7Whf31S14MvEBlE3LLB0syJuJMtbkYxLfJS0GnYwZZUpCDxGlp4o49xy2QST3q7FByyznoP1XwnGZOSZPiaoNqilAfkCfGd4c1hCdpbcUrupQHp8ajSrIeKrr/muQZHlfThn2GDjsS4vW91tuOFOyQw8Rta1E695APu8fQfWtE8NfR25dXsyVCDjkOxwAl25zUp2UJJ91tG+3mK0db7AAk71ohgOiqeoDOfwLr01ts6bfYCitv2aN5qUJUChXmduIQQoglWh39asndemPi6z1jeRZnHtDT3ZcQ3QRkBPyUmIgpUPz3VlHW8D6H9LZcyLAZtFhtTPmOJZTtx5ZISnZJ2txSiEgqPqR3AqsV68cF0VOX9jYFDbiA6R7XOUpxQ+Z4pAH5d/zoI4yXwndZ7Wy5KatluvOgVrEGelSz379nOBJ+PbZqE75aLrY7m7bL1bZltnMnTseUyppxH5pUARXRjw8eJHG+q9wVYZNvXYMhCCtqK4+HW5KQNqLa9AlQ0SUkb13BOjrcuuHSXF+q2MOW29RkM3BtB9guTaB50VfqNH95BPqg9j9DogOYeDYnkGb5NGxvF7cq4XWUFllgOob2EIK1EqWQkaCT6kfL1IqS/5LnXb+Y39rQv76tWtV0zXob1Yl+xrZh3+zvORHg4yl1txJ9dBQ7pUnRBGjojRFdFPDl1Jd6q9MIuUyoDMGb57kaUyyoqbDiCO6d9wCCk6O9b1s+tBzk6mdKc+6bMwXc0sC7YieVpjqEhp5KijWwVNqUAe47E7Pf5VpNdZOtXTy09T+n0/FbpptTo82HJ47VGkJB4OD+JBHxSpQ+NctMyxu84blc/G79EMW5W94tPNqGwT6hQ3+JKgQQfQgg0EkRPDH1xlRWZTGDqLTyEuIKrpDSSkjY2C6CPyPevr/Jc67fzG/taF/fVM3hf8T2aZL1Bs+D5mzb7gzcVKZauDbQYfbWEKUnklPuKBKQnQSkje+/pVk+vebS+nXSS+5lAisSpVvQ15LT4JbUpx5DQ5aIOgV77EelBzF6jYHlfTy+tWPMbSbZcHY6ZKGi+27yaUpSQrk2pSfVCh677VrVbl1b6l5V1RyFu95XJjOvsteTHbjx0tIZb5FXEa7kbJO1Env61ptAqabVIxsM2THrjh0mXkrcZtiPbZsZLUZKyFFT63GgX3eW9hB0B+QSahdHHmOYJTvvo99VMP+NjF50h9i4YdcYcKXdU3J8QL66B5gVvkW1pUk+gPEFI7DWtDWPLLdai8LJ7tVuV9i4l1YXdMcYaci2x5SIzC1rcabJSQtKCv3gkLUspJ7jsT3reoj+LdVITwcx5duubJSyZbakgJW75nBW0gFQSlpscVbHEOEaUSoxjb4BzHKbs4bnEgvPJkzm/aioeesbX5SdA++rvrfy+egd86TsMLxe44+6JUO8KMlTjIYJfUw/GS22+232LvlgvbSn3uD6lJB1Uckkm/mKxtt18Nhx23WbCum8SfdHXWIMmGzNuqoyuMm6uPgrYgIWO7bIbCVuEHvyA/LQWMx/wx6s47OyZuPHskefHZagNp4xokYOJ9xKfTjr8R+P8AACQ7g/BuWEQcXuc+xsXNiC3GcRMniNHnxE8Q3IjSCClLg8hpJC9EFtaSnuRWsQunuOPQXEy2SylJb5zoGTw7iuMla0tpdXHbQkrbC1JBIUCN/Goxsm7l7qsvUiVo0NxYZUqOuO+AX33GHSy4qShuGXTtBGnC8t5BV6nzFAH3QK9DtkgpU49HQu43eUllnk7JD8la0KkuoSC6rsVNNckgkA7TrQ1rGYjcspmsvy70u3TbjZrguIplxkmM07F58VpKSkh1Kita+SjzbWVa+7rK3KwPrtcK23u4PXm2MJR5Db7bTaCsI8kBZA5b1zR75Vw8ze/uFE+e7l1trO+3yuTU+dcpt3Nst0+PFeeZhRWgoJfSgnltSd9/u/LSQD2bCj2Qvl5Rc7S1PVOmSYRduyXZji0sOvJVHCVoIZbCF+Yn7nZ5FPmJC18iFlLWSvd+VGhKRZbpbhODbqYqOYS8qWhPFptprRHMyCyhTZ1xbUlP+mKifqM7O6fOWa6Y/OW4Jcb2Oa3JUXkSAyUqac0vuE6VptQ0oJbBHEmu4Y+XTmV123R+4Xu9ts2liBGt8uSl5TsaXITOZkuLZbdZYUFITpt7ipaHOSj5gVtXLe/m2qU5bMmnIvM55mQvjdIUdKWmpbH3akjytEtFcQOtaQoKC2CkkntWDsUvF8o6ZKuchp5tixPNJeiMuqVKsyFqI9oiOk+YpoLKFeUsq1pXcaBO53XHY8TJGJlzS0l25RDFuyW3Apq4Nhtt8uL+auCJfFY0rk02o9+W6usbpyd9vpcpS2pcnHrrZYmTGYqXZ21uS3I7pjhtMmOlSgFpdccbSjg4QlXJsjke5qvHTOVCbzAsvKbTAfQ7wiTZhbjyHAhRYbkLTxBRz473xB+PEE6ma9W2bbodgdclvTLli11gpYlHst+P7W9GLLmuyi26yrifgh3XxJMO3WTBxfrTPkmKiZAtl/e2xpJDjSH1DiAdjuB8diteGTVkRne5W45y7dk4fcxnK8QjurbQmz222NxTIZd8xBKwqPvi3w5g81EHY7b0RDlS+51Qx22QFWmywbzNhSUPu3R+Z5LL9ykOJKEhzQcCWWwdpQPjr01sxBW/FLJdzTPPRSlK1QVOvgSWtHiQsyUqIC4ktKgD6jyFHX8QP4VBVTn4FP8AOSsf/Vpf/wChdB0lrjQolSipRJJOyT8a7L1Atv8AEP4bmGgqPeoEMqOyhNgkpIP14s6/roKIdKeomVdM8heyDE5LTEp2OYr3nMh1C21KSriQfjtAOx37fnXs6vdWMw6qSrdIy2TFdVbkLRHTHYDSUhZBUdD1J4p/hVlPGj1l6b5v0gj2PE79EvNwcujLpQIziVMNpQ4SsFaRo74p+elH61TCgmjwRrWjxN4olKiAsTUqAPqPY3zr+IH8K6YVzN8Ev+c7iP8A33/+J+umVBx1yBSl364LWoqUqU6SSdknma8SSUqCkkgg7BHwr2X7/wCeT/8ArLn/AKjXioOsXQbJ3sy6OYtkcpZXKl29AkrP77yNtuK/VaVH9arV+0oxpgJxPMGm0pfJdtsheu6k/wCUaH6fff71TX4MI7sXwz4g08NKU3KcH9Fct5Sf6lCo2/aSPtJ6aYzGKwHV3krSn5pSysE/oVJ/jQZH9nIpSuh93ClEhOSPhIJ9B7NGP/8AprM+PskeHiXo+tyi7/3jWE/ZxEf4krynY2MkfJH/AHaNWc8fQJ8PEwgEgXKKT9PeNBzlpSlB10sq1udMITjilLWqytlSlHZJLA7mubXhawyPnXXHHrLOaS7b2nVTJiFDYW2ykr4kfEKUEpP0VXSK2KEXpVFVI20GbGgucgQU6YG9j6VSD9nYuOnrtOD3412CQGf6fnME/wDlCqDoNXK3xLZQ9l3XLK7s46XGW57kSN32AyyfKRr6EJ5fmon411SrkH1AYei55kEaSFB5m6SW3OQAPIOqB3r47oMHVkPCP4gcd6SY1erFk8C9TI8yYmXF+z2ml8FlAQvlzcRrYSj036VW+lBMHiw6qWvqz1Dh3qxMzmLXEtrcZpuWhKHOfJa1khKlD1UB6n8NQ/SvVaYEu63WJa4DKnpcx9EdhtPqtxaglKR+ZIFBc/8AZx4L7Pab71DmNaclq+zYBI7+Wkhbqh9Crgn/AGFVhMw62GH45Yk5Ev8A+BWxYxt7v7pbUdPLP9F8738Q0mrV4NirmB9JrfimPtx3ZlrthaY5qKW3pPEqKlHWwFukqPb949qpDdfCJ1nelOS3V2Ga++4px1abgeRUTsqPJA9STQdCJsaPNhvw5TSXo77amnW1DYWhQ0QfoQa5L9XsPkYF1Lv2JPherfLUhha/Vxk+80s/mgpP611O6ct5Axgdkj5W22i+Mwm2p3luhxK3Up4lYUPXlrl9N6qpX7R3B/KnWHqHEa919P2ZPIH76drZUfqR5g3/AKqaCpFhtsi83yBZ4YBkzpLcZkH4rWoJT/WRXXTC8et+J4na8atTYbhW2KiO0NaJCRoqP1J2SfiSa5beH9cdvrngy5X+TGQQv0V5yOJ/3tV1goKDftFMoeuPVW14uh0mJZ7clxTe/wDp3iVKJ/2Etf1/OqwVOvjtYeZ8SF5cdCuD8SI41sD8PkJT2/2kq/rqCqCWfCx1St/SbqS7kF4jz5NskwHIkhqGhCnDtSFJIC1JHZSB8fQmt/8AFv4g8Z6sYZZ7Bi8K8xEMXAy5Ynstt7KWylvXBa9/5Rfy9BVZ6UEn+FNa2/ERhakKKSbiE7B+BQoEfwJrqTXLTwr/AOcNhX/aSf8A0qrqXQcj+ralL6rZetaipSr5NJJOyT5666K+EXC42F9CrA2hoJm3ZhN0mrI95S3khSQf6KOCdfQ/OudPVn/nUy3/ALbm/wD7111dxDyBidn9mJLHsDHl79ePlp1/VQVg/aR5I9Ew3F8VZc4ouUx2W+Ae5SwlKUg/Ql3f5o+lUaq4P7S9pwXnB3zy8tceYhPprYUyT+vvD+qqfUGXw2/TcWyy1ZHblqRLtstuS2QdbKVA8T9CNg/QmuvkKSzMhsS46wtl9tLjah8UqGwf4GuNlde+ngdGAY6H1JU6LVG5lI7FXlJ3r6boKVftHMdYt/Uqw5Iwjgq725TT2h+NxhQHLfz4OIH5JFS7+zoeW70MuaFa01kT6Edvh5EdX/FRqOv2l1xadv2E2kKT5saLLkKHxCXVtJB/L7pX8DUg/s4v+ZC8/wD3I/8A/wA0agsZbbtbblInR4Mxp963yPZpaEn3mXeKV8VD4HipJ/IioK8Y3RBHUjGf8Jceig5ZamT5aUDvOYGyWT81DuUfUkfHtCGf9Vbz0f8AGblt0bQ4/apb8ZF0ghXZ9kx2iFJ+HNIVtJ+pB7E1eDGL5aslx+DfrJMbmW6cyHo7yD2Uk/8AAjuCPUEEGg5b+Hl5UHr5hBc8xpf29FZUB2UCp1KNH/e0f1q8njueQ14cLwhStF2XEQkfM+clWv4JJ/StW66dDURutWI9WcViKDSMjgPX+K0jfECS3uUlI7/0wP6X+kaz/j7/AM3mX/2lF/8AUaDnNSlKD9SkqUEpBKidAAdzVvunGGYni9mu9nj3K1XDjC9rN5Xay68gyG+KUtqB/wBAKIQkkq80ED15VQxp6fGyO2SLU4hu4NS2lxVrKQlLoWCgkq7Actevb51babdc0l47MZceVZcqvaIkAJSQYsfk66gyGuAUeCkIOllSlBRT2SkpJ8n4q3qSt+HXdVewXIUYrmjF0i8Vx0O+X5rjCVOttFQ24gHYS6E9wfgfmKlbNsJvGXS7fmuOzIgmGO6rz4k9TrTrsdWoyGCtRcDy0Afd75BSe4Tuojy+HZ7Hm8yFaXTdLZDkhLannUqD6U65bU0dFJOxtJ9PkamS9x4uRWO35ZZo7cu1t2iPCZs7ShJNmcQ6jkVFCwtoKCOQf0o6KuSe4quS6syicPayvTJsTWQZLb8juFhkzbFGkSLmmYy2hyJ5SwX1x5CPVstvlQUkjuFK/CPerZ71drFKabMa9WuLNtbzaoMa6ykMtKQhppKnn2+QWtCVtpWhshB5J5aVopToPUaJasqsb9+lyrbi/sTzsWa8lSpRuE4uJCEKcaBDumEJWVpBAUpRI946wmeY/i1uwdLzFkX9oMv+wKfhrcSn2tLTBXvmVBxv3lHYCTyXr00TjMZlrdaW62mKNaZzUOM8+iShyO6PMcXbQxOmSCkgyQEK5gr2kpSAVH2fuUqXqv5fblXFyXGmS4c9TyHmoizC8oKbShyM842ARp3iUpWnjx4hKghR2BCOOXbqbhWLXC4KtUw2fmLev7RS7qI4SFe4nklSN8QCdcT+E79K8V46o5o8y3EuHs7U1iemaJCo3B8HSj5ZH4eBLi1EFO1FZ2SCRXfQyt6rnqSe6xlzhR2DKLkuRPuKEJTGSt7zHFsKPEIQFE+8VpOie5dWyFKUWwawEqNAvOYRYpfLstKXzcre8yVsxeJLbLC9ghPNDvYFJ/AO2yKxmFPM5Zia5j95T7PcVtoctcCIU+zFhptXkMElbqXSWEujio8/L5a5bTXrZuVjsuRCw/aLS5FwLrUhplwOue3NOKQ6lfPay4oKSkBZUHEoP4ivirKY2bnyve2mZl02uNoemz8CfejuS4640q1cwpTrbiSVIaJJ5gp7hskqIHJtTgHIZDpVnMTKLzaMPvsR9LyLGYCHFH0kxxIDSgPqy84g7GySPpUmvuxnR5UxaChaFOpXsa8nYJPvHunkAVbOgRyUQdP1qcqxx7tkNkyuxByTcfbE+xXiHHckslY32lKQDtHbSlqIdR+8HUjnVTk8sdZf3c8dXcbHjK4WVoxWdASt5+5xGbo+0paePmsXGOqQe/yUt1Xz7VW3pSy1fOp8NF0Zbl+1GS4tt0bS655Likgj6r1Uk9Hck+xsqs1kdfQg4pAvPt0ht1K2VoJLgKFb0pPJINRl0lm4rb8uRLy1+5xY7bRMSVA/HGk8k8HTo7KU+8dDZ2B2I3WvHjcZlPv5Rld6WPgYVij2PQ8WFualW2Jdi0EvkpWdrkkuLI0TpK2hv6a7VUN3h5qvK5eXyPHl66+G/rVos7zKVPwG8Ig5hYYkpi3tbkrkIRMuAcZaec8pgaLXmLc/F37JSABoqqrdV+GmXdrnLrrRSlK9TEqePAcwt3xG2lxJSAzClrVv4jyint+qhUD10K8PWFdBunbMLKbTmduk3qXBTykXG9MBbSXEpUpAbSUpT8B3BUO4360Fjq44XOKqDcpUJfLlHeW0eSdHaVEdx8D2rrT/AIwsB/nxjP8A4qx/7qhnL+kvhgya9SrxKvFhhzJbqnpCoeRIbStaiSTw5lKdk/ugf8aCnvhp6eRup3Vu3YxcVSEWzynZM5bCglxLSEHWiQQNrKE+n71TF4sPDvgvTDps1lONzb6uWq4NRC1LktuNcVJWSdBsK5e6P3tfSrB9KsZ8P3TK4SbliWQY9GnSWPZ3ZDuQIdUpvYUU6U4QNlIPYfCtD8eeV4teuiDMOzZLZrlJF5jrLMSc06viEO7PFKiddx3+tBXfwPsLd8TOMOJKQGUTFq38R7I8nt+qhXS2qy+G7COhGCwbPmcLMbe/f5VuQ4XbjeWUqj+a2CtAaBSEnvohQJHfvU7N5/gjriW281xta1HSUpujBJP0HKg5QZjFVBy68wl8uUee+0eSdHaXFDuPge1fTCMZvGY5Xb8ZsMVUm4T3g00gDsPmpR+CUjZJ+ABNdCcs6DdBc2v8u/uiMibKdU7LXb7txQ64o7KinkUgk7PYDeyazGG490K6IxpEq3XCwWV95vi/Lm3JK5Dqex4grUTo6B4oABIHagkbCMfi4ph1nxqCeUe1wmoiFEaKwhITyP1Otn6mqIePzqDHynqhFxa2vpeg400tp1aDsKlOFJdGx68QlCfooLFSD4gvF3BXbJOPdKy+4++ktu3x1sthoH18hChyKv8AXUBr4A9iKXurW64p11alrWSpSlHZUT6kn50Fy/2a+SsBOWYe64lL5LVyjo33Un/Jun9Puf8AeqxniIwyRn/RrI8XgpSqdIjh2ICdcnmlpcQnZ9ORRx3/AK1cy+mOaXjp9m9uyyxuBMuE5stqPuPNkaW2r/VUCR9OxHcCujnSPr/046i29kxr1GtF2UkebbLg8lp1KviEE6Do+qe+vUD0oOYk6LJgzXoU2O7GksOKbeZdQUrbWk6KVA9wQe2jXpx20y79f7fZYDanZU6S3HZSlOyVLUAO3611Zy/pl08zGWm4ZHh9mucogf8AKXIyfNUNaG1jSlDXoCSKwEhPRDotHcnLZxbFnuJ2pDaBLcHySBt1fr6DfrQezxAZBEwnoVk9xU4G/KtbkSIFHuXXE+U0Pr7ygT9Aa53eHDNmun3WbH8kluFuAh8x5x+AYdSUKUfnx5Bf+zW4eKvr3J6tXNi02dh+Bi1vdLjDTpHmSndEec4B2ToEhKdnWySdnQgug7LNLQ62l1paVoWApKknYUD6EH5Vz/8AHL0iueNZ9Mz+1w3HsfvbvmyXG0bESUfxhfyCz7wV6bUR8BvIeF/xRnDLVHw7qAiVMsrACINwaHN2Gj0Da0+q2x8CPeSO2lDQTcvFs0wbO7aRYMhs18jvoKXGG3kLVxI7pW0feHb4KA7UHI6rheArpNjWTYnf8qy/Hrfd2HZaIcBE1gOBHlp5OLSD27lxA3/qEVZGT0L6PyJipTnTvHw4pXIhEYIRv+inSdfTVfS99QOkvTCypt8nIMdsUSKn7u3wyjmkevusNAq9fkn40FQPH1g+MYblOMqxewQLPHnQ3i6iI2EJWtC0jZSOw7KFfLwBdPzkvVJ3L5rJVbscb5tkjsuU4Clsf7Kea/oQn516epvUXCPEJ19xOz3N2bYcOipejqnPONsvKUoFfMlXJKEqUhtI3sjZJ+Qtl05k9GOnuOJsGJ5JitvhBZdWBeGlrdcIAK1qUslSiAP4ADQGqDVPF11tuvSC02FGOxLXMu10fcJRPbWttDDaRyOkLSQSpaNEnWgrsfhW2R4zerLrnJFvxVka/CiC6R/5nSf66tB1dx/oL1SbZVleTY+5MjtFqNMj35tp1lJOzr3+J79/eSa559UrNY8e6hXux41c13S0wZamI0tS0KLoT2J5I90jexsdjrdBdrwgeIHIeqWUXnHcubtbUtmImXBMNlTXJKVcXQQpStn32yNa7BX6TH1zwpvqF0pv+KlKTIlRiqIo/uyEe+0d/AckgH6E1AXhLwvori9kx/qI7mkX/Cd+Fycam3lplMVxaChxAaBSSO6h7/L4EaOjVjf8YWA/z4xn/wAVY/8AdQcmoMmdZL2xLZ5xp8CSlxHIaU262rY2PmCK619OMst2cYNaMrtS0qjXGMl3iDstL9Ftn6pUFJP1FVa8U/TroPMxXI89seSW6NkYCpPkW27NOomvrWB7zRKj3Ktnhx+JO+9Qp4ZuvV36RXJyDKYdumLzHOcmClYC2l6A81onsFaABSdBQA7ggEBYfx79IrnlVshdQMchuTJ1pjmPcY7SOTi42ypLiQO54FStgbOlb9EmqIV1a6edY+m2eRWnMfyu3qkLGzCkuhiSk/EFteidfNOx9a+mR9Hul2Q3FdxvGCWKTMcJU48IoQtwn4qKdcj9Tugox4I+ntuzzq6td9trFws1pguSJLEhvm06tX3baFD0PdSlDf8AoVNvje6X4JjXRlN7xnEbPaZrNzYQt+JHDSi2oLBT29e/H+FT0wvpR0ltjzDTuLYhHXpTqObUdbxA7Ej8TitHt6nvVT/GJ4hsVz7FU4PhiJE2N7Yh+VcnWi22sIB0ltKtKPcglSgPTQB3sBEfhOYXI8RWFtoKQRPK+/yS2tR/qFdRqqd4WsD6GYzZsb6gvZdBcydyEl9SbheGWxDecaKHEJaBT6clgc+R+PY61Yv/ABhYD/PjGf8AxVj/AN1By861xVQusmaxFcvur/OSCpOiR569HX1Gj+tdCfCBnMbNuh1k08lVwszKbZNb37yVNJCUKP8ASb4Hfz5D4GoW8Y2F9F7jjF66iWPJLeMpBaJjW25MupmuKcSgqU1skEA8iU6/CSQSarj0L6r5D0ly77as3GTEfSG58BxRDcpsHt/RUPVKvh39QSCF4/Gt01m9Qek/tFmjqkXmxPGbHZQNqeb46dbSPidaUB6koAHrXNxQKVFKgQQdEH4V1C6Wdf8Apl1AhtexZBHtdyUAF265OJYeCvknZ4uf7JP5CvbmfQ3pJmtyVeL9hkCTMePNciO67GU8T+8osrTzJ+Z2aDmb08xqXmOc2XF4KVl65zG4+0jZQkn3l/klO1H6A110UqNAglS1tx4sdralLVxS2hI9ST6AAepqKo1s6D9CWHZzbePYy/5eit14vTVp9eKeZU8oH5J3vtVWPE/4nZfUCDIxHC2pFtxt33Zch0cZE4A746B9xvt6b2oeuhtNBG3ic6hN9S+sF1yCGpSrYyEwrdy9Sw3vSvpyUVr18Oeqt3+zuaQ30ImLQNF2/SFr7+p8plP/AASKpr0CxjEsx6mwMfzW9OWa0SG3VLkofbZ0pCCoJK3AUpB4kbI9dD410P6ayuj3TzFWcaxfLsdjwGlqc05e2nFrWr8SiVL9Tr4aHyFBSHxzRVR/ErkLx5alMQ3RsfARm0dvp7n/ABrYfBV1uOB5GnC8lmccYur33LrivdgSVaAXv4Nq7BXwB0rt727JdYsL8P8A1TlJuGRZXY491Q0GUXCDfWG3ggEkJIKihWtn1STXPzqLarRYs7vdlsNxVcrZAmuxo8tRSfOShRTyBT2IJB0R2I0aDrzVeP2gz62ugHlpCSHrxGQrfwHFxXb9UisN4MOutvv2EKxLM7zHiXaxMjyZc19LaZUUaCSVqIHNHZJ36jie55a8XjwzrCr70bZtFjy6w3W4C8MuKjQrg0+4lKUOBRKUKJABUPX50FFKUpQKsZ0itU/IulV0u10y++3l4p8lu1wZxekR20rR6oU2pSFfdIKSlQHE62DVc6kvod1QuOCXL7OekpTYJrwXNT5BcWg61zRxUhQPYA+96fA1jz45ZY/T7tOOyXtlOv3TOxYPAhXC0y5Bcmz5KPZlOBxtDAIU0UK9T7i29kk91D0qP8El5QzfBCxKfIh3G4IMcKYkJYUtP4inzCRxHuj4j0qz4bsmVYI9Z7ddYcjFH72DzWh9TyI/vyXEPqUELRzfbCQob0OI2o1VaXKVasofnWGQ7FTHlrXBfYUtBSkK2gpKtK9Nevfv3rPgzuWNxy91cmMxu4lhvIiE2XGcsuuRWDKYsl6SL48428wtT4SkF0FXvt8EJT5nI6G+xB0MxCixZt69nYzkXa0pDFmgAPyZAih5TbTiXFezJYUgj0Cz3CUHltI3jsAnXfNbdMl5pBgXiLPdLbclzu8FoKE+7Ha0op5vNgqaCXOTpO1jaax9vv1hsNhkYjJj3/G2rq66l1q4wvMVADrYStaXAUlxBU2wClTJUEpVxIUd1FnxPdW2Xy2dmMzqhkCDEyOG9Bf3AjG4CLE+z2lBKgpCx7yVNp3tBPdXordfsy9WG8qy6/XCx4vfLs60xb4D6bijbodKW0OBpaUq8xtC0JK0oQNtkgJ0TX8Y9duqaxKdnXSwX+02tlERmFOkMuw5x8lamw320tXFCleqVEjRO9isxjdyyNF4sNrnYbitoiLkuPXCTZ0wz9oJabXIbb00TpH3Xfv72u+vQ8vX5dfqe7cbq9hthmOt5FPsNvvrUb2VdojvIaabSGipKg8EJWnkACVkEp2EoHLROGgZD02zGXa7LebPHgqfQJpt7CfbjcHHWweQcZPmsyAruSr3lJ1z2dcI7xaxKyhmVfrhmMyQLq3HtSnPssSJUmWtHNcZouKHENpSlJd5AEdtgGtgvN9wvAr/AO1m3XaJlTyAj29dvhgRo62lASIzUZYYUSTrkVE+vr3FR6cnUt2ry+fh5rpheZpvzrlvzgR7AuMi9RJr8xb6orC3QhKUuAE+aE6/Aff46BPpWIVihyXKY94/w5lZLa7nPTDiqWiQqRKUlQ5MPDQLQSgpKl9wAsFIPcDe5U20KsibfDzSxobdYZcbfanSmHURlNLSUuB1EkkhC1pCOYSjkdBJ71hM3yPGsStV3ah5ler+vJI6PZmrVObajwW0aT3KAE8yEBJHlJ90keveqxyyvU/wmyNF6lMYzjtoXarLYWlm7KTKbnuzkuuxAk6VHQlBOkg8gSs7VsbG0g1NPSDDrJZMBtsaRBalXS5IYkyC62Dt14oUyjR76QkpJ7a15/r3ArtgNotJyWyO5nEuabBcXVtoXFT946R7o4j1KQspBI+oHcVYpWUP43hdvkzcfm5G1BiLW3MhNq8tNvbBajFxatBKnGlrUVAFQQtXujntNc+5JjDj1vdR54obHjlvdi3qL5q7peXgpkJWA01DZZQ22kIA+KfL7k+oWNDQqDa2fqZmc/OcnXeZjKYzaUBqNGSsqDLYJPHZ9SSpRJ7bJPYDQGsV6eHG44SVlnZctwpSlaIKUpQKUpQKUpQKUpQKUpQKUrJY/ZZV7kusx3YrCGGVPPPyXg022gfEk/EnQAGySewrluhjaV+kaJAIP1Hxr8ro9LFwnx2g0xOktNj0Sh1SQP0BrzUpQKUpQKUpQep643B5pTT0+U42r1St5RB/QmvLSlApSlApSlApSsnfrLJspitzH4in5DCXiyy8HFspUNpDmuyVEd+O9j4gVzYxlKUroV6mbjcGWktMz5TbafRKHlAD9Aa8tfqUlSglIJUToADuaD8pWSyGzSLHOTCmPxHJHlpW4iO8HfKJG+CintyHxAJ1WNrkuwpSldClKUCvTHnzozflx5khlG98W3VJG/yBrzUoP0kk7J2TX5SlApSlApSlApSlApSlApSlBN+AdWc0ynIrRjN1k212K8HWXypDLDkpK+S1JUtxCkbV2Tx4hKtJHY+9U0Zfh1izV9OEz1xIkaHKYnLdiOpRKcR5DrAQr3VAuIV5AJ2QUlPp6GlSFcVpVxSrR3o+h/Op+xfqja8sm2nGBiV1gFlaZEBqzyGngia0CpDqW3G0q7EHsp3jr1B7mvFzcNl8sOm/Hyb6yQ7cJt/srFyxZu6XBu2e0kvRkuLQy6Uq0FlG9HfFJ39B8hUkYtcIMbA2Dfs9i3WFcEOMuWW4q8xEVakKShwa8x1soVxVyShO/wCBMpZ6xFnQblanoAkZTkNmbiohKfQ2uU60lS2n0stOqTocj3cI4lAKQRuoThdDeoMiPbX3LexFTOkmMQ+4QqOQriFOJAJCCdaUnkPeT8xVTkxzx+rpy45Y3rt6rPj8uF0xzK0QpMS6SJMq2eQ5b3DIRKBLyvLQANhY4lRBGwEK3r47F0luIveKwwwtuLe4jptqJjSUtutuqbUuC9zA2CpSXYyj+8laArehWiE530pyC525JfaZaebbnJbKzDlp0VIClDjtKkk67pVon0716bVllqajSXIHTJpjzGlKkOQblOQhTSVAnkPMUOIVxO/gQn0IqssblLrvZLJX06sXXLX71bYH25dblBdaTcLUFpAfR5qdLSrgkErSpK2z9UnsN6qRpDbz2bqk3awMzbFDx6JLfkfZDD8ZD6YaOLSH1tL8thRBHYKAVyOvU1HmQZ1JhyUuOYY9bbuytb8WTNnS1uRXXQlZeQlagOZ91ezsHeyDuv6xrGM86w3F673GYsQYyENOznWUoaSEghLbaEhKSruew0BvZI3XLj9Mt6hL3123bqHl+R9NbipMK12Rtq5LcWx5CJMfyXGuLSlBKS2laCEp4KCeJ7kAbUDpvSnppcL/AJu43lttnxIzUA3RTT6FtKlpKwlCQdctKUr4DZ4kDuRW45f0NYbsTca3XC6zL+htvyEy1Dk4nlpQ8hIK220jZCgVjehsd9ZewZLkaMWevtut0C73XHIBtuRrmTwFoYY5qAbbKlJVyHLbigSohQCRqs5nJh9Hurx3l9TfUWOxi7Qr0mHFXJREEa3AJB4R0nuGgOyEbXpTo+GkNDagpVZOos644vkV8xey5dMmW19ahNaaWW2VLUrktBQCU7B0Dr47GzWfy3rrfbrAei2i1RrK68OLkxDy3ZBH0UdBJ0SAQPdBITx2aiMkk7Pc1pwcOWPeSeTOX2KUpXqYlKUoFT30iv0I4JZsZtd1dxC/SJzgE12xpmMXZSl6bQVlJKeP4fkNbP0gStox/qHm+P2sWuzZPcoUJO+DDbvuo2dniD+HZJPbXc1ly4XPHUXhl41M/SCLNx9vq2i63WNa7lBkxA7cI1uTMQysuv8AJTbJGiDvWtDQPoNVhcYRb8y8QFqZyG9JymO1CWYqpFoTb0SVoStaWlNAAEBRJ2fxa0e3aorxvNssxyROkWW/zYb09YXLcQvanlAqIKidknald/qa+WQZdk2QXSNdLxepkudFSEx5Cl6W0ArkOJGtaJ3Wfo5eVv5/6+/lXqTUbRmOa5/frFdbdf7UwqCzIQHSbOhs25W/dbSsJBb32GidkfHud2DYYua52JMfamNDFW8WjyrxZ5LDTsqQhLa+biW+BcUn8A2DraT2J7Gr2RdQM1yG2C2XrJrlNhjRLLjx4q16cgPxfruvgMyylN5t94Te5abhbYyYsOQFaUyykKAQPppSv40z4LlNTUdx5JKmXoXKt8XBuo1zttyVYYzc6KYk024TnIzSnVBI8pW+RKSEn5b38K0y853kdr6m/aFqygXRb7LMUznrEzF81rkFFPkqQQnStjl6nXrWoY3nGWY2uWqw3uTbjMWHJAY4pC1DejrWh6n0+deXJcnv+SXRm6X26SJ81ltLTbzpBUlIUVAD8ion9aqcP1232v3+X/blz6kiWet8jJMx62u9OIz7JgJuTKIbKIrSPJKmk8llSUhZAClqOye1bN10xJu59PJjltt9ujoxF9CLeYslt1yRbyhDa1OBBJCg4nntWvdJ+O6gRGXZKjJ3MnReJKby6CFzQR5h2nge+u3u9u3wrx2S9XWyuSXLVNdiqlR1xX+GtONL1yQoH1B0O1TOHKeOr7fdPOXe/lZzA42RP9N+mMTHLzjluRL9pFwi3JLJcntpeBKW0qQpS9J574kfiGz6EadYRj8m59aHcfhJZtibS6YramuHl6JCuKSNpHLehoaGhoVDZya/li0MfaskN2Val20BWvZlKUFEo+WykH9K+hyzIjJu0kXV9Lt4QW7ipIA9pSfUK0O+/U/OuTgym+/f/e3fUnX38Jx8PON/ZGEpyCZbbbLORTRDdRNktteXbU8kvOI5kEqKz6D1CBUJ9Rsafw/Nrrjr5KvY3ylpZ/6Ro+8hX6pINY663m6XViCxcJrshqAwI8VCj7rTY9EgCv2+3q63yQzIu812Y8ywiO2tzRUG0/hTv4638a0wwymdyt90ZZSzSaIWRZHi/h3xGXi3BuVKuMtt8+wtSCtIWrQIWhWu/wAqzbFqt7PX/pxNctUa23S62xMu7W9tkIQ2+WnNq4fuk67p/wBX5k7hbHuoub4/am7VZcknQYTZUUMtKASkqOz8PiSaxbGS39nJE5Ii7zDeErKxNW4Vu8iOO+R38Dqo9G9/rv8AlXqTr9koder9Jm2923ozd29spuJK4SsaRBEfjyAIeA2vX4dfHe68/hQS2eotxU4pLYRZJKw4pkO+WQUe9xP4iPXXxrSck6hZrkdsVbL5kc2fDUsLLLqgUlQ9D6Vi8ZyG9YzcjcbDcX7fLLZaLrRAVxJBI/qH8KqcV9O4ff8Ahzznn5JSyq9SLxnmFMO5g5k8dF1aJLmPItoZJdbGuw9/YH6a+tSAbtf8h6+3bBbxaotzw8uvNvNO21tKYzQbJDgdSkKSQrWlFXx+eqr/AH7P8yvrkJy75DNmLgviRFLih904PRQ7evYV6L11Mz682523XLLLo/EeHF1rzuKVj5K1rY+h7VF4LZPb7/ZU5I2iNBZc8POSptqfa0QsobWXUp2pLHlFKVn4hJOv1rZZVhtUvIejVgyJlMdp+3JMphY4KWFOKLaVfH3yAn59zUOYtlGQ4tLclY9eJdtddTxcLDmgsD0Ch6HX1rz3y9Xa+XVy63e4yZ05wgqfecKl9vQA/AD4AelXeLK33+9J85pJXULMc9fmZRjUmxxUWeMVtmGmzNhFvZSvihxBCNo7aAWSfxbHwIkLo3hjcHpzb7Zc4FuWnMA65cnn5DSH4sUtqTGLaVEFRKzzGt/xqDLp1Fzq6WU2a4ZVdZMBSQhbS5BPNPyUfVQ+hJrD3m93a8zWptznvSZDLSGWlqOihCPwpTr0A+Gqm8OVx8ZqOzOS790q9KMeex5zqG+u2R5+WY1HSm3xnWPOCVeYpLr6UEe8UgJIOv3vrWFj5PlmU5Nhr2TwmXGU3lpLM821DK3/AL1vk2VpSAoJ36D05d99taevL8nVk6snF7mIvKtcpjbnBxWgE9yNbGgBo+oFfa/Zxl99nQ5t3yGfMfhOB2MXHNhpYOwpKfQHeu+vhVenlvdc8prSamrdDHWDqndotsjXG92eMuRaITjAdTz7BTgb/eUjtofNXz1WuyZ9xzXobk99zeMwZtplxk2e5GG2y46tayHWPcSnkkDvr4b3+7UWDJsgTkqslReJjd4U55ipjbhS4VEaJ2PmOxHxr0ZXmWVZUllOQ36dcUM9223nNoSfmEjtv663XJw3c/b+HfOLHO47jGTQ+mVrHs8HKYlktlyiOLSEpnMJCS6wT8VAJKhv5n4cjUF9fEIb6x5OhtCUJE06SkaA7CtdlZNf5Mm1ynrtKU/aWW2YDgXpUdDf4EpI9NfCvHeLlOvFzkXO5yXJUyQvm88s+8tXzNd4uK4ZbtczzmUWWxqRc7f0l6bvQMlxaxQHBJN1ReCyDMaD491AWgqVpJWCEkH3k9/TWoWNNhvNy6vpxCGlcF21qegMttaPBLiStSE+oTvZAA7Aga+FQ9cL3drharfaps51+FbQsQ2VH3WQsgr4/mQP4V/NhvF1sNzaudmuEiBMa3weYWUqAPqO3qD8R6GpnBZvvv8A9276nskC9RTF8NNiXIYDTsrI33WSpOlONBnjyHxKeQ1Vi8hegyuqkzF37wxNYkw1Ibxt6wJDC1ljkCqYEkgEjl9N6qnuU5RkOUy25WQ3iXcnWk8Wy+5sIB9Qkeg39Kz0rq11Jkx3I7uZXby3ElKuLvE6P1ABH6VOfBll/P8ALuPJI2aNbnR4Xrk17Lzls5j5auCOShqMjY2Phuvl0gjgdNOqIkMAOt2tgjmj3knmv5+labi+e5hi8ByBYMgmW+K46XlttKGlLIAKu49dJA/SvPIzDJpD12dfvMpbl5QlFxUSNyUp/CFdvhWnp5dz9dp8p1Up3O63fA+l+ESsCisNpu7C3rjcUwEPuPyQvXkKUtKtBPcBI1vR+teDpHYZ2U9YrhfMgs0WEizFVwmwiymIyHh2aZ4q0lHJevxeoCtnvWgYtnGX4tGcjY/kM+3sOq5Laac9wq+fE9gfqPkK8r+T5DIiXKLIvEx5q6uIdnhxwqMlSDtBWo91aPps1z0stWT5+TznSSfEljklp+yZq5Fhx3LxGSzcm4bqXGWprSQFcSglICk6IG99lb71D1ZBN6uqcfXYBNd+y1yBKMU6KPNCePP6HXbfyrH1rx43HHVTlZbuFKUq0lKUoFKUoFKUoFKUoFKUoFf02tbawttakKHcKSdEV/NKDf8Ap/1TvmIRnY0SJbX1vuoUue+y4uWhCQlIQlxLiSUAJGkE6/KpntuddOblCn3O25RdcVRbWUtQEGYpBKyNuLRDSVJV6+hPEkAcRrkas0rHPgxy79mmPJYtXkHU6x2KTBsEPJkX+PPjpWtu5tty2IK1cnD5pjtkuqJKEJbR2Ro7OuIGZvS8ivNsn2pqLwuVwtTsEwZ0srchx5ARuVJKAGY3FKDxaSnkr57SRVQrdMk2+4Rp8N0tSYzqXmVgA8VpIKTo9uxA9a2CXn+XSrJJtD97kqYlzvb5KwdOvPaABWse8oDiCAToEDXoKxv4XWvFc5vzWZkz71cm7sWlRJ0ZKw06qFJMoQy2lLR9pgvJO2lcSvk2nnpQ+hGLwHq3ZMitjdoduMTFJEAlCQi4pixZTfoClbrS1MpGuyEkEb/hBF26pZxcxbHZN7dTOtoWli4MpDcopUNFKnU6UpP0PrvvutMcWtxxTji1LWolSlKOySfUk0x/C7msi83fS0eUdUsJskKXbF3A3hDwUHY9oecHtCiNcnZBVyXv05FxexoFsfCtN0nNPT5jlsjKtsKQe0VD6lgJBBCST+LuN9/j8BXgpW/Hw48fszyzuRSlK1QUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgUpSg//9k=';
+  const img = document.getElementById('sepLogo');
+  if(img) img.src = 'data:image/png;base64,' + sepB64;
+  const loginLogo = document.getElementById('loginLogoImg');
+  if(loginLogo) loginLogo.src = 'data:image/png;base64,' + sepB64;
+})();
+</script>
+</body>
+</html>
