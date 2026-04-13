@@ -184,9 +184,9 @@ table.dir-table thead th{padding:9px 10px;font-size:10px;font-weight:600;letter-
 table.dir-table thead th.th-dir{width:26%;background:#f7f5f0}
 table.dir-table thead th.th-nivel{width:70px;background:#f7f5f0;text-align:center}
 table.dir-table thead th.th-estado{width:22%;background:#e8f4f1}
-table.dir-table thead th.th-logros{background:#e8f1e0;color:#155724}
-table.dir-table thead th.th-retos{background:#fff3cd;color:#856404}
-table.dir-table thead th.th-compromisos{background:#f5f5f5}
+table.dir-table thead th.th-logros{background:#e8f1e0;color:#155724;text-align:center}
+table.dir-table thead th.th-retos{background:#fff3cd;color:#856404;text-align:center}
+table.dir-table thead th.th-compromisos{background:#f5f5f5;text-align:center}
 table.dir-table tbody tr{border-bottom:1px solid var(--pgryl)}
 table.dir-table tbody tr:last-child{border-bottom:none}
 table.dir-table tbody tr:hover{background:rgba(0,47,42,.025)}
@@ -224,183 +224,332 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
 .plt-header,.plt-footer{display:none}
 /* nivel-print-val: hidden on screen, shown in print */
 .nivel-print-val{display:none}
+/* print-mirror: replaces textareas in print, hidden on screen */
+.print-mirror{display:none}
 
 @media print {
-  @page { size: A4 landscape; margin: 10mm 12mm 42px 12mm; }
+  /* ══════════════════════════════════════════════════════
+     SEMS — PRINT STYLESHEET  |  Landscape A4
+     Paleta: Verde institucional (p627 #002f2a · p626 #1e5b4f · gold #a57f2c)
+     Tipografía: Cormorant Garamond (display) · Jost (cuerpo)
+  ══════════════════════════════════════════════════════ */
+  @page {
+    size: A4 landscape;
+    margin: 8mm 10mm 28px 10mm;
+  }
 
-  /* ── HIDE: ALL PAGES EXCEPT REGISTRAR, AND ALL UI CHROME ── */
-  #page-menu,
-  #page-consultar { display:none!important; }
-
+  /* ── HIDE UI CHROME ── */
+  #page-menu, #page-consultar, #page-login, #page-sumario { display:none!important; }
   .app-header,.deco-band,.app-footer,.prog-tabs-bar,.form-actions,
   .reg-topbar,.no-print,.ev-overlay,.ev-drawer,
-  .modal-overlay,.toast-container,.meta-grid { display:none!important }
+  .modal-overlay,.toast-container,.meta-grid { display:none!important; }
 
   /* ── LAYOUT ── */
-  html,body{ background:#fff!important; }
-  #page-registrar{ display:block!important; overflow:visible!important; }
-  .reg-page{ display:block!important; overflow:visible!important; }
-  .reg-scroll{ overflow:visible!important; padding:0!important; margin:0!important; }
+  html,body { background:#fff!important; }
+  #page-registrar { display:block!important; overflow:visible!important; }
+  .reg-page      { display:block!important; overflow:visible!important; }
+  .reg-scroll    { overflow:visible!important; padding:0!important; margin:0!important; }
 
-  /* ── LETTERHEAD HEADER — static box on page 1 only ── */
-  .plt-header{
-    display:block!important;
-    position:relative;
-    width:100%;
-    background:#6b1232;
-    border-radius:5px;
-    overflow:hidden;
-    margin-bottom:12px;
+  /* ════════════════════════════
+     MEMBRETE — Página 1
+  ════════════════════════════ */
+  .plt-header {
+    display:block!important; position:relative; width:100%;
+    background:#002f2a; border-radius:4px; overflow:hidden;
+    margin-bottom:5px;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  .plt-header-pattern{
-    position:absolute; left:0; top:0; bottom:0; width:80px;
-    background-image:url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.09'%3E%3Crect x='0' y='0' width='9' height='9'/%3E%3Crect x='9' y='9' width='9' height='9'/%3E%3C/g%3E%3C/svg%3E");
+  .plt-header-pattern {
+    position:absolute; left:0; top:0; bottom:0; width:70px;
+    background-image:url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.07'%3E%3Crect x='0' y='0' width='9' height='9'/%3E%3Crect x='9' y='9' width='9' height='9'/%3E%3C/g%3E%3C/svg%3E");
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  .plt-header-inner{
+  .plt-header-inner {
     display:flex; align-items:center; justify-content:space-between;
-    padding:13px 18px 13px 28px;
-    position:relative; z-index:1;
+    padding:9px 16px 9px 24px; position:relative; z-index:1;
   }
-  .plt-ht1{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; font-size:15pt; color:#fff; letter-spacing:.02em; line-height:1.15; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .plt-ht2{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; font-size:11pt; color:#fff; letter-spacing:.02em; margin-top:2px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .plt-ht3{ font-family:'Jost',sans-serif; font-size:8pt; font-weight:500; color:#e6a832; letter-spacing:.05em; margin-top:4px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .plt-header-logo{
-    background:#6b1232!important;
+  .plt-ht1 {
+    font-family:'Cormorant Garamond',Georgia,serif; font-weight:700;
+    font-size:13pt; color:#fff; letter-spacing:.02em; line-height:1.15;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-ht2 {
+    font-family:'Cormorant Garamond',Georgia,serif; font-weight:400;
+    font-size:9pt; color:rgba(255,255,255,.85); letter-spacing:.02em; margin-top:1px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-ht3 {
+    font-family:'Jost',sans-serif; font-size:7pt; font-weight:500;
+    color:#e6d194; letter-spacing:.06em; margin-top:3px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-header-logo {
+    background:#002f2a!important;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
     border-radius:3px; overflow:hidden; line-height:0;
   }
-  .plt-header-logo img{
-    height:60px; object-fit:contain;
-    mix-blend-mode:screen!important;
+  .plt-header-logo img {
+    height:52px; object-fit:contain;
+    mix-blend-mode:screen!important; display:block;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    display:block;
   }
 
-  /* ── LETTERHEAD FOOTER — fixed at bottom of every page ── */
-  .plt-footer{
+  /* ════════════════════════════
+     PIE DE PÁGINA — todas las páginas
+  ════════════════════════════ */
+  /* Footer: page 1 only via fixed positioning */
+  .plt-footer {
     display:block!important;
     position:fixed; bottom:0; left:0; right:0;
-    -webkit-print-color-adjust:exact; print-color-adjust:exact;
     z-index:9999;
-  }
-  .plt-footer-band{
-    height:13px;
-    background:linear-gradient(135deg,#8b1a35 25%,#6b1232 25%,#6b1232 50%,#8b1a35 50%,#8b1a35 75%,#6b1232 75%);
-    background-size:8px 8px;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  .plt-footer-text{
-    background:#fff;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:3px 14px 2px;
-    font-family:'Jost',sans-serif; font-size:7pt; color:#555;
-    border-top:1px solid #e0e0e0;
-  }
-
-  /* ── PRINT META TABLE ── */
-  .plt-meta-table{
-    width:100%; border-collapse:collapse; margin-bottom:13px;
-    font-size:8pt; font-family:'Jost',sans-serif;
-    border:1.5px solid #6b1232;
+  .plt-footer-band {
+    height:8px;
+    background:linear-gradient(90deg,#002f2a 0%,#1e5b4f 35%,#a57f2c 55%,#1e5b4f 78%,#002f2a 100%);
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  .plt-meta-table td{ padding:4px 9px; border:1px solid #ccc; vertical-align:middle; }
-  .plt-meta-table td.plt-meta-lbl{
-    background:#6b1232; color:#fff; font-weight:600;
-    width:85px; font-size:7pt; letter-spacing:.05em;
+  .plt-footer-text {
+    background:#fff; display:flex; align-items:center; justify-content:space-between;
+    padding:2px 12px; font-family:'Jost',sans-serif; font-size:6pt; color:#555;
+    border-top:1px solid #c0d8d4;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  .plt-meta-table td.plt-meta-val{ color:#161a1d; font-size:8.5pt; }
 
-  /* ── PROGRAM PANELS — flow without forced page breaks ── */
-  .prog-panel{ display:block!important; margin-bottom:14px; }
-  .prog-panel + .prog-panel{ page-break-before:auto; }
-
-  .prog-panel-header{
-    background:#6b1232!important;
+  /* ════════════════════════════
+     TABLA DE IDENTIFICACIÓN
+  ════════════════════════════ */
+  .plt-meta-table {
+    width:100%; border-collapse:collapse; margin-bottom:5px;
+    font-size:7.5pt; font-family:'Jost',sans-serif;
+    border:1.5px solid #002f2a;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    padding:8px 14px; margin-bottom:0;
-    display:flex; align-items:center; justify-content:space-between;
-    border-radius:4px 4px 0 0;
   }
-  .prog-panel-header h3{ font-size:10.5pt!important; color:#fff!important; }
-  .prog-panel-header > div > div:last-child{ color:#e6a832!important; font-size:8.5pt!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .prog-badge{ background:rgba(255,255,255,.18)!important; color:#fff!important; font-size:7.5pt!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .plt-meta-table td { padding:3px 8px; border:1px solid #c0d8d4; vertical-align:middle; }
+  .plt-meta-table td.plt-meta-lbl {
+    background:#002f2a; color:#fff; font-weight:600;
+    width:72px; font-size:6.5pt; letter-spacing:.05em;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .plt-meta-table td.plt-meta-val { color:#161a1d; font-size:7.5pt; font-family:'Jost',sans-serif; }
 
-  /* ── DIRECTIVE TABLE — landscape column widths ── */
-  .dir-table-wrap{ overflow:visible!important; }
-  table.dir-table{
-    width:100%; font-size:7.5pt; border-collapse:collapse;
+  /* ════════════════════════════
+     SECCIÓN DIAGNÓSTICO — Página 1, misma paleta verde
+  ════════════════════════════ */
+  .diag-section {
+    display:block!important;
+    border:1.5px solid #002f2a; border-radius:0;
+    overflow:hidden; page-break-after:always; page-break-inside:avoid;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .diag-header {
+    background:#002f2a!important; padding:6px 14px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    text-align:center;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .diag-header h3 {
+    font-family:'Cormorant Garamond',Georgia,serif;
+    font-size:10pt!important; color:#fff!important; margin:0; font-weight:700;
+    text-align:center;
+  }
+  .diag-cell-label {
+    background:#e8f4f1!important; color:#002f2a!important;
+    font-family:'Jost',sans-serif; font-size:6pt; font-weight:700;
+    letter-spacing:.09em; text-transform:uppercase; padding:3px 8px 2px;
+    border-bottom:1px solid #c0d8d4;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .diag-grid { display:grid!important; border-bottom:1px solid #c0d8d4; }
+  .diag-grid-top { grid-template-columns:1fr 1fr 1fr; }
+  .diag-grid-bottom { grid-template-columns:1fr 1fr; }
+  .diag-cell { border-right:1px solid #c0d8d4; border-bottom:none; }
+  .diag-grid-top .diag-cell:nth-child(3n) { border-right:none; }
+  .diag-grid-bottom .diag-cell:nth-child(2n) { border-right:none; }
+  /* All diag cell label centered */
+  .diag-cell-label { text-align:center!important; }
+  .diag-comments .diag-cell-label { text-align:center!important; }
+  /* Row 1: gray like Nivel de Avance */
+  .diag-contextual .diag-cell-label,
+  .diag-servicio .diag-cell-label,
+  .diag-indicadores .diag-cell-label {
+    background:#f0f0f0!important; color:#555!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  /* Fortalezas: green like Logros */
+  .diag-fortalezas .diag-cell-label {
+    background:#1e5b4f!important; color:#fff!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  /* Oportunidades: amber like Retos */
+  .diag-oportunidades .diag-cell-label {
+    background:#a57f2c!important; color:#fff!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .diag-cell textarea {
+    display:block!important; width:100%; box-sizing:border-box;
+    font-family:'Jost',sans-serif; font-size:7pt; color:#161a1d;
+    height:62pt; padding:4px 8px; line-height:1.4;
+    border:none; resize:none; overflow:hidden; background:transparent;
+  }
+  .diag-grid-top .diag-cell textarea { height:70pt; }
+  .diag-grid-bottom .diag-cell textarea { height:75pt; }
+  .diag-comments { border-top:1px solid #c0d8d4; display:flex; flex-direction:column; }
+  .diag-comments .diag-cell-label { border-bottom:1px solid #c0d8d4; }
+  .diag-comments textarea {
+    display:block!important; width:100%; box-sizing:border-box;
+    font-family:'Jost',sans-serif; font-size:7pt; color:#161a1d;
+    height:44pt; padding:4px 8px; line-height:1.4;
+    border:none; resize:none; overflow:hidden; background:transparent;
+  }
+
+  /* ════════════════════════════
+     PANELES DE PROGRAMAS — cada uno en página nueva
+  ════════════════════════════ */
+  .prog-tabs-bar { display:none!important; }
+  .prog-panel {
+    display:block!important; margin-bottom:0;
+    page-break-before:always; page-break-inside:avoid;
+  }
+  .prog-panel-header {
+    background:#002f2a!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    padding:7px 14px; display:flex; align-items:center; justify-content:space-between;
+    border-radius:3px 3px 0 0;
+  }
+  .prog-panel-header h3 {
+    font-family:'Cormorant Garamond',Georgia,serif;
+    font-size:10pt!important; color:#fff!important; font-weight:700;
+  }
+  .prog-panel-header > div > div:last-child {
+    font-family:'Jost',sans-serif;
+    color:#e6d194!important; font-size:7.5pt!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .prog-badge {
+    background:rgba(255,255,255,.15)!important; color:#fff!important;
+    font-size:6.5pt!important; font-family:'Jost',sans-serif;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+
+  /* ════════════════════════════
+     TABLA DE DIRECTRICES
+  ════════════════════════════ */
+  .dir-table-wrap { overflow:visible!important; }
+  table.dir-table {
+    width:100%; font-size:6.5pt; border-collapse:collapse;
     min-width:unset!important;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  table.dir-table thead th{
-    padding:6px 8px; font-size:7pt; border:1px solid #ccc;
+  table.dir-table thead th {
+    padding:5px 7px; font-size:6pt; font-family:'Jost',sans-serif;
+    font-weight:600; letter-spacing:.07em; text-transform:uppercase;
+    border:1px solid #c0d8d4;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  table.dir-table td{ padding:5px 8px; border:1px solid #ddd; vertical-align:top; }
-  table.dir-table td.td-dir{ font-size:7.5pt; line-height:1.45; }
-  table.dir-table td.td-dir .dir-id{ font-size:7pt; }
+  table.dir-table td {
+    padding:4px 7px; border:1px solid #d8e8e4;
+    vertical-align:top; font-family:'Jost',sans-serif;
+  }
+  table.dir-table td.td-dir { font-size:6.5pt; line-height:1.4; }
+  table.dir-table td.td-dir .dir-id { font-size:6pt; font-weight:700; color:#002f2a; }
 
-  /* Hide Estado (3rd col) and Evidencias (7th col) */
+  /* Hide Estado (3rd) and Evidencias (7th) */
   table.dir-table thead th:nth-child(3),
   table.dir-table tbody td:nth-child(3),
   table.dir-table thead th:nth-child(7),
-  table.dir-table tbody td:nth-child(7){ display:none!important; }
+  table.dir-table tbody td:nth-child(7) { display:none!important; }
 
-  /* Landscape column widths — more space for content cols */
-  table.dir-table thead th:nth-child(1){ width:30%; }
-  table.dir-table thead th:nth-child(2){ width:7%; text-align:center; }
-  table.dir-table thead th:nth-child(4){ width:21%; }
-  table.dir-table thead th:nth-child(5){ width:21%; }
-  table.dir-table thead th:nth-child(6){ width:21%; }
+  /* Column widths — directive narrower, content columns wider */
+  table.dir-table thead th:nth-child(1) { width:24%; }
+  table.dir-table thead th:nth-child(2) { width:5%; text-align:center; }
+  table.dir-table thead th:nth-child(4) { width:23.5%; }
+  table.dir-table thead th:nth-child(5) { width:23.5%; }
+  table.dir-table thead th:nth-child(6) { width:24%; }
 
-  /* Table header colors */
-  table.dir-table thead th.th-dir{ background:#f7f0f3!important; color:#6b1232!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  table.dir-table thead th.th-nivel{ background:#f5f5f5!important; color:#333!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  table.dir-table thead th.th-logros{ background:#1e5b4f!important; color:#fff!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  table.dir-table thead th.th-retos{ background:#d4a017!important; color:#fff!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  table.dir-table thead th.th-compromisos{ background:#e0e0e0!important; color:#333!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-
-  /* Nivel: hide the select, show styled number */
-  .nivel-sel{ display:none!important; }
-  .nivel-print-val{
-    display:block!important;
-    text-align:center; font-weight:700; font-size:11pt;
-    line-height:1; padding:3px 0;
+  /* Column header colors — green scheme */
+  table.dir-table thead th.th-dir {
+    background:#e8f4f1!important; color:#002f2a!important;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
-  .np-0{ color:#c0392b!important; }
-  .np-1{ color:#856404!important; }
-  .np-2{ color:#155724!important; }
-  .np-empty{ color:#bbb!important; font-size:9pt!important; font-weight:400!important; }
-  table.dir-table td.td-nivel{ text-align:center; vertical-align:middle; }
-
-  /* Text areas */
-  .dir-ta{
-    border:none!important; background:transparent!important;
-    padding:0!important; font-size:7.5pt!important;
-    line-height:1.45!important; width:100%!important; resize:none!important;
+  table.dir-table thead th.th-nivel {
+    background:#f0f0f0!important; color:#333!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
+  table.dir-table thead th.th-logros {
+    background:#1e5b4f!important; color:#fff!important; text-align:center!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  table.dir-table thead th.th-retos {
+    background:#a57f2c!important; color:#fff!important; text-align:center!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  table.dir-table thead th.th-compromisos {
+    background:#e0e0e0!important; color:#333!important; text-align:center!important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+
+  /* Nivel: styled number */
+  .nivel-print-val {
+    display:flex!important; align-items:center; justify-content:center;
+    font-family:'Cormorant Garamond',Georgia,serif;
+    font-size:13pt; font-weight:700; height:100%;
+  }
+  .nivel-print-val[data-val="0"] { color:#c0392b; }
+  .nivel-print-val[data-val="1"] { color:#a57f2c; }
+  .nivel-print-val[data-val="2"] { color:#1e5b4f; }
+  select[id^="niv_"] { display:none!important; }
 
   /* Comments section */
-  .prog-comments{
-    border-top:2px solid #6b1232!important;
-    padding:8px 10px!important; background:#faf5f7!important;
-    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  .prog-comments {
+    border-top:1px solid #c0d8d4; padding:8px 14px;
     page-break-inside:avoid;
   }
-  .prog-comments label{ font-size:7pt!important; color:#6b1232!important; }
-  .prog-comments textarea{
+  .prog-comments label {
+    font-family:'Jost',sans-serif;
+    font-size:6pt!important; color:#002f2a!important;
+    font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .prog-comments textarea {
     border:none!important; background:transparent!important;
-    font-size:7.5pt!important; width:100%!important; resize:none!important;
+    font-family:'Jost',sans-serif;
+    font-size:7pt!important; width:100%!important; resize:none!important;
+    color:#161a1d!important;
+  }
+
+  /* ════════════════════════════
+     PRINT MIRRORS: replace textareas — visible in print, hidden on screen
+  ════════════════════════════ */
+  .print-mirror {
+    display:block!important;
+    font-family:'Jost',sans-serif;
+    font-size:6.5pt; color:#161a1d; line-height:1.45;
+    padding:3px 7px; white-space:pre-wrap; word-wrap:break-word;
+    min-height:0; width:100%; box-sizing:border-box;
+  }
+  .diag-cell .print-mirror, .diag-comments .print-mirror {
+    font-size:7pt; line-height:1.5; padding:5px 8px;
+  }
+
+  /* ── HIDE ALL TEXTAREAS in print (mirrors replace them).
+     The same specificity path as any competing rule, all with !important ── */
+  textarea,
+  textarea.dir-ta,
+  table.dir-table td textarea,
+  table.dir-table td textarea.dir-ta,
+  .diag-cell textarea,
+  .diag-comments textarea,
+  textarea[id^="cgp_"] {
+    display:none!important;
+    visibility:hidden!important;
+    height:0!important;
+    overflow:hidden!important;
   }
 
   /* Misc */
-  .records-table-wrap,.meta-grid{ box-shadow:none!important; }
-  a{ color:inherit!important; text-decoration:none!important; }
+  .records-table-wrap,.meta-grid { box-shadow:none!important; }
+  a { color:inherit!important; text-decoration:none!important; }
 }
 
 /* Print-only meta table: hidden on screen */
@@ -692,6 +841,36 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
 .ev-btn .evc{font-weight:600}
 .th-ev{width:88px;background:#eef3f1!important;color:var(--p626)!important}
 @media print{.ev-overlay,.ev-drawer{display:none!important}}
+
+/* ── DIAGNÓSTICO DEL PLANTEL ── */
+.diag-section{background:var(--wh);border:1px solid var(--bdr);border-radius:6px;overflow:hidden;margin-bottom:0}
+.diag-header{padding:12px 18px;background:var(--p627);display:flex;align-items:center;justify-content:center;gap:10px;text-align:center}
+.diag-header h3{font-family:var(--fd);font-size:16px;font-weight:700;color:var(--wh);letter-spacing:.04em;margin:0}
+.diag-grid{display:grid;gap:0;border-top:none}
+.diag-grid-top{grid-template-columns:1fr 1fr 1fr}
+.diag-grid-bottom{grid-template-columns:1fr 1fr}
+.diag-cell{display:flex;flex-direction:column;border-right:1px solid var(--pgryl);border-bottom:1px solid var(--pgryl)}
+.diag-grid-top .diag-cell:nth-child(3n){border-right:none}
+.diag-grid-bottom .diag-cell:nth-child(2n){border-right:none}
+.diag-cell-label{font-size:8.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  padding:9px 12px 5px;border-bottom:1px solid var(--pgryl);text-align:center}
+/* Row 1 cells: gray (like Nivel de Avance) */
+.diag-contextual .diag-cell-label,.diag-servicio .diag-cell-label,.diag-indicadores .diag-cell-label{
+  background:#f0f0f0;color:#555}
+/* Fortalezas: green (like Logros) */
+.diag-fortalezas .diag-cell-label{background:#e8f1e0;color:#155724}
+/* Oportunidades: amber (like Retos) */
+.diag-oportunidades .diag-cell-label{background:#fff3cd;color:#856404}
+/* Comments label */
+.diag-comments .diag-cell-label{background:#e8f4f1;color:var(--p627);text-align:center}
+.diag-cell textarea{flex:1;border:none;outline:none;resize:vertical;font-family:var(--fb);font-size:12.5px;color:var(--txt);padding:10px 12px;min-height:140px;background:transparent;line-height:1.6}
+.diag-grid-top .diag-cell textarea{min-height:150px}
+.diag-grid-bottom .diag-cell textarea{min-height:160px}
+.diag-cell textarea::placeholder{color:var(--pgry);font-size:11.5px}
+.diag-cell textarea:focus{background:rgba(0,47,42,.03)}
+.diag-comments{border-top:1px solid var(--pgryl);padding:0}
+.diag-comments .diag-cell-label{border-bottom:1px solid var(--pgryl)}
+.diag-comments textarea{min-height:100px;width:100%;box-sizing:border-box;resize:vertical}
 </style>
 </head>
 <body>
@@ -785,8 +964,8 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
         <img id="loginLogoImg" alt="SEP – Secretaría de Educación Pública">
       </div>
       <div class="login-title">Sistema de Supervisión SEMS</div>
-      <div class="login-sub1">Estado de México</div>
-      <div class="login-sub2">Desarrollo de Programas SEMS por Plantel</div>
+      <div class="login-sub1">Desarrollo de Programas SEMS por Plantel</div>
+      <div class="login-sub2">Estado de México</div>
       <div class="login-form">
         <div class="login-field">
           <label>Nombre del supervisor</label>
@@ -838,6 +1017,18 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
       <div class="sm-filter-group">
         <label>Ciclo Escolar</label>
         <select class="sm-filter-select" id="smFCiclo" onchange="renderSumario()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="sm-filter-group">
+        <label>Entidad Federativa</label>
+        <select class="sm-filter-select" id="smFEntidad" onchange="renderSumario()">
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div class="sm-filter-group">
+        <label>Municipio</label>
+        <select class="sm-filter-select" id="smFMunicipio" onchange="renderSumario()">
           <option value="">Todos</option>
         </select>
       </div>
@@ -960,7 +1151,7 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
 <div class="plt-footer" id="pltFooter">
   <div class="plt-footer-band"></div>
   <div class="plt-footer-text">
-    <span>Eliseo Anaya Dorantes &ndash; Supervisor SEMS en el Estado de México</span>
+    <span id="pltFooterSupervisor">Supervisión SEMS</span>
     <span id="pltFooterDate"></span>
   </div>
 </div>
@@ -985,25 +1176,46 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
         </div>
         <div class="form-field">
           <label>Entidad Federativa</label>
-          <select id="f_entidad">
+          <select id="f_entidad" onchange="markDirty();populateMunicipios();">
             <option value="">Seleccionar…</option>
-            <option>Aguascalientes</option><option>Baja California</option>
-            <option>Baja California Sur</option><option>Campeche</option>
-            <option>Chiapas</option><option>Chihuahua</option>
-            <option>Ciudad de México</option><option>Coahuila</option>
-            <option>Colima</option><option>Durango</option>
+            <option>Aguascalientes</option>
+            <option>Baja California</option>
+            <option>Baja California Sur</option>
+            <option>Campeche</option>
+            <option>Chiapas</option>
+            <option>Chihuahua</option>
+            <option>Ciudad de México</option>
+            <option>Coahuila de Zaragoza</option>
+            <option>Colima</option>
+            <option>Durango</option>
             <option selected>Estado de México</option>
-            <option>Guanajuato</option><option>Guerrero</option>
-            <option>Hidalgo</option><option>Jalisco</option>
-            <option>Michoacán</option><option>Morelos</option>
-            <option>Nayarit</option><option>Nuevo León</option>
-            <option>Oaxaca</option><option>Puebla</option>
-            <option>Querétaro</option><option>Quintana Roo</option>
-            <option>San Luis Potosí</option><option>Sinaloa</option>
-            <option>Sonora</option><option>Tabasco</option>
-            <option>Tamaulipas</option><option>Tlaxcala</option>
-            <option>Veracruz</option><option>Yucatán</option>
+            <option>Guanajuato</option>
+            <option>Guerrero</option>
+            <option>Hidalgo</option>
+            <option>Jalisco</option>
+            <option>Michoacán de Ocampo</option>
+            <option>Morelos</option>
+            <option>Nayarit</option>
+            <option>Nuevo León</option>
+            <option>Oaxaca</option>
+            <option>Puebla</option>
+            <option>Querétaro</option>
+            <option>Quintana Roo</option>
+            <option>San Luis Potosí</option>
+            <option>Sinaloa</option>
+            <option>Sonora</option>
+            <option>Tabasco</option>
+            <option>Tamaulipas</option>
+            <option>Tlaxcala</option>
+            <option>Veracruz de Ignacio de la Llave</option>
+            <option>Yucatán</option>
             <option>Zacatecas</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Municipio</label>
+          <select id="f_municipio" onchange="markDirty()">
+            <option value="">— Seleccione entidad primero —</option>
           </select>
         </div>
         <div class="form-field">
@@ -1016,7 +1228,7 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
         </div>
         <div class="form-field">
           <label>Plantel</label>
-          <input type="text" id="f_plantel" placeholder="Ej. CBTis 203 – Toluca">
+          <input type="text" id="f_plantel" placeholder="Ej. CBTis 203">
         </div>
         <div class="form-field">
           <label>Nombre del Supervisor</label>
@@ -1026,6 +1238,96 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
           <label>Fecha de Captura</label>
           <input type="date" id="f_fecha">
         </div>
+      </div>
+
+
+      <!-- DIAGNÓSTICO DEL PLANTEL -->
+      <!-- Title above diagnostic (screen only, same format as programs title) -->
+      <div class="no-print" style="
+        padding:18px 0 10px;
+        text-align:center;
+        border-top:1px solid var(--pgryl);
+        margin-top:4px;
+      ">
+        <div style="
+          font-family:'Cormorant Garamond',Georgia,serif;
+          font-size:22px;
+          font-weight:700;
+          color:var(--p627);
+          letter-spacing:.04em;
+          line-height:1.2;
+        ">Diagnóstico Contextual</div>
+        <div style="
+          font-family:'Jost',sans-serif;
+          font-size:9px;
+          font-weight:600;
+          color:var(--p1255);
+          letter-spacing:.13em;
+          text-transform:uppercase;
+          margin-top:5px;
+        ">Mapeo del plantel</div>
+      </div>
+
+      <div class="diag-section" id="diagSection">
+        <div class="diag-header" style="justify-content:center;text-align:center;">
+          <h3 style="text-align:center;">🔍 Aspectos prioritarios de atención</h3>
+        </div>
+        <!-- Fila 1: gris (como Nivel de Avance) — 3 columnas -->
+        <div class="diag-grid diag-grid-top">
+          <div class="diag-cell diag-contextual">
+            <div class="diag-cell-label">Características Contextuales</div>
+            <textarea id="d_contextuales" placeholder="Describa las características contextuales del plantel…" oninput="markDirty()"></textarea>
+          </div>
+          <div class="diag-cell diag-servicio">
+            <div class="diag-cell-label">Características del Servicio Educativo</div>
+            <textarea id="d_servicio" placeholder="Describa las características del servicio educativo…" oninput="markDirty()"></textarea>
+          </div>
+          <div class="diag-cell diag-indicadores">
+            <div class="diag-cell-label">Indicadores Académicos</div>
+            <textarea id="d_indicadores" placeholder="Registre los indicadores académicos relevantes…" oninput="markDirty()"></textarea>
+          </div>
+        </div>
+        <!-- Fila 2: Fortalezas (verde) + Áreas de Oportunidad (ámbar) — 2 columnas -->
+        <div class="diag-grid diag-grid-bottom">
+          <div class="diag-cell diag-fortalezas">
+            <div class="diag-cell-label">Fortalezas</div>
+            <textarea id="d_fortalezas" placeholder="Identifique las fortalezas del plantel…" oninput="markDirty()"></textarea>
+          </div>
+          <div class="diag-cell diag-oportunidades">
+            <div class="diag-cell-label">Áreas de Oportunidad</div>
+            <textarea id="d_oportunidades" placeholder="Señale las áreas de mejora y oportunidad…" oninput="markDirty()"></textarea>
+          </div>
+        </div>
+        <div class="diag-comments">
+          <div class="diag-cell-label">Comentarios Generales del Diagnóstico</div>
+          <textarea id="d_comentarios" placeholder="Agregue comentarios generales sobre el plantel…" oninput="markDirty()"></textarea>
+        </div>
+      </div>
+
+      <!-- PROGRAMS SECTION TITLE (screen only) -->
+      <div class="no-print" style="
+        padding:18px 0 10px;
+        text-align:center;
+        border-top:1px solid var(--pgryl);
+        margin-top:4px;
+      ">
+        <div style="
+          font-family:'Cormorant Garamond',Georgia,serif;
+          font-size:22px;
+          font-weight:700;
+          color:var(--p627);
+          letter-spacing:.04em;
+          line-height:1.2;
+        ">Desarrollo de Programas SEMS en el Plantel</div>
+        <div style="
+          font-family:'Jost',sans-serif;
+          font-size:9px;
+          font-weight:600;
+          color:var(--p1255);
+          letter-spacing:.13em;
+          text-transform:uppercase;
+          margin-top:5px;
+        ">Directrices de supervisión por programa</div>
       </div>
 
       <!-- PROGRAM TABS -->
@@ -1113,6 +1415,41 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
 // ══════════════════════════════════════════════
 //  DATA: 4 PROGRAMS, 42 DIRECTIVES
 // ══════════════════════════════════════════════
+const MUNICIPIOS_POR_ESTADO = {
+  "Aguascalientes": ["Aguascalientes", "Asientos", "Calvillo", "Cosío", "El Llano", "Jesús María", "Pabellón de Arteaga", "Rincón de Romos", "San Francisco de los Romo", "San José de Gracia", "Tepezalá"],
+  "Baja California": ["Ensenada", "Mexicali", "Playas de Rosarito", "San Felipe", "San Quintín", "Tecate", "Tijuana"],
+  "Baja California Sur": ["Comondú", "La Paz", "Loreto", "Los Cabos", "Mulegé"],
+  "Campeche": ["Calakmul", "Calkiní", "Campeche", "Candelaria", "Carmen", "Champotón", "Dzitbalché", "Escárcega", "Hecelchakán", "Hopelchén", "Palizada", "Seybaplaya", "Tenabo"],
+  "Chiapas": ["Acacoyagua", "Acala", "Acapetahua", "Aldama", "Altamirano", "Amatenango de la Frontera", "Amatenango del Valle", "Amatán", "Angel Albino Corzo", "Arriaga", "Bejucal de Ocampo", "Bella Vista", "Benemérito de las Américas", "Berriozábal", "Bochil", "Cacahoatán", "Capitán Luis Ángel Vidal", "Catazajá", "Chalchihuitán", "Chamula", "Chanal", "Chapultenango", "Chenalhó", "Chiapa de Corzo", "Chiapilla", "Chicoasén", "Chicomuselo", "Chilón", "Cintalapa", "Coapilla", "Comitán de Domínguez", "Copainalá", "El Bosque", "El Parral", "El Porvenir", "Emiliano Zapata", "Escuintla", "Francisco León", "Frontera Comalapa", "Frontera Hidalgo", "Honduras de la Sierra", "Huehuetán", "Huitiupán", "Huixtla", "Huixtán", "Ixhuatán", "Ixtacomitán", "Ixtapa", "Ixtapangajoya", "Jiquipilas", "Jitotol", "Juárez", "La Concordia", "La Grandeza", "La Independencia", "La Libertad", "La Trinitaria", "Larráinzar", "Las Margaritas", "Las Rosas", "Mapastepec", "Maravilla Tenejapa", "Marqués de Comillas", "Mazapa de Madero", "Mazatán", "Metapa", "Mezcalapa", "Mitontic", "Montecristo de Guerrero", "Motozintla", "Nicolás Ruíz", "Ocosingo", "Ocotepec", "Ocozocoautla de Espinosa", "Ostuacán", "Osumacinta", "Oxchuc", "Palenque", "Pantelhó", "Pantepec", "Pichucalco", "Pijijiapan", "Pueblo Nuevo Solistahuacán", "Rayón", "Reforma", "Rincón Chamula San Pedro", "Sabanilla", "Salto de Agua", "San Andrés Duraznal", "San Cristóbal de las Casas", "San Fernando", "San Juan Cancuc", "San Lucas", "Santiago el Pinar", "Siltepec", "Simojovel", "Sitalá", "Socoltenango", "Solosuchiapa", "Soyaló", "Suchiapa", "Suchiate", "Sunuapa", "Tapachula", "Tapalapa", "Tapilula", "Tecpatán", "Tenejapa", "Teopisca", "Tila", "Tonalá", "Totolapa", "Tumbalá", "Tuxtla Chico", "Tuxtla Gutiérrez", "Tuzantán", "Tzimol", "Unión Juárez", "Venustiano Carranza", "Villa Comaltitlán", "Villa Corzo", "Villaflores", "Yajalón", "Zinacantán"],
+  "Chihuahua": ["Ahumada", "Aldama", "Allende", "Aquiles Serdán", "Ascensión", "Bachíniva", "Balleza", "Batopilas de Manuel Gómez Morín", "Bocoyna", "Buenaventura", "Camargo", "Carichí", "Casas Grandes", "Chihuahua", "Chínipas", "Coronado", "Coyame del Sotol", "Cuauhtémoc", "Cusihuiriachi", "Delicias", "Dr. Belisario Domínguez", "El Tule", "Galeana", "Gran Morelos", "Guachochi", "Guadalupe", "Guadalupe y Calvo", "Guazapares", "Guerrero", "Gómez Farías", "Hidalgo del Parral", "Huejotitán", "Ignacio Zaragoza", "Janos", "Jiménez", "Julimes", "Juárez", "La Cruz", "López", "Madera", "Maguarichi", "Manuel Benavides", "Matachí", "Matamoros", "Meoqui", "Morelos", "Moris", "Namiquipa", "Nonoava", "Nuevo Casas Grandes", "Ocampo", "Ojinaga", "Praxedis G. Guerrero", "Riva Palacio", "Rosales", "Rosario", "San Francisco de Borja", "San Francisco de Conchos", "San Francisco del Oro", "Santa Bárbara", "Santa Isabel", "Satevó", "Saucillo", "Sulevo", "Temósachic", "Urique", "Uruachi", "Valle de Zaragoza"],
+  "Ciudad de México": ["Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa de Morelos", "Cuauhtémoc", "Gustavo A. Madero", "Iztacalco", "Iztapalapa", "La Magdalena Contreras", "Miguel Hidalgo", "Milpa Alta", "Tlalpan", "Tláhuac", "Venustiano Carranza", "Xochimilco", "Álvaro Obregón"],
+  "Coahuila de Zaragoza": ["Abasolo", "Acuña", "Allende", "Arteaga", "Candela", "Castaños", "Cuatro Ciénegas", "Escobedo", "Francisco I. Madero", "Frontera", "General Cepeda", "Guerrero", "Hidalgo", "Jiménez", "Juárez", "Lamadrid", "Matamoros", "Monclova", "Morelos", "Múzquiz", "Nadadores", "Nava", "Ocampo", "Parras", "Piedras Negras", "Progreso", "Ramos Arizpe", "Sabinas", "Sacramento", "Saltillo", "San Buenaventura", "San Juan de Sabinas", "San Pedro", "Sierra Mojada", "Torreón", "Viesca", "Villa Unión", "Zaragoza"],
+  "Colima": ["Armería", "Colima", "Comala", "Coquimatlán", "Cuauhtémoc", "Ixtlahuacán", "Manzanillo", "Minatitlán", "Tecomán", "Villa de Álvarez"],
+  "Durango": ["Canatlán", "Canelas", "Coneto de Comonfort", "Cuencamé", "Durango", "El Oro", "General Simón Bolívar", "Guadalupe Victoria", "Guanaceví", "Gómez Palacio", "Hidalgo", "Indé", "Lerdo", "Mapimí", "Mezquital", "Nazas", "Nombre de Dios", "Nuevo Ideal", "Ocampo", "Otáez", "Peñón Blanco", "Poanas", "Pueblo Nuevo", "Pánuco de Coronado", "Rodeo", "San Bernardo", "San Juan de Guadalupe", "San Juan del Río", "San Luis del Cordero", "San Pedro del Gallo", "Santa Clara", "Santiago Papasquiaro", "Súchil", "Tamazula", "Tepehuanes", "Tlahualilo", "Topia", "Vicente Guerrero"],
+  "Estado de México": ["Acambay de Ruíz Castañeda", "Acolman", "Aculco", "Almoloya de Alquisiras", "Almoloya de Juárez", "Almoloya del Río", "Amanalco", "Amatepec", "Amecameca", "Apaxco", "Atenco", "Atizapán", "Atizapán de Zaragoza", "Atlacomulco", "Atlautla", "Axapusco", "Ayapango", "Calimaya", "Capulhuac", "Chalco", "Chapa de Mota", "Chapultepec", "Chiautla", "Chicoloapan", "Chiconcuac", "Chimalhuacán", "Coacalco de Berriozábal", "Coatepec Harinas", "Cocotitlán", "Coyotepec", "Cuautitlán", "Cuautitlán Izcalli", "Donato Guerra", "Ecatepec de Morelos", "Ecatzingo", "El Oro", "Huehuetoca", "Hueypoxtla", "Huixquilucan", "Isidro Fabela", "Ixtapaluca", "Ixtapan de la Sal", "Ixtapan del Oro", "Ixtlahuaca", "Jaltenco", "Jilotepec", "Jilotzingo", "Jiquipilco", "Jocotitlán", "Joquicingo", "Juchitepec", "La Paz", "Lerma", "Luvianos", "Malinalco", "Melchor Ocampo", "Metepec", "Mexicaltzingo", "Morelos", "Naucalpan de Juárez", "Nextlalpan", "Nezahualcóyotl", "Nicolás Romero", "Nopaltepec", "Ocoyoacac", "Ocuilan", "Otumba", "Otzoloapan", "Otzolotepec", "Ozumba", "Papalotla", "Polotitlán", "Rayón", "San Antonio la Isla", "San Felipe del Progreso", "San José del Rincón", "San Martín de las Pirámides", "San Mateo Atenco", "San Simón de Guerrero", "Santo Tomás", "Soyaniquilpan de Juárez", "Sultepec", "Tecámac", "Tejupilco", "Temamatla", "Temascalapa", "Temascalcingo", "Temascaltepec", "Temoaya", "Tenancingo", "Tenango del Aire", "Tenango del Valle", "Teoloyucan", "Teotihuacán", "Tepotzotlán", "Tequixquiac", "Texcaltitlán", "Texcalyacac", "Texcoco", "Tezoyuca", "Tianguistenco", "Timilpan", "Tlalmanalco", "Tlalnepantla de Baz", "Tlatlaya", "Toluca", "Tonanitla", "Tonatico", "Tultepec", "Tultitlán", "Valle de Bravo", "Valle de Chalco Solidaridad", "Villa Guerrero", "Villa Victoria", "Villa de Allende", "Villa del Carbón", "Xalatlaco", "Xonacatlán", "Zacazonapan", "Zacualpan", "Zinacantepec", "Zumpahuacán", "Zumpango"],
+  "Guanajuato": ["Abasolo", "Acámbaro", "Apaseo el Alto", "Apaseo el Grande", "Atarjea", "Celaya", "Comonfort", "Coroneo", "Cortazar", "Cuerámaro", "Doctor Mora", "Dolores Hidalgo Cuna de la Independencia Nacional", "Guanajuato", "Huanímaro", "Irapuato", "Jaral del Progreso", "Jerécuaro", "León", "Manuel Doblado", "Moroleón", "Ocampo", "Pueblo Nuevo", "Purísima del Rincón", "Pénjamo", "Romita", "Salamanca", "Salvatierra", "San Diego de la Unión", "San Felipe", "San Francisco del Rincon", "San José Iturbide", "San Luis de la Paz", "San Miguel de Allende", "Santa Catarina", "Santa Cruz de Juventino Rosas", "Santiago Maravatío", "Silao de la Victoria", "Tarandacuao", "Tarimoro", "Tierra Blanca", "Uriangato", "Valle de Santiago", "Victoria", "Villagrán", "Xichú", "Yuriria"],
+  "Guerrero": ["Acapulco de Juárez", "Acatepec", "Ahuacuotzingo", "Ajuchitlán del Progreso", "Alcozauca de Guerrero", "Alpoyeca", "Apaxtla", "Arcelia", "Atenango del Río", "Atlamajalcingo del Monte", "Atlixtac", "Atoyac de Álvarez", "Ayutla de los Libres", "Azoyú", "Benito Juárez", "Buenavista de Cuéllar", "Chilapa de Álvarez", "Chilpancingo de los Bravo", "Coahuayutla de José María Izazaga", "Cochoapa el Grande", "Cocula", "Copala", "Copalillo", "Copanatoyac", "Coyuca de Benítez", "Coyuca de Catalán", "Cuajinicuilapa", "Cualác", "Cuautepec", "Cuetzala del Progreso", "Eduardo Neri", "Florencio Villarreal", "General Canuto A. Neri", "General Heliodoro Castillo", "Huamuxtitlán", "Huitzuco de los Figueroa", "Iguala de la Independencia", "Igualapa", "Iliatenco", "Ixcateopan de Cuauhtémoc", "José Joaquín de Herrera", "Juan R. Escudero", "Juchitán", "La Unión de Isidoro Montes de Oca", "Las Vigas", "Leonardo Bravo", "Malinaltepec", "Marquelia", "Metlatónoc", "Mochitlán", "Mártir de Cuilapan", "Olinalá", "Ometepec", "Pedro Ascencio Alquisiras", "Petatlán", "Pilcaya", "Pungarabato", "Quechultenango", "San Luis Acatlán", "San Marcos", "San Miguel Totolapan", "San Nicolás", "Santa Cruz del Rincón", "Taxco de Alarcón", "Tecoanapa", "Teloloapan", "Tepecoacuilco de Trujano", "Tetipac", "Tixtla de Guerrero", "Tlacoachistlahuaca", "Tlacoapa", "Tlalchapa", "Tlalixtaquilla de Maldonado", "Tlapa de Comonfort", "Tlapehuala", "Técpan de Galeana", "Xalpatláhuac", "Xochihuehuetlán", "Xochistlahuaca", "Zapotitlán Tablas", "Zihuatanejo de Azueta", "Zirándaro", "Zitlala", "Ñuu Savi"],
+  "Hidalgo": ["Acatlán", "Acaxochitlán", "Actopan", "Agua Blanca de Iturbide", "Ajacuba", "Alfajayucan", "Almoloya", "Apan", "Atitalaquia", "Atlapexco", "Atotonilco de Tula", "Atotonilco el Grande", "Calnali", "Cardonal", "Chapantongo", "Chapulhuacán", "Chilcuautla", "Cuautepec de Hinojosa", "El Arenal", "Eloxochitlán", "Emiliano Zapata", "Epazoyucan", "Francisco I. Madero", "Huasca de Ocampo", "Huautla", "Huazalingo", "Huehuetla", "Huejutla de Reyes", "Huichapan", "Ixmiquilpan", "Jacala de Ledezma", "Jaltocán", "Juárez Hidalgo", "La Misión", "Lolotla", "Metepec", "Metztitlán", "Mineral de la Reforma", "Mineral del Chico", "Mineral del Monte", "Mixquiahuala de Juárez", "Molango de Escamilla", "Nicolás Flores", "Nopala de Villagrán", "Omitlán de Juárez", "Pachuca de Soto", "Pacula", "Pisaflores", "Progreso de Obregón", "San Agustín Metzquititlán", "San Agustín Tlaxiaca", "San Bartolo Tutotepec", "San Felipe Orizatlán", "San Salvador", "Santiago Tulantepec de Lugo Guerrero", "Santiago de Anaya", "Singuilucan", "Tasquillo", "Tecozautla", "Tenango de Doria", "Tepeapulco", "Tepehuacán de Guerrero", "Tepeji del Río de Ocampo", "Tepetitlán", "Tetepango", "Tezontepec de Aldama", "Tianguistengo", "Tizayuca", "Tlahuelilpan", "Tlahuiltepa", "Tlanalapa", "Tlanchinol", "Tlaxcoapan", "Tolcayuca", "Tula de Allende", "Tulancingo de Bravo", "Villa de Tezontepec", "Xochiatipan", "Xochicoatlán", "Yahualica", "Zacualtipán de Ángeles", "Zapotlán de Juárez", "Zempoala", "Zimapán"],
+  "Jalisco": ["Acatic", "Acatlán de Juárez", "Ahualulco de Mercado", "Amacueca", "Amatitán", "Ameca", "Arandas", "Atemajac de Brizuela", "Atengo", "Atenguillo", "Atotonilco el Alto", "Atoyac", "Autlán de Navarro", "Ayotlán", "Ayutla", "Bolaños", "Cabo Corrientes", "Casimiro Castillo", "Cañadas de Obregón", "Chapala", "Chimaltitán", "Chiquilistlán", "Cihuatlán", "Cocula", "Colotlán", "Concepción de Buenos Aires", "Cuautitlán de García Barragán", "Cuautla", "Cuquío", "Degollado", "Ejutla", "El Arenal", "El Grullo", "El Limón", "El Salto", "Encarnación de Díaz", "Etzatlán", "Guachinango", "Guadalajara", "Gómez Farías", "Hostotipaquillo", "Huejuquilla el Alto", "Huejúcar", "Ixtlahuacán de los Membrillos", "Ixtlahuacán del Río", "Jalostotitlán", "Jamay", "Jesús María", "Jilotlán de los Dolores", "Jocotepec", "Juanacatlán", "Juchitlán", "La Barca", "La Huerta", "La Manzanilla de la Paz", "Lagos de Moreno", "Magdalena", "Mascota", "Mazamitla", "Mexticacán", "Mezquitic", "Mixtlán", "Ocotlán", "Ojuelos de Jalisco", "Pihuamo", "Poncitlán", "Puerto Vallarta", "Quitupan", "San Cristóbal de la Barranca", "San Diego de Alejandría", "San Gabriel", "San Ignacio Cerro Gordo", "San Juan de los Lagos", "San Juanito de Escobedo", "San Julián", "San Marcos", "San Martín Hidalgo", "San Martín de Bolaños", "San Miguel el Alto", "San Sebastián del Oeste", "Santa María de los Ángeles", "Santa María del Oro", "Sayula", "Tala", "Talpa de Allende", "Tamazula de Gordiano", "Tapalpa", "Tecalitlán", "Techaluta de Montenegro", "Tecolotlán", "Tenamaxtlán", "Teocaltiche", "Teocuitatlán de Corona", "Tepatitlán de Morelos", "Tequila", "Teuchitlán", "Tizapán el Alto", "Tlajomulco de Zúñiga", "Tlaquepaque", "Tolimán", "Tomatlán", "Tonalá", "Tonaya", "Tonila", "Totatiche", "Tototlán", "Tuxcacuesco", "Tuxcueca", "Tuxpan", "Unión de San Antonio", "Unión de Tula", "Valle de Guadalupe", "Valle de Juárez", "Villa Corona", "Villa Guerrero", "Villa Hidalgo", "Villa Purificación", "Yahualica de González Gallo", "Zacoalco de Torres", "Zapopan", "Zapotiltic", "Zapotitlán de Vadillo", "Zapotlanejo", "Zapotlán del Rey", "Zapotlán el Grande"],
+  "Michoacán de Ocampo": ["Acuitzio", "Aguililla", "Angamacutiro", "Angangueo", "Apatzingán", "Aporo", "Aquila", "Ario", "Arteaga", "Briseñas", "Buenavista", "Carácuaro", "Charapan", "Charo", "Chavinda", "Cherán", "Chilchota", "Chinicuila", "Chucándiro", "Churintzio", "Churumuco", "Coahuayana", "Coalcomán de Vázquez Pallares", "Coeneo", "Cojumatlán de Régules", "Contepec", "Copándaro", "Cotija", "Cuitzeo", "Ecuandureo", "Epitacio Huerta", "Erongarícuaro", "Gabriel Zamora", "Hidalgo", "Huandacareo", "Huaniqueo", "Huetamo", "Huiramba", "Indaparapeo", "Irimbo", "Ixtlán", "Jacona", "Jiménez", "Jiquilpan", "José Sixto Verduzco", "Jungapeo", "Juárez", "La Huacana", "La Piedad", "Lagunillas", "Los Reyes", "Lázaro Cárdenas", "Madero", "Maravatío", "Marcos Castellanos", "Morelia", "Morelos", "Múgica", "Nahuatzen", "Nocupétaro", "Nuevo Parangaricutiro", "Nuevo Urecho", "Numarán", "Ocampo", "Pajacuarán", "Panindícuaro", "Paracho", "Parácuaro", "Penjamillo", "Peribán", "Puruándiro", "Purépero", "Pátzcuaro", "Queréndaro", "Quiroga", "Sahuayo", "Salvador Escalante", "San Lucas", "Santa Ana Maya", "Senguio", "Tancítaro", "Tangamandapio", "Tangancícuaro", "Tanhuato", "Taretan", "Tarímbaro", "Tepalcatepec", "Tingambato", "Tingüindín", "Tiquicheo de Nicolas Romero", "Tlalpujahua", "Tlazazalca", "Tocumbo", "Tumbiscatío", "Turicato", "Tuxpan", "Tuzantla", "Tzintzuntzan", "Tzitzio", "Uruapan", "Venustiano Carranza", "Villamar", "Vista Hermosa", "Yurécuaro", "Zacapu", "Zamora", "Zinapécuaro", "Zináparo", "Ziracuaretiro", "Zitácuaro", "Álvaro Obregón"],
+  "Morelos": ["Amacuzac", "Atlatlahucan", "Axochiapan", "Ayala", "Coatetelco", "Coatlán del Río", "Cuautla", "Cuernavaca", "Emiliano Zapata", "Hueyapan", "Huitzilac", "Jantetelco", "Jiutepec", "Jojutla", "Jonacatepec de Leandro Valle", "Mazatepec", "Miacatlán", "Ocuituco", "Puente de Ixtla", "Temixco", "Temoac", "Tepalcingo", "Tepoztlán", "Tetecala", "Tetela del Volcán", "Tlalnepantla", "Tlaltizapán de Zapata", "Tlaquiltenango", "Tlayacapan", "Totolapan", "Xochitepec", "Xoxocotla", "Yautepec", "Yecapixtla", "Zacatepec", "Zacualpan de Amilpas"],
+  "Nayarit": ["Acaponeta", "Ahuacatlán", "Amatlán de Cañas", "Bahía de Banderas", "Compostela", "Del Nayar", "Huajicori", "Ixtlán del Río", "Jala", "La Yesca", "Rosamorada", "Ruíz", "San Blas", "San Pedro Lagunillas", "Santa María del Oro", "Santiago Ixcuintla", "Tecuala", "Tepic", "Tuxpan", "Xalisco"],
+  "Nuevo León": ["Abasolo", "Agualeguas", "Allende", "Anáhuac", "Apodaca", "Aramberri", "Bustamante", "Cadereyta Jiménez", "Cerralvo", "China", "Ciénega de Flores", "Doctor Arroyo", "Doctor Coss", "Doctor González", "El Carmen", "Galeana", "García", "General Bravo", "General Escobedo", "General Terán", "General Treviño", "General Zaragoza", "General Zuazua", "Guadalupe", "Hidalgo", "Higueras", "Hualahuises", "Iturbide", "Juárez", "Lampazos de Naranjo", "Linares", "Los Aldamas", "Los Herreras", "Los Ramones", "Marín", "Melchor Ocampo", "Mier y Noriega", "Mina", "Montemorelos", "Monterrey", "Parás", "Pesquería", "Rayones", "Sabinas Hidalgo", "Salinas Victoria", "San Nicolás de los Garza", "San Pedro Garza García", "Santa Catarina", "Santiago", "Vallecillo", "Villaldama"],
+  "Oaxaca": ["Abejones", "Acatlán de Pérez Figueroa", "Asunción Cacalotepec", "Asunción Cuyotepeji", "Asunción Ixtaltepec", "Asunción Nochixtlán", "Asunción Ocotlán", "Asunción Tlacolulita", "Ayotzintepec", "Calihualá", "Candelaria Loxicha", "Capulálpam de Méndez", "Chahuites", "Chalcatongo de Hidalgo", "Chiquihuitlán de Benito Juárez", "Ciudad Ixtepec", "Ciénega de Zimatlán", "Coatecas Altas", "Coicoyán de las Flores", "Concepción Buenavista", "Concepción Pápalo", "Constancia del Rosario", "Cosolapa", "Cosoltepec", "Cuilápam de Guerrero", "Cuyamecalco Villa de Zaragoza", "El Barrio de la Soledad", "El Espinal", "Eloxochitlán de Flores Magón", "Fresnillo de Trujano", "Guadalupe Etla", "Guadalupe de Ramírez", "Guelatao de Juárez", "Guevea de Humboldt", "Heroica Ciudad de Ejutla de Crespo", "Heroica Ciudad de Huajuapan de León", "Heroica Ciudad de Juchitán de Zaragoza", "Heroica Villa Tezoatlán de Segura y Luna", "Huautepec", "Huautla de Jiménez", "Ixpantepec Nieves", "Ixtlán de Juárez", "Jerónimo Tecóatl", "La Compañía", "La Pe", "La Reforma", "La Unión Hidalgo", "Loma Bonita", "Magdalena Apasco", "Magdalena Jaltepec", "Magdalena Mixtepec", "Magdalena Ocotlán", "Magdalena Peñasco", "Magdalena Teitipac", "Magdalena Tequisistlán", "Magdalena Tlacotepec", "Magdalena Zahuatlán", "Mariscala de Juárez", "Matadamas", "Matías Romero Avendaño", "Mazatlán Villa de Flores", "Mesones Hidalgo", "Miahuatlán de Porfirio Díaz", "Mixistlán de la Reforma", "Monjas", "Mártires de Tacubaya", "Natividad", "Nazareno Etla", "Nejapa de Madero", "Nuevo Zoquiápam", "Oaxaca de Juárez", "Ocotlán de Morelos", "Pinotepa de Don Luis", "Pluma Hidalgo", "Putla Villa de Guerrero", "Reforma de Pineda", "Reyes Etla", "Rojas de Cuauhtémoc", "Salina Cruz", "San Agustín Amatengo", "San Agustín Atenango", "San Agustín Chayuco", "San Agustín Etla", "San Agustín Loxicha", "San Agustín Tlacotepec", "San Agustín Yatareni", "San Agustín de las Juntas", "San Andrés Cabecera Nueva", "San Andrés Dinicuiti", "San Andrés Huaxpaltepec", "San Andrés Huayápam", "San Andrés Ixtlahuaca", "San Andrés Lagunas", "San Andrés Nuxiño", "San Andrés Paxtlán", "San Andrés Sinaxtla", "San Andrés Solaga", "San Andrés Teotilálpam", "San Andrés Tepetlapa", "San Andrés Yaá", "San Andrés Zabache", "San Andrés Zautla", "San Antonino Castillo Velasco", "San Antonino Monte Verde", "San Antonino el Alto", "San Antonio Acutla", "San Antonio Huitepec", "San Antonio Nanahuatípam", "San Antonio Sinicahua", "San Antonio Tepetlapa", "San Antonio de la Cal", "San Baltazar Chichicápam", "San Baltazar Loxicha", "San Baltazar Yatzachi el Bajo", "San Bartolo Coyotepec", "San Bartolo Soyaltepec", "San Bartolo Yautepec", "San Bartolomé Ayautla", "San Bartolomé Loxicha", "San Bartolomé Quialana", "San Bartolomé Yucuañe", "San Bartolomé Zoogocho", "San Bernardo Mixtepec", "San Blas Atempa", "San Carlos Yautepec", "San Cristóbal Amatlán", "San Cristóbal Amoltepec", "San Cristóbal Lachirioag", "San Cristóbal Suchixtlahuaca", "San Dionisio Ocotepec", "San Dionisio Ocotlán", "San Dionisio del Mar", "San Esteban Atatlahuca", "San Felipe Jalapa de Díaz", "San Felipe Tejalápam", "San Felipe Usila", "San Francisco Cahuacuá", "San Francisco Cajonos", "San Francisco Chapulapa", "San Francisco Chindúa", "San Francisco Huehuetlán", "San Francisco Ixhuatán", "San Francisco Jaltepetongo", "San Francisco Lachigoló", "San Francisco Logueche", "San Francisco Ozolotepec", "San Francisco Sola", "San Francisco Telixtlahuaca", "San Francisco Teopan", "San Francisco Tlapancingo", "San Francisco del Mar", "San Gabriel Mixtepec", "San Ildefonso Amatlán", "San Ildefonso Ixtlán", "San Ildefonso Villa Alta", "San Jacinto Amilpas", "San Jacinto Tlacotepec", "San Jerónimo Coatlán", "San Jerónimo Silacayoapilla", "San Jerónimo Sosola", "San Jerónimo Taviche", "San Jerónimo Tecóatl", "San Jerónimo Tlacochahuaya", "San Jorge Nuchita", "San José Ayuquila", "San José Chiltepec", "San José Estancia Grande", "San José Independencia", "San José Lachiguiri", "San José Tenango", "San José del Peñasco", "San José del Progreso", "San Juan Achutla", "San Juan Atepec", "San Juan Bautista Atatlahuca", "San Juan Bautista Coixtlahuaca", "San Juan Bautista Cuicatlán", "San Juan Bautista Guelache", "San Juan Bautista Jayacatlán", "San Juan Bautista Lo de Soto", "San Juan Bautista Sahuatlán", "San Juan Bautista Tlacoatzintepec", "San Juan Bautista Tlacutla", "San Juan Bautista Tuxtepec", "San Juan Bautista Valle Nacional", "San Juan Bautista Valle Nacional", "San Juan Cacahuatepec", "San Juan Chicomezúchil", "San Juan Chilateca", "San Juan Cieneguilla", "San Juan Coatzóspam", "San Juan Colorado", "San Juan Comaltepec", "San Juan Cotzocón", "San Juan Diuxi", "San Juan Evangelista Analco", "San Juan Guelavía", "San Juan Guichicovi", "San Juan Ihualtepec", "San Juan Juquila Mixes", "San Juan Juquila Vijanos", "San Juan Lachao", "San Juan Lachigalla", "San Juan Lajarcia", "San Juan Lalana", "San Juan Mazatlán", "San Juan Mixtepec", "San Juan Ozolotepec", "San Juan Petlapa", "San Juan Quiahije", "San Juan Quiotepec", "San Juan Sayultepec", "San Juan Tabaá", "San Juan Tamazola", "San Juan Teita", "San Juan Teitipac", "San Juan Tepeuxila", "San Juan Teposcolula", "San Juan Yaeé", "San Juan Yatzona", "San Juan Yucuita", "San Juan de los Cues", "San Juan de los Cués", "San Juan del Estado", "San Juan del Río", "San Juan Ñumí", "San Lorenzo", "San Lorenzo Albarradas", "San Lorenzo Cacaotepec", "San Lorenzo Cuaunecuiltitla", "San Lorenzo Texmelúcan", "San Lorenzo Victoria", "San Lucas Camotlán", "San Lucas Ojitlán", "San Lucas Quiaviní", "San Lucas Zoquiápam", "San Luis Amatlán", "San Marcial Ozolotepec", "San Marcos Arteaga", "San Martín Huamelúlpam", "San Martín Itunyoso", "San Martín Lachilá", "San Martín Peras", "San Martín Tilcajete", "San Martín Toxpalan", "San Martín Zacatepec", "San Martín de los Cansecos", "San Mateo Cajonos", "San Mateo Etlatongo", "San Mateo Nejápam", "San Mateo Peñasco", "San Mateo Piñas", "San Mateo Río Hondo", "San Mateo Sindihui", "San Mateo Tlapantepec", "San Mateo Yoloxochitlán", "San Mateo del Mar", "San Melchor Betaza", "San Miguel Achiutla", "San Miguel Ahuehuetitlán", "San Miguel Aloápam", "San Miguel Amatitlán", "San Miguel Amatlán", "San Miguel Chicahua", "San Miguel Chimalapa", "San Miguel Coatlán", "San Miguel Ejutla", "San Miguel Huautla", "San Miguel Mixtepec", "San Miguel Panixtlahuaca", "San Miguel Peras", "San Miguel Piedras", "San Miguel Quetzaltepec", "San Miguel Santa Flor", "San Miguel Sola de Vega", "San Miguel Soyaltepec", "San Miguel Tecomatlán", "San Miguel Tenango", "San Miguel Tequixtepec", "San Miguel Tilquiápam", "San Miguel Tlacamama", "San Miguel Tlacotepec", "San Miguel Tulancingo", "San Miguel Yotao", "San Miguel del Puerto", "San Miguel del Río", "San Miguel el Grande", "San Nicolás", "San Nicolás Hidalgo", "San Pablo Coatlán", "San Pablo Cuatro Venados", "San Pablo Etla", "San Pablo Huitzo", "San Pablo Huixtepec", "San Pablo Macuiltianguis", "San Pablo Tijúa", "San Pablo Villa de Mitla", "San Pablo Yaganiza", "San Pedro Amuzgos", "San Pedro Apóstol", "San Pedro Atoyac", "San Pedro Cajonos", "San Pedro Comitancillo", "San Pedro Coxcaltepec Cántaros", "San Pedro Huamelula", "San Pedro Huilotepec", "San Pedro Ixcatlán", "San Pedro Ixtlahuaca", "San Pedro Jaltepetongo", "San Pedro Jicayán", "San Pedro Jocotipac", "San Pedro Juanba", "San Pedro Juchatengo", "San Pedro Mixtepec", "San Pedro Molinos", "San Pedro Mártir", "San Pedro Mártir Quiechapa", "San Pedro Mártir Yucuxaco", "San Pedro Nopala", "San Pedro Ocopetatillo", "San Pedro Ocotepec", "San Pedro Pochutla", "San Pedro Quiatoni", "San Pedro Saacua", "San Pedro Soledad", "San Pedro Tapanatepec", "San Pedro Teozacoalco", "San Pedro Teutila", "San Pedro Tidaá", "San Pedro Tokoti", "San Pedro Totolápam", "San Pedro Yaneri", "San Pedro Yucunama", "San Pedro Yólox", "San Pedro el Alto", "San Pedro y San Pablo Ayutla", "San Pedro y San Pablo Teposcolula", "San Pedro y San Pablo Tequixtepec", "San Raymundo Jalpan", "San Sebastián Abasolo", "San Sebastián Coatlán", "San Sebastián Ixcapa", "San Sebastián Nicananduta", "San Sebastián Río Hondo", "San Sebastián Tecomaxtlahuaca", "San Sebastián Teitipac", "San Sebastián Tutla", "San Simón Almolongas", "San Simón Zahuatlán", "Santa Ana", "Santa Ana Ateixtlahuaca", "Santa Ana Cuauhtémoc", "Santa Ana Tavela", "Santa Ana Tlapacoyan", "Santa Ana Yareni", "Santa Ana Zegache", "Santa Ana del Valle", "Santa Catalina Quierí", "Santa Catarina Cuixtla", "Santa Catarina Ixtepeji", "Santa Catarina Juquila", "Santa Catarina Lachatao", "Santa Catarina Loxicha", "Santa Catarina Mechoacán", "Santa Catarina Minas", "Santa Catarina Quiané", "Santa Catarina Tayata", "Santa Catarina Ticuá", "Santa Catarina Yosonotú", "Santa Catarina Zapoquila", "Santa Cruz Acatepec", "Santa Cruz Amilpas", "Santa Cruz Itundujia", "Santa Cruz Mixtepec", "Santa Cruz Nundaco", "Santa Cruz Papalutla", "Santa Cruz Tacache de Mina", "Santa Cruz Tacahua", "Santa Cruz Tayata", "Santa Cruz Xitla", "Santa Cruz Xoxocotlán", "Santa Cruz Zenzontepec", "Santa Cruz de Bravo", "Santa Gertrudis", "Santa Inés Yatzeche", "Santa Inés de Zaragoza", "Santa Inés del Monte", "Santa Lucía Miahuatlán", "Santa Lucía Monteverde", "Santa Lucía Ocotlán", "Santa Lucía del Camino", "Santa Magdalena Jicotlán", "Santa María Alotepec", "Santa María Apazco", "Santa María Atzompa", "Santa María Camotlán", "Santa María Chachoápam", "Santa María Chilchotla", "Santa María Chimalapa", "Santa María Colotepec", "Santa María Cortijo", "Santa María Coyotepec", "Santa María Ecatepec", "Santa María Guelacé", "Santa María Guienagati", "Santa María Huatulco", "Santa María Huazolotitlán", "Santa María Ipalapa", "Santa María Ixcatlán", "Santa María Jacatepec", "Santa María Jalapa del Marqués", "Santa María Jaltianguis", "Santa María Lachixío", "Santa María Mixtequilla", "Santa María Nativitas", "Santa María Nduayaco", "Santa María Ozolotepec", "Santa María Papalo", "Santa María Petapa", "Santa María Peñoles", "Santa María Quiegolani", "Santa María Sola", "Santa María Tatetla", "Santa María Tecomavaca", "Santa María Temaxcalapa", "Santa María Temaxcaltepec", "Santa María Teopoxco", "Santa María Tepantlali", "Santa María Texcatitlán", "Santa María Tlahuitoltepec", "Santa María Tlalixtac", "Santa María Tonameca", "Santa María Totolapilla", "Santa María Xadani", "Santa María Yalina", "Santa María Yavesía", "Santa María Yolotepec", "Santa María Yosoyúa", "Santa María Yucuhiti", "Santa María Zacatepec", "Santa María Zaniza", "Santa María Zoquitlán", "Santa María del Rosario", "Santa María del Tule", "Santa María la Asunción", "Santiago Amoltepec", "Santiago Apoala", "Santiago Apóstol", "Santiago Astata", "Santiago Atitlán", "Santiago Ayuquililla", "Santiago Cacaloxtepec", "Santiago Camotlán", "Santiago Chazumba", "Santiago Choápam", "Santiago Comaltepec", "Santiago Huajolotitlán", "Santiago Huauclilla", "Santiago Ihuitlán Plumas", "Santiago Ixcuintepec", "Santiago Ixtayutla", "Santiago Jamiltepec", "Santiago Jocotepec", "Santiago Juxtlahuaca", "Santiago Lachiguiri", "Santiago Lalopa", "Santiago Laollaga", "Santiago Laxopa", "Santiago Llano Grande", "Santiago Matatlán", "Santiago Miltepec", "Santiago Minas", "Santiago Nacaltepec", "Santiago Nejapilla", "Santiago Niltepec", "Santiago Nundiche", "Santiago Nuyoó", "Santiago Pinotepa Nacional", "Santiago Suchilquitongo", "Santiago Tamazola", "Santiago Tapextla", "Santiago Texcalcingo", "Santiago Textitlán", "Santiago Tilantongo", "Santiago Tillo", "Santiago Tlazoyaltepec", "Santiago Xanica", "Santiago Xiacuí", "Santiago Yaitepec", "Santiago Yaveo", "Santiago Yolomécatl", "Santiago Yosondúa", "Santiago Yucuyachi", "Santiago Zacatepec", "Santiago Zoochila", "Santiago del Río", "Santo Domingo Albarradas", "Santo Domingo Armenta", "Santo Domingo Chazumba", "Santo Domingo Ingenio", "Santo Domingo Ixcatlán", "Santo Domingo Nuxaá", "Santo Domingo Ozolotepec", "Santo Domingo Petapa", "Santo Domingo Roayaga", "Santo Domingo Tehuantepec", "Santo Domingo Teojomulco", "Santo Domingo Tepuxtepec", "Santo Domingo Tlatayápam", "Santo Domingo Tomaltepec", "Santo Domingo Tonaltepec", "Santo Domingo Tonalá", "Santo Domingo Xagacía", "Santo Domingo Yanhuitlán", "Santo Domingo Yodohino", "Santo Domingo Zanatepec", "Santo Domingo de Morelos", "Santo Tomás Jalieza", "Santo Tomás Mazaltepec", "Santo Tomás Ocotepec", "Santo Tomás Tamazulapan", "Santos Reyes Nopala", "Santos Reyes Pápalo", "Santos Reyes Tepejillo", "Santos Reyes Yucuná", "Silacayoápam", "Sitio de Xitlapehua", "Soledad Etla", "Tamazulápam del Espíritu Santo", "Tanetze de Zaragoza", "Taniche", "Tataltepec de Valdés", "Teococuilco de Marcos Pérez", "Teotitlán de Flores Magón", "Teotitlán del Valle", "Teotongo", "Tepelmeme Villa de Morelos", "Tlacolula de Matamoros", "Tlacotepec Plumas", "Tlalixtac de Cabrera", "Totontepec Villa de Morelos", "Trinidad Zaachila", "Valerio Trujano", "Villa Díaz Ordaz", "Villa Hidalgo", "Villa Hidalgo", "Villa Hidalgo Yalalag", "Villa Sola de Vega", "Villa Talea de Castro", "Villa Tejúpam de la Unión", "Villa de Chilapa de Díaz", "Villa de Etla", "Villa de Etla", "Villa de Morelos", "Villa de San Juan Chapultepec", "Villa de San Juan Ihualtepec", "Villa de San Juan Mixtepec", "Villa de San Juan Quiahije", "Villa de San Juan Quiotepec", "Villa de San Juan Sayultepec", "Villa de San Juan Tabaá", "Villa de San Juan Tamazola", "Villa de San Juan Teita", "Villa de San Juan Teitipac", "Villa de San Juan Tepeuxila", "Villa de San Juan Yaeé", "Villa de San Juan Yatzona", "Villa de San Juan Yucuita", "Villa de San Juan Ñumí", "Villa de San Mateo Peñasco", "Villa de San Miguel el Grande", "Villa de San Pedro y San Pablo Ayutla", "Villa de San Sebastián Tecomaxtlahuaca", "Villa de Santa María Zacatepec", "Villa de Santa María la Asunción", "Villa de Santiago Chazumba", "Villa de Santiago Choápam", "Villa de Santiago Jamiltepec", "Villa de Santiago Juxtlahuaca", "Villa de Santiago Tamazola", "Villa de Santiago Yaveo", "Villa de Sola de Vega", "Villa de Talea de Castro", "Villa de Tamazulápam del Progreso", "Villa de Tamazulápam del Progreso", "Villa de Tejúpam de la Unión", "Villa de Tututepec de Melchor Ocampo", "Villa de Tututepec de Melchor Ocampo", "Villa de Tututepec de Melchor Ocampo", "Villa de Zaachila", "Villa de Zaragoza", "Yaxe", "Yonondúa", "Yotao", "Zapotitlán Lagunas", "Zapotitlán Palmas", "Zapotitlán del Río", "Zimatlán de Álvarez"],
+  "Puebla": ["Acajete", "Acateno", "Acatlán", "Acatzingo", "Acteopan", "Ahuacatlán", "Ahuatlán", "Ahuazotepec", "Ahuehuetitla", "Ajalpan", "Aljojuca", "Altepexi", "Amixtlán", "Amozoc", "Aquixtla", "Atempan", "Atexcal", "Atlequizayan", "Atlixco", "Atoyatempan", "Atzala", "Atzitzihuacán", "Atzitzintla", "Axutla", "Ayotoxco de Guerrero", "Calpan", "Caltepec", "Camocuautla", "Caxhuacan", "Cañada Morelos", "Chalchicomula de Sesma", "Chapulco", "Chiautla", "Chiautzingo", "Chichiquila", "Chiconcuautla", "Chietla", "Chigmecatitlán", "Chignahuapan", "Chignautla", "Chila", "Chila de la Sal", "Chilchotla", "Chinantla", "Coatepec", "Coatzingo", "Cohetzala", "Cohuecan", "Coronango", "Coxcatlán", "Coyomeapan", "Cuapiaxtla de Madero", "Cuautempan", "Cuautinchán", "Cuautlancingo", "Cuayuca de Andrade", "Cuetzalan del Progreso", "Cuyoaco", "Domingo Arenas", "Eloxochitlán", "Epatlán", "Esperanza", "Francisco Z. Mena", "General Felipe Ángeles", "Guadalupe", "Guadalupe Victoria", "Hermenegildo Galeana", "Honey", "Huaquechula", "Huatlatlauca", "Huauchinango", "Huehuetla", "Huehuetlán el Chico", "Huehuetlán el Grande", "Huejotzingo", "Hueyapan", "Hueytamalco", "Hueytlalpan", "Huitzilan de Serdán", "Huitziltepec", "Ixcamilpa de Guerrero", "Ixcaquixtla", "Ixtacamaxtitlán", "Ixtepec", "Izúcar de Matamoros", "Jalpan", "Jolalpan", "Jonotla", "Jopala", "Juan C. Bonilla", "Juan Galindo", "Juan N. Méndez", "La Magdalena Tlatlauquitepec", "Lafragua", "Libres", "Los Reyes de Juárez", "Mazapiltepec de Juárez", "Mixtla", "Molcaxac", "Naupan", "Nauzontla", "Nealtican", "Nicolás Bravo", "Nopalucan", "Ocotepec", "Ocoyucan", "Olintla", "Oriental", "Pahuatlán", "Palmar de Bravo", "Pantepec", "Petlalcingo", "Piaxtla", "Puebla", "Quecholac", "Quimixtlán", "Rafael Lara Grajales", "San Andrés Cholula", "San Antonio Cañada", "San Diego la Mesa Tochimiltzingo", "San Felipe Teotlalcingo", "San Felipe Tepatlán", "San Gabriel Chilac", "San Gregorio Atzompa", "San Jerónimo Tecuanipan", "San Jerónimo Xayacatlán", "San José Chiapa", "San José Miahuatlán", "San Juan Atenco", "San Juan Atzompa", "San Martín Texmelucan", "San Martín Totoltepec", "San Matías Tlalancaleca", "San Miguel Ixitlán", "San Miguel Xoxtla", "San Nicolás Buenos Aires", "San Nicolás de los Ranchos", "San Pablo Anicano", "San Pedro Cholula", "San Pedro Yeloixtlahuaca", "San Salvador Huixcolotla", "San Salvador el Seco", "San Salvador el Verde", "San Sebastián Tlacotepec", "Santa Catarina Tlaltempan", "Santa Inés Ahuatempan", "Santa Isabel Cholula", "Santiago Miahuatlán", "Santo Tomás Hueyotlipan", "Soltepec", "Tecali de Herrera", "Tecamachalco", "Tecomatlán", "Tehuacán", "Tehuitzingo", "Tenampulco", "Teopantlán", "Teotlalco", "Tepanco de López", "Tepango de Rodríguez", "Tepatlaxco de Hidalgo", "Tepeaca", "Tepemaxalco", "Tepeojuma", "Tepeyahualco", "Tepeyahualco de Cuauhtémoc", "Tetela de Ocampo", "Teteles de Avila Castillo", "Tetzoyocan", "Teziutlán", "Tianguismanalco", "Tilapa", "Tlachichuca", "Tlacotepec de Benito Juárez", "Tlacuilotepec", "Tlahuapan", "Tlaltenango", "Tlanepantla", "Tlaola", "Tlapacoya", "Tlapanalá", "Tlatlauquitepec", "Tlaxco", "Tochimilco", "Tochtepec", "Totoltepec de Guerrero", "Tulcingo", "Tuzamapan de Galeana", "Tzicatlacoyan", "Vicente Guerrero", "Xayacatlán de Bravo", "Xicotepec", "Xicotlán", "Xiutetelco", "Xochiapulco", "Xochitlán Todos Santos", "Xochitlán de Vicente Suárez", "Yaonáhuac", "Yehualtepec", "Zacapala", "Zacapoaxtla", "Zacatlán", "Zapotitlán", "Zapotitlán de Méndez", "Zaragoza", "Zautla", "Zihuateutla", "Zinacatepec", "Zongozotla", "Zoquiapan", "Zoquitlán"],
+  "Querétaro": ["Amealco de Bonfil", "Arroyo Seco", "Cadereyta de Montes", "Colón", "Corregidora", "El Marqués", "Ezequiel Montes", "Huimilpan", "Jalpan de Serra", "Landa de Matamoros", "Pedro Escobedo", "Peñamiller", "Pinal de Amoles", "Querétaro", "San Joaquín", "San Juan del Río", "Tequisquiapan", "Tolimán"],
+  "Quintana Roo": ["Bacalar", "Benito Juárez", "Cozumel", "Felipe Carrillo Puerto", "Isla Mujeres", "José María Morelos", "Lázaro Cárdenas", "Othón P. Blanco", "Puerto Morelos", "Solidaridad", "Tulum"],
+  "San Luis Potosí": ["Ahualulco", "Alaquines", "Aquismón", "Armadillo de los Infante", "Axtla de Terrazas", "Catorce", "Cedral", "Cerritos", "Cerro de San Pedro", "Charcas", "Ciudad Fernández", "Ciudad Valles", "Ciudad del Maíz", "Coxcatlán", "Cárdenas", "Ebano", "El Naranjo", "Guadalcázar", "Huehuetlán", "Lagunillas", "Matehuala", "Matlapa", "Mexquitic de Carmona", "Moctezuma", "Rayón", "Rioverde", "Salinas", "San Antonio", "San Ciro de Acosta", "San Luis Potosí", "San Martín Chalchicuautla", "San Nicolás Tolentino", "Santa Catarina", "Santa María del Río", "Santo Domingo", "Soledad de Graciano Sánchez", "Tamasopo", "Tamazunchale", "Tampacán", "Tampamolón Corona", "Tamuín", "Tancanhuitz", "Tanlajás", "Tanquián de Escobedo", "Tierra Nueva", "Vanegas", "Venado", "Villa Hidalgo", "Villa Juárez", "Villa de Arista", "Villa de Arriaga", "Villa de Guadalupe", "Villa de Ramos", "Villa de Reyes", "Villa de la Paz", "Xilitla", "Zaragoza"],
+  "Sinaloa": ["Ahome", "Angostura", "Badiraguato", "Choix", "Concordia", "Cosalá", "Culiacán", "El Fuerte", "Eldorado", "Elota", "Escuinapa", "Guasave", "Juan José Ríos", "Mazatlán", "Mocorito", "Navolato", "Rosario", "Salvador Alvarado", "San Ignacio", "Sinaloa"],
+  "Sonora": ["Aconchi", "Agua Prieta", "Alamos", "Altar", "Arivechi", "Arizpe", "Atil", "Bacadéhuachi", "Bacanora", "Bacerac", "Bacoachi", "Banámichi", "Bavispe", "Baviácora", "Benito Juárez", "Benjamín Hill", "Bácum", "Caborca", "Cajeme", "Cananea", "Carbó", "Cucurpe", "Cumpas", "Divisaderos", "Empalme", "Etchojoa", "Fronteras", "General Plutarco Elías Calles", "Granados", "Guaymas", "Hermosillo", "Huachinera", "Huasabas", "Huatabampo", "Huépac", "Imuris", "La Colorada", "Magdalena", "Mazatán", "Moctezuma", "Naco", "Nacozari de García", "Navojoa", "Nogales", "Nácori Chico", "Onavas", "Opodepe", "Oquitoa", "Pitiquito", "Puerto Peñasco", "Quiriego", "Rayón", "Rosario", "Sahuaripa", "San Felipe de Jesús", "San Ignacio Río Muerto", "San Javier", "San Luis Río Colorado", "San Miguel de Horcasitas", "San Pedro de la Cueva", "Santa Ana", "Santa Cruz", "Soyopa", "Suaqui Grande", "Sáric", "Tepache", "Trincheras", "Tubutama", "Ures", "Villa Hidalgo", "Villa Pesqueira", "Yécora"],
+  "Tabasco": ["Balancán", "Centla", "Centro", "Comalcalco", "Cunduacán", "Cárdenas", "Emiliano Zapata", "Huimanguillo", "Jalapa", "Jalpa de Méndez", "Jonuta", "Macuspana", "Nacajuca", "Paraíso", "Tacotalpa", "Teapa", "Tenosique"],
+  "Tamaulipas": ["Abasolo", "Aldama", "Altamira", "Antiguo Morelos", "Burgos", "Bustamante", "Camargo", "Casas", "Ciudad Madero", "Cruillas", "El Mante", "González", "Guerrero", "Gustavo Díaz Ordaz", "Gómez Farías", "Güémez", "Hidalgo", "Jaumave", "Jiménez", "Llera", "Mainero", "Matamoros", "Mier", "Miguel Alemán", "Miquihuana", "Méndez", "Nuevo Laredo", "Nuevo Morelos", "Ocampo", "Padilla", "Palmillas", "Reynosa", "Río Bravo", "San Carlos", "San Fernando", "San Nicolás", "Soto la Marina", "Tampico", "Tula", "Valle Hermoso", "Victoria", "Villagrán", "Xicoténcatl"],
+  "Tlaxcala": ["Acuamanala de Miguel Hidalgo", "Amaxac de Guerrero", "Apetatitlán de Antonio Carvajal", "Apizaco", "Atlangatepec", "Atltzayanca", "Benito Juárez", "Calpulalpan", "Chiautempan", "Contla de Juan Cuamatzi", "Cuapiaxtla", "Cuaxomulco", "El Carmen Tequexquitla", "Emiliano Zapata", "Españita", "Huamantla", "Ixtacuixtla de Mariano Matamoros", "Ixtenco", "La Magdalena Tlaltelulco", "Lázaro Cárdenas", "Mazatecochco de José María Morelos", "Muñoz de Domingo Arenas", "Nanacamilpa de Mariano Arista", "Natívitas", "Panotla", "Papalotla de Xicohténcatl", "San Damián Texoloc", "San Francisco Tetlanohcan", "San Jerónimo Zacualpan", "San José Teacalco", "San Juan Huactzinco", "San Lorenzo Axocomanitla", "San Lucas Tecopilco", "San Pablo del Monte", "Sanctórum de Lázaro Cárdenas", "Santa Ana Nopalucan", "Santa Apolonia Teacalco", "Santa Catarina Ayometla", "Santa Cruz Quilehtla", "Santa Cruz Tlaxcala", "Santa Isabel Xiloxoxtla", "Tenancingo", "Teolocholco", "Tepetitla de Lardizábal", "Tepeyanco", "Terrenate", "Tetla de la Solidaridad", "Tetlatlahuca", "Tlaxcala", "Tlaxco", "Tocatlán", "Totolac", "Tzompantepec", "Xaloztoc", "Xaltocan", "Xicohtzinco", "Yauhquemehcan", "Zacatelco", "Ziltlaltépec de Trinidad Sánchez Santos"],
+  "Veracruz de Ignacio de la Llave": ["Acajete", "Acatlán", "Acayucan", "Actopan", "Acula", "Acultzingo", "Agua Dulce", "Alpatláhuac", "Alto Lucero de Gutiérrez Barrios", "Altotonga", "Alvarado", "Amatitlán", "Amatlán de los Reyes", "Angel R. Cabada", "Apazapan", "Aquila", "Astacinga", "Atzacan", "Atzalan", "Ayahualulco", "Banderilla", "Benito Juárez", "Boca del Río", "Calcahualco", "Camarón de Tejeda", "Camerino Z. Mendoza", "Carlos A. Carrillo", "Carrillo Puerto", "Castillo de Teayo", "Catemaco", "Cazones de Herrera", "Cerro Azul", "Chacaltianguis", "Chalma", "Chiconamel", "Chiconquiaco", "Chicontepec", "Chinameca", "Chinampa de Gorostiza", "Chocamán", "Chontla", "Chumatlán", "Coacoatzintla", "Coatepec", "Coatzacoalcos", "Coatzintla", "Coetzala", "Colipa", "Comapa", "Cosamaloapan de Carpio", "Cosautlán de Carvajal", "Coscomatepec", "Cosoleacaque", "Cotaxtla", "Coxquihui", "Coyutla", "Cuichapa", "Cuitláhuac", "Córdoba", "El Higo", "Emiliano Zapata", "Espinal", "Filomeno Mata", "Fortín", "Gutiérrez Zamora", "Hidalgotitlán", "Huatusco", "Huayacocotla", "Hueyapan de Ocampo", "Huiloapan de Cuauhtémoc", "Ignacio de la Llave", "Ilamatlán", "Isla", "Ixcatepec", "Ixhuacán de los Reyes", "Ixhuatlancillo", "Ixhuatlán de Madero", "Ixhuatlán del Café", "Ixhuatlán del Sureste", "Ixmatlahuacan", "Ixtaczoquitlán", "Jalacingo", "Jalcomulco", "Jaltipan", "Jamapa", "Jesús Carranza", "Jilotepec", "José Azueta", "Juan Rodríguez Clara", "Juchique de Ferrer", "La Antigua", "La Perla", "Landero y Coss", "Las Choapas", "Las Minas", "Las Vigas de Ramírez", "Lerdo de Tejada", "Los Reyes", "Magdalena", "Maltrata", "Manlio Fabio Altamirano", "Mariano Escobedo", "Martínez de la Torre", "Mecatlán", "Mecayapan", "Medellín de Bravo", "Miahuatlán", "Minatitlán", "Misantla", "Mixtla de Altamirano", "Moloacán", "Nanchital de Lázaro Cárdenas del Río", "Naolinco", "Naranjal", "Naranjos Amatlán", "Nautla", "Nogales", "Oluta", "Omealca", "Orizaba", "Otatitlán", "Oteapan", "Ozuluama de Mascareñas", "Pajapan", "Papantla", "Paso de Ovejas", "Paso del Macho", "Perote", "Platón Sánchez", "Playa Vicente", "Poza Rica de Hidalgo", "Pueblo Viejo", "Puente Nacional", "Pánuco", "Rafael Delgado", "Rafael Lucio", "Río Blanco", "Saltabarranca", "San Andrés Tenejapan", "San Andrés Tuxtla", "San Juan Evangelista", "San Rafael", "Santiago Sochiapan", "Santiago Tuxtla", "Sayula de Alemán", "Sochiapa", "Soconusco", "Soledad Atzompa", "Soledad de Doblado", "Soteapan", "Tamalín", "Tamiahua", "Tampico Alto", "Tancoco", "Tantima", "Tantoyuca", "Tatahuicapan de Juárez", "Tatatila", "Tecolutla", "Tehuipango", "Tempoal", "Tenampa", "Tenochtitlán", "Teocelo", "Tepatlaxco", "Tepetlán", "Tepetzintla", "Tequila", "Texcatepec", "Texhuacán", "Texistepec", "Tezonapa", "Tierra Blanca", "Tihuatlán", "Tlachichilco", "Tlacojalpan", "Tlacolulan", "Tlacotalpan", "Tlacotepec de Mejía", "Tlalixcoyan", "Tlalnelhuayocan", "Tlaltetela", "Tlapacoyan", "Tlaquilpa", "Tlilapan", "Tomatlán", "Tonayán", "Totutla", "Tres Valles", "Tuxpan", "Tuxtilla", "Ursulo Galván", "Uxpanapa", "Vega de Alatorre", "Veracruz", "Villa Aldama", "Xalapa", "Xico", "Xoxocotla", "Yanga", "Yecuatla", "Zacualpan", "Zapotitlán", "Zentla", "Zongolica", "Zontecomatlán de López y Fuentes", "Zopotitlán", "Zozocolco de Hidalgo", "Álamo Temapache"],
+  "Yucatán": ["Abalá", "Acanceh", "Akil", "Baca", "Bokobá", "Buctzotz", "Caba", "Calotmul", "Cansahcab", "Cantamayec", "Celestún", "Cenotillo", "Chacsinkín", "Chankom", "Chapab", "Chemax", "Chichimilá", "Chicxulub Pueblo", "Chikindzonot", "Chocholá", "Chumayel", "Conkal", "Cuncunul", "Cuzamá", "Dzemul", "Dzidzantún", "Dzilam González", "Dzilam de Bravo", "Dzitás", "Dzoncauich", "Dzonta", "Dzonzotitlan", "Dzán", "Espita", "Halachó", "Hocabá", "Hoctún", "Homún", "Huhí", "Hunucmá", "Ixil", "Izamal", "Kanasín", "Kantunil", "Kaua", "Kinchil", "Kopomá", "Mama", "Maní", "Maxcanú", "Mayapán", "Mocochá", "Motul", "Muna", "Muxupip", "Mérida", "Opichén", "Oxkutzcab", "Panabá", "Peto", "Progreso", "Quintana Roo", "Río Lagartos", "Sacalum", "Samahil", "San Felipe", "Sanahcat", "Santa Elena", "Seye", "Sinanché", "Sotuta", "Sucilá", "Sudzal", "Suma", "Tahdziú", "Tahmek", "Teabo", "Tecoh", "Tekal de Venegas", "Tekantó", "Tekax", "Tekit", "Tekom", "Telchac Pueblo", "Telchac Puerto", "Temax", "Temozón", "Tepakán", "Tetiz", "Teya", "Ticul", "Timucuy", "Tinum", "Tixcacalcupul", "Tixkokob", "Tixmehuac", "Tixpéhual", "Tizimín", "Tunkás", "Tzucacab", "Uayma", "Ucú", "Umán", "Valladolid", "Xocchel", "Yaxcabá", "Yaxkukul", "Yobaín"],
+  "Zacatecas": ["Apozol", "Apulco", "Atolinga", "Benito Juárez", "Calera", "Cañitas de Felipe Pescador", "Chalchihuites", "Concepción del Oro", "Cuauhtémoc", "El Salvador", "Fresnillo", "Genaro Codina", "General Enrique Estrada", "General Francisco R. Murguía", "General Pánfilo Natera", "Guadalupe", "Huanusco", "Jalpa", "Jerez", "Jiménez del Teul", "Juan Aldama", "Juchipila", "Loreto", "Luis Moya", "Mazapil", "Melchor Ocampo", "Mezquital del Oro", "Miguel Auza", "Momax", "Monte Escobedo", "Morelos", "Moyahua de Estrada", "Nochistlán de Mejía", "Noria de Ángeles", "Ojocaliente", "Pinos", "Pánuco", "Río Grande", "Sain Alto", "Santa María de la Paz", "Sombrerete", "Susticacán", "Tabasco", "Tepechitlán", "Tepetongo", "Teul de González Ortega", "Tlaltenango de Sánchez Román", "Trancoso", "Trinidad García de la Cadena", "Valparaíso", "Vetagrande", "Villa García", "Villa González Ortega", "Villa Hidalgo", "Villa de Cos", "Villanueva", "Zacatecas"],
+};
+
 const PROGRAMAS = [
   {
     id:'p1', num:1, icon:'🏫',
@@ -1196,7 +1533,7 @@ const PROGRAMAS = [
 // ═══════════════════════════════
 //  CONFIGURATION
 // ═══════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeYYLeh5K_dcqKHisDeTvoXx51iqg5bmmQoJ-gJnqXvqiqpjBq5_qAC7ZiEt5ienPx/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbww_voz-Mi7DbVVvxCXQ9UXpS27fcniw0K8475OrQSIaHJpJtm_77dafZktZNWvQ6QV/exec';
 
 // ═══════════════════════════════
 //  SESSION MANAGEMENT
@@ -1259,6 +1596,19 @@ const DB_KEY = 'sems_programas_db_v2';
 let db = [];
 let currentId = null;
 let isDirty = false;
+
+function populateMunicipios(selectedMunicipio) {
+  const entidad = document.getElementById('f_entidad')?.value || '';
+  const sel = document.getElementById('f_municipio');
+  if (!sel) return;
+  const munis = MUNICIPIOS_POR_ESTADO[entidad] || [];
+  if (munis.length === 0) {
+    sel.innerHTML = '<option value="">— Seleccione entidad primero —</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Seleccione municipio —</option>' +
+    munis.map(m => `<option value="${escHtml(m)}"${m === selectedMunicipio ? ' selected' : ''}>${escHtml(m)}</option>`).join('');
+}
 
 function loadDB() {
   try { db = JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
@@ -1358,8 +1708,9 @@ function _doLogout() {
 }
 
 function updateMenuCards() {
+  // Sumario is visible to all users — plantel sees only their own data
   const sc = document.getElementById('menuCardSumario');
-  if (sc) sc.style.display = (currentUser?.rol === 'plantel') ? 'none' : '';
+  if (sc) sc.style.display = '';
   // Show welcome name in menu
   const wEl = document.getElementById('menuWelcome');
   if (wEl && currentUser?.nombre) {
@@ -1420,15 +1771,15 @@ async function loadSupervisorList() {
 function showPage(name) {
   // Auth guard – non-login pages require a session
   if (name !== 'login' && !currentUser) { showPage('login'); return; }
-  // Role guard – sumario requires zona role
-  if (name === 'sumario' && currentUser?.rol !== 'zona') {
-    toast('⚠️ No tiene permisos para acceder al Sumario.', 'error'); return;
-  }
+  // Sumario is accessible to all roles; plantel sees only their own records
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   if (name==='consultar') { renderTable(); populateFilters(); }
   if (name==='menu') { updateMenuStats(); updateMenuCards(); }
-  if (name==='sumario') { populateSmFilters(); renderSumario(); }
+  if (name==='sumario') {
+    populateSmFilters();
+    renderSumario();
+  }
   if (name==='login') {
     // Always reset the login form to its initial state
     const btn = document.getElementById('loginBtn');
@@ -1584,8 +1935,16 @@ function newRecord() {
   buildProgramUI();
   document.getElementById('f_ciclo').value      = '';
   document.getElementById('f_entidad').value    = 'Estado de México';
+  populateMunicipios();
+  document.getElementById('f_municipio').value  = '';
   document.getElementById('f_subsistema').value = '';
   document.getElementById('f_plantel').value    = '';
+  // Clear diagnostic fields
+  ['d_contextuales','d_servicio','d_indicadores','d_fortalezas',
+   'd_oportunidades','d_comentarios'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   const supInput = document.getElementById('f_supervisor');
   const fechaInput = document.getElementById('f_fecha');
   if (currentUser?.rol === 'plantel') {
@@ -1643,8 +2002,16 @@ function editRecord(id) {
   buildProgramUI();
   document.getElementById('f_ciclo').value      = rec.cicloEscolar   || '';
   document.getElementById('f_entidad').value    = rec.entidad         || '';
+  populateMunicipios(rec.municipio || '');
   document.getElementById('f_subsistema').value = rec.subsistema      || '';
   document.getElementById('f_plantel').value    = rec.plantel         || '';
+  // Restore diagnostic fields
+  const diag = rec.diagnostico || {};
+  const setD = (id, key) => { const el = document.getElementById(id); if(el) el.value = diag[key] || ''; };
+  setD('d_contextuales','contextuales'); setD('d_servicio','servicio');
+  setD('d_indicadores','indicadores');   setD('d_fortalezas','fortalezas');
+  setD('d_oportunidades','oportunidades');
+  setD('d_comentarios','comentarios');
   const supEl = document.getElementById('f_supervisor');
   supEl.value = rec.supervisor || '';
   const fechaEl = document.getElementById('f_fecha');
@@ -1734,6 +2101,15 @@ async function saveRecord(thenMenu) {
     const now = new Date();
     const ts  = `${now.toLocaleDateString('es-MX')} ${now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}`;
 
+    const diagnostico = {
+      contextuales:  (document.getElementById('d_contextuales')?.value  || '').trim(),
+      servicio:      (document.getElementById('d_servicio')?.value      || '').trim(),
+      indicadores:   (document.getElementById('d_indicadores')?.value   || '').trim(),
+      fortalezas:    (document.getElementById('d_fortalezas')?.value    || '').trim(),
+      oportunidades: (document.getElementById('d_oportunidades')?.value || '').trim(),
+      comentarios:   (document.getElementById('d_comentarios')?.value   || '').trim(),
+    };
+
     const programasData = {};
     PROGRAMAS.forEach(prog => {
       programasData[prog.id] = {
@@ -1756,11 +2132,13 @@ async function saveRecord(thenMenu) {
       id:                currentId || 'NEW',  // 'NEW' → server assigns real ID
       cicloEscolar:      document.getElementById('f_ciclo').value,
       entidad:           document.getElementById('f_entidad').value,
+      municipio:         document.getElementById('f_municipio')?.value || '',
       subsistema:        document.getElementById('f_subsistema').value,
       plantel:           plantel,
       supervisor:        document.getElementById('f_supervisor').value.trim(),
       fechaCaptura:      document.getElementById('f_fecha').value,
       ultimaModificacion: ts,
+      diagnostico:       diagnostico,
       programas:         programasData
     };
 
@@ -1868,7 +2246,7 @@ function renderTable() {
   }
 
   let html = `<table class="rt"><thead><tr>
-    <th>#</th><th>Ciclo Escolar</th><th>Subsistema</th><th>Plantel</th>
+    <th>#</th><th>Ciclo Escolar</th><th>Subsistema</th><th>Municipio</th><th>Plantel</th>
     <th>Supervisor</th><th>Fecha captura</th><th>Última mod.</th>
     <th>Avance</th><th style="text-align:right">Acciones</th>
   </tr></thead><tbody>`;
@@ -1882,6 +2260,7 @@ function renderTable() {
       <td class="id-col">${String(rowNum).padStart(2,'0')}</td>
       <td>${escHtml(r.cicloEscolar||'—')}</td>
       <td>${escHtml(r.subsistema||'—')}</td>
+      <td>${escHtml(r.municipio||'—')}</td>
       <td><strong>${escHtml(r.plantel||'—')}</strong></td>
       <td>${escHtml(r.supervisor||'—')}</td>
       <td>${formatDate(r.fechaCaptura)}</td>
@@ -1982,11 +2361,20 @@ function printRecord() {
   const ciclo       = escHtml(document.getElementById('f_ciclo').value||'—');
   const supervisor  = escHtml(document.getElementById('f_supervisor').value||'—');
   const entidad     = escHtml(document.getElementById('f_entidad').value||'—');
+  const municipio   = escHtml(document.getElementById('f_municipio')?.value||'');
 
   const metaEl = document.getElementById('pltPrintMeta');
   if (metaEl) {
     metaEl.innerHTML = `
       <table class="plt-meta-table">
+        <tr>
+          <td class="plt-meta-lbl">Entidad</td>
+          <td class="plt-meta-val">${entidad}</td>
+          <td class="plt-meta-lbl">Municipio</td>
+          <td class="plt-meta-val">${municipio||'—'}</td>
+          <td class="plt-meta-lbl">Fecha de captura</td>
+          <td class="plt-meta-val">${fecha}</td>
+        </tr>
         <tr>
           <td class="plt-meta-lbl">Subsistema</td>
           <td class="plt-meta-val">${subsistema}</td>
@@ -1997,21 +2385,58 @@ function printRecord() {
           <td class="plt-meta-lbl">Ciclo Escolar</td>
           <td class="plt-meta-val">${ciclo}</td>
           <td class="plt-meta-lbl">Supervisor</td>
-          <td class="plt-meta-val">${supervisor}</td>
-          <td class="plt-meta-lbl">Fecha de captura</td>
-          <td class="plt-meta-val">${fecha}</td>
+          <td class="plt-meta-val" colspan="3">${supervisor}</td>
         </tr>
       </table>`;
   }
 
-  // Footer date
+  // Footer: set text for page-1 fixed footer
+  const supervisorName = document.getElementById('f_supervisor')?.value?.trim() || 'Supervisión SEMS';
+  const dateStr = new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+  const fsup = document.getElementById('pltFooterSupervisor');
+  if (fsup) fsup.textContent = supervisorName + ' \u2013 Supervisión SEMS';
   const fd = document.getElementById('pltFooterDate');
-  if (fd) fd.textContent = 'Impreso el ' + new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+  if (fd) fd.textContent = 'Impreso el ' + dateStr;
 
-  // Show all panels for print
+  // Inject @page margin CSS for footer on ALL pages (pages 2+)
+  const escapedSup = supervisorName.replace(/'/g, "\\'");
+  const escapedDate = dateStr.replace(/'/g, "\\'");
+  const pgStyle = document.createElement('style');
+  pgStyle.id = 'sems-page-margins';
+  pgStyle.textContent = `@media print { @page {
+    @bottom-left { content: '${escapedSup} – Supervisión SEMS';
+      font-family: 'Jost', sans-serif; font-size: 6pt; color: #555; }
+    @bottom-center { content: 'Pág. ' counter(page) ' / ' counter(pages);
+      font-family: 'Jost', sans-serif; font-size: 6pt; color: #555; }
+    @bottom-right { content: 'Impreso el ${escapedDate}';
+      font-family: 'Jost', sans-serif; font-size: 6pt; color: #555; }
+  }}`;
+  document.head.appendChild(pgStyle);
+
+  // ── Inject mirrors for ALL textareas ──────────────────────────────────────
+  // Textareas can't auto-expand in print. We replace them with <div> mirrors
+  // that expand naturally with content.
+  const mirroredEls = [];
+  document.querySelectorAll(
+    'textarea.dir-ta, .diag-cell textarea, .diag-comments textarea, textarea[id^="cgp_"]'
+  ).forEach(ta => {
+    const mirror = document.createElement('div');
+    mirror.className = 'print-mirror';
+    mirror.setAttribute('data-print-mirror','1');
+    mirror.textContent = ta.value; // plain text, no HTML injection
+    ta.insertAdjacentElement('afterend', mirror);
+    mirroredEls.push(mirror);
+  });
+
+  // ── Move footer to body root (ensures it repeats on every page) ────────────
+  const footer = document.getElementById('pltFooter');
+  const footerParent = footer?.parentNode;
+  if (footer) document.body.appendChild(footer);
+
+  // ── Show all program panels ────────────────────────────────────────────────
   document.querySelectorAll('.prog-panel').forEach(p => p.classList.add('active'));
 
-  // ── Inject nivel-print-val spans (styled number instead of select widget) ──
+  // ── Inject nivel-print-val spans ──────────────────────────────────────────
   document.querySelectorAll('.nivel-sel').forEach(sel => {
     const val = sel.value;
     const span = document.createElement('span');
@@ -2023,10 +2448,17 @@ function printRecord() {
 
   window.print();
 
-  // ── Remove injected spans ──
-  document.querySelectorAll('[data-print-span]').forEach(el => el.remove());
+  // ── Cleanup: remove mirrors ────────────────────────────────────────────────
+  mirroredEls.forEach(m => m.remove());
 
-  // Restore active tab
+  // ── Restore footer to original position ───────────────────────────────────
+  if (footer && footerParent) footerParent.appendChild(footer);
+
+  // ── Remove nivel spans and injected page-margin styles ──────────────────
+  document.querySelectorAll('[data-print-span]').forEach(el => el.remove());
+  document.getElementById('sems-page-margins')?.remove();
+
+  // ── Restore active tab ────────────────────────────────────────────────────
   const activeTab = document.querySelector('.prog-tab.active');
   if (activeTab) {
     const progId = activeTab.id.replace('tab-','');
@@ -2424,37 +2856,62 @@ function countTotalEvidencias() {
 let smActiveProg = 'p1';
 
 function getSmFilteredRecords() {
-  const fc = document.getElementById('smFCiclo')?.value     || '';
+  const fc = document.getElementById('smFCiclo')?.value      || '';
+  const fe = document.getElementById('smFEntidad')?.value    || '';
+  const fm = document.getElementById('smFMunicipio')?.value  || '';
   const fs = document.getElementById('smFSubsistema')?.value || '';
   const fp = document.getElementById('smFPlantel')?.value    || '';
   const fv = document.getElementById('smFSupervisor')?.value || '';
+  // Plantel users are locked to their own records regardless of filter
+  const lockedSupervisor = (currentUser?.rol === 'plantel') ? currentUser.nombre : '';
   return db.filter(r =>
     (!fc || r.cicloEscolar===fc) &&
+    (!fe || r.entidad===fe) &&
+    (!fm || r.municipio===fm) &&
     (!fs || r.subsistema===fs) &&
     (!fp || r.plantel===fp) &&
-    (!fv || r.supervisor===fv)
+    (!fv || r.supervisor===fv) &&
+    (!lockedSupervisor || r.supervisor===lockedSupervisor)
   );
 }
 
 function populateSmFilters() {
-  const ciclos     = [...new Set(db.map(r=>r.cicloEscolar).filter(Boolean))].sort();
-  const planteles  = [...new Set(db.map(r=>r.plantel).filter(Boolean))].sort();
-  const supervisores = [...new Set(db.map(r=>r.supervisor).filter(Boolean))].sort();
+  const isPlantel = currentUser?.rol === 'plantel';
+  // For plantel users, only show their own records in filter options
+  const filterBase = isPlantel
+    ? db.filter(r => r.supervisor === currentUser.nombre)
+    : db;
+  const ciclos       = [...new Set(filterBase.map(r=>r.cicloEscolar).filter(Boolean))].sort();
+  const entidades    = [...new Set(filterBase.map(r=>r.entidad).filter(Boolean))].sort();
+  const municipios   = [...new Set(filterBase.map(r=>r.municipio).filter(Boolean))].sort();
+  const planteles    = [...new Set(filterBase.map(r=>r.plantel).filter(Boolean))].sort();
+  const supervisores = [...new Set(filterBase.map(r=>r.supervisor).filter(Boolean))].sort();
   const curC = document.getElementById('smFCiclo').value;
+  const curE = document.getElementById('smFEntidad').value;
+  const curM = document.getElementById('smFMunicipio').value;
   const curP = document.getElementById('smFPlantel').value;
   const curV = document.getElementById('smFSupervisor').value;
-  const fill = (selId, vals, cur) => {
+  const fill = (selId, vals, cur, allLabel) => {
     const el = document.getElementById(selId);
-    el.innerHTML = '<option value="">Todos</option>' +
+    if (!el) return;
+    el.innerHTML = `<option value="">${allLabel||'Todos'}</option>` +
       vals.map(v=>`<option${v===cur?' selected':''}>${escHtml(v)}</option>`).join('');
   };
-  fill('smFCiclo',      ciclos,      curC);
-  fill('smFPlantel',    planteles,   curP);
-  fill('smFSupervisor', supervisores, curV);
+  fill('smFCiclo',     ciclos,     curC);
+  fill('smFEntidad',   entidades,  curE, 'Todas');
+  fill('smFMunicipio', municipios, curM);
+  fill('smFPlantel',   planteles,  curP);
+  // Hide supervisor filter entirely for plantel users (they can only see their own)
+  const supGroup = document.getElementById('smFSupervisor')?.closest('.sm-filter-group');
+  if (supGroup) supGroup.style.display = isPlantel ? 'none' : '';
+  if (!isPlantel) fill('smFSupervisor', supervisores, curV);
 }
 
 function resetSmFilters() {
-  ['smFCiclo','smFSubsistema','smFPlantel','smFSupervisor'].forEach(id=>{
+  const ids = currentUser?.rol === 'plantel'
+    ? ['smFCiclo','smFEntidad','smFMunicipio','smFSubsistema','smFPlantel']
+    : ['smFCiclo','smFEntidad','smFMunicipio','smFSubsistema','smFPlantel','smFSupervisor'];
+  ids.forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value='';
   });
@@ -2464,7 +2921,7 @@ function resetSmFilters() {
 function renderSmChips() {
   const pairs = [
     ['smFCiclo','Ciclo'], ['smFSubsistema','Subsistema'],
-    ['smFPlantel','Plantel'], ['smFSupervisor','Supervisor']
+    ['smFEntidad','Entidad'], ['smFMunicipio','Municipio'], ['smFPlantel','Plantel'], ['smFSupervisor','Supervisor']
   ];
   const chips = [];
   pairs.forEach(([id,label])=>{
@@ -2675,6 +3132,8 @@ function printSumario() {
   const recs = getSmFilteredRecords();
   const filters = [
     document.getElementById('smFCiclo')?.value,
+    document.getElementById('smFEntidad')?.value,
+    document.getElementById('smFMunicipio')?.value,
     document.getElementById('smFSubsistema')?.value,
     document.getElementById('smFPlantel')?.value,
     document.getElementById('smFSupervisor')?.value,
