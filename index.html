@@ -2591,6 +2591,45 @@ function exportDB() {
   a.click();
   toast('💾 Base de datos exportada.','success');
 }
+async function syncDBToCloud(records, mode) {
+  if (!records || records.length === 0) return;
+  const total = records.length;
+  let done = 0, errors = 0;
+
+  // Show progress toast
+  const toastEl = document.createElement('div');
+  toastEl.className = 'toast toast-info';
+  toastEl.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;background:#002f2a;color:#fff;padding:12px 20px;border-radius:8px;font-family:var(--fb);font-size:13px;min-width:280px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.3)';
+  toastEl.innerHTML = `⬆ Sincronizando con la nube… <strong>0 / ${total}</strong>`;
+  document.body.appendChild(toastEl);
+
+  for (const rec of records) {
+    try {
+      // Send as NEW so backend appends without ID conflicts
+      const payload = {...rec, id: 'NEW'};
+      await apiCall('saveRecord', payload);
+      done++;
+    } catch(e) {
+      errors++;
+      console.warn('syncDBToCloud error for', rec.plantel, e.message);
+    }
+    toastEl.innerHTML = `⬆ Sincronizando con la nube… <strong>${done} / ${total}</strong>${errors?` (${errors} errores)`:''}`;
+    // Small delay to avoid rate-limiting Apps Script
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  toastEl.style.background = errors ? '#a57f2c' : '#1e5b4f';
+  toastEl.innerHTML = errors
+    ? `⚠ Sincronización completada con ${errors} errores. ${done} registros subidos.`
+    : `✅ ${done} registros sincronizados con Google Sheets.`;
+  setTimeout(() => toastEl.remove(), 5000);
+
+  // Reload coverage panel now that Sheets has the data
+  if (document.getElementById('smCoberturaWrap')) {
+    await loadCoberturaZona();
+  }
+}
+
 function importDB(input) {
   const file = input.files[0];
   if (!file) return;
@@ -2601,15 +2640,18 @@ function importDB(input) {
       if (!Array.isArray(imported)) throw new Error('Formato inválido');
       showModal('📂','Importar base de datos',
         `Se importarán ${imported.length} registros. ¿Desea reemplazar los datos actuales o combinarlos?`, [
-        {label:'Reemplazar', cls:'btn-danger', action:()=>{
+        {label:'Reemplazar', cls:'btn-danger', action:async ()=>{
           db = imported; saveDB(); closeModal(); updateMenuStats();
-          toast(`✅ ${imported.length} registros importados.`,'success');
+          toast(`✅ ${imported.length} registros importados localmente.`,'success');
+          await syncDBToCloud(imported, 'reemplazar');
         }},
-        {label:'Combinar', cls:'btn-secondary', action:()=>{
+        {label:'Combinar', cls:'btn-secondary', action:async ()=>{
           const existing = new Set(db.map(r=>r.id));
-          imported.forEach(r=>{ if(!existing.has(r.id)) db.push(r); });
+          const newRecs = imported.filter(r=>!existing.has(r.id));
+          newRecs.forEach(r=>db.push(r));
           saveDB(); closeModal(); updateMenuStats();
-          toast('✅ Base de datos combinada.','success');
+          toast(`✅ ${newRecs.length} registros combinados localmente.`,'success');
+          await syncDBToCloud(newRecs, 'combinar');
         }},
         {label:'Cancelar', cls:'btn-ghost', action:closeModal}
       ]);
