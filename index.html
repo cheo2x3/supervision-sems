@@ -717,6 +717,14 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
 
 /* kpi strip */
 .sm-kpi-strip{display:flex;gap:0;flex-wrap:wrap;align-items:stretch;background:var(--wh);border:1px solid var(--bdr);border-radius:6px;box-shadow:var(--shd);overflow:hidden}
+.cobertura-table{width:100%;border-collapse:collapse;font-family:var(--fb);font-size:12px}
+.cobertura-table th{background:var(--p627);color:var(--wh);padding:7px 12px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.cobertura-table td{padding:6px 12px;border-bottom:1px solid var(--pgryl);color:var(--txt);vertical-align:middle}
+.cobertura-table tr:last-child td{border-bottom:none}
+.cobertura-table tr:hover td{background:var(--off)}
+.cob-bar-wrap{width:100px;background:var(--pgryl);border-radius:4px;height:8px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
+.cob-bar{height:100%;border-radius:4px;transition:width .4s}
+.cob-pct{font-weight:700;font-size:11px}
 .sm-kpi-block{display:flex;align-items:center;gap:16px;padding:14px 22px}
 .sm-kpi{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:72px}
 .sm-kpi-val{
@@ -1003,7 +1011,10 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
     <div class="sm-topbar">
       <div class="sm-topbar-left">
         <h2>Sumario de avance</h2>
-        <p id="smSubtitle">Distribución de planteles por nivel de avance en cada directriz</p>
+        <p id="smSubtitle" style="margin:0;line-height:1.6">
+          <span id="smSubLine1" style="display:inline-block;margin-right:10px"></span>
+          <span id="smSubLine2" style="display:inline-block"></span>
+        </p>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-gold btn-sm" onclick="printSumario()">🖨 Imprimir Sumario</button>
@@ -1048,7 +1059,7 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
       </div>
       <div class="sm-filter-group">
         <label>Supervisor</label>
-        <select class="sm-filter-select" id="smFSupervisor" onchange="renderSumario()">
+        <select class="sm-filter-select" id="smFSupervisor" onchange="renderSumario();renderCoberturaWrap();">
           <option value="">Todos</option>
         </select>
       </div>
@@ -1067,6 +1078,61 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
         <div style="height:2px;background:linear-gradient(90deg,#002f2a,#1e5b4f,#a57f2c);margin-top:10px;border-radius:1px"></div>
       </div>
       <!-- KPI strip -->
+      <div style="
+        padding:18px 0 10px;
+        text-align:left;
+        border-top:1px solid var(--pgryl);
+        
+        margin-top:4px;
+      ">
+        <div style="
+          font-family:'Cormorant Garamond',Georgia,serif;
+          font-size:22px;
+          font-weight:700;
+          color:var(--p627);
+          letter-spacing:.04em;
+          line-height:1.2;
+        ">Avance de captura</div>
+        <div style="
+          font-family:'Jost',sans-serif;
+          font-size:9px;
+          font-weight:600;
+          color:var(--p1255);
+          letter-spacing:.13em;
+          text-transform:uppercase;
+          margin-top:5px;
+        ">Cobertura por supervisor</div>
+      </div>
+
+      <!-- Cobertura de captura -->
+      <div id="smCoberturaWrap" style="display:none;margin-bottom:10px"></div>
+
+      <div style="
+        padding:18px 0 10px;
+        text-align:left;
+        border-top:1px solid var(--pgryl);
+        
+        margin-top:4px;
+      ">
+        <div style="
+          font-family:'Cormorant Garamond',Georgia,serif;
+          font-size:22px;
+          font-weight:700;
+          color:var(--p627);
+          letter-spacing:.04em;
+          line-height:1.2;
+        ">Análisis de Programas SEMS</div>
+        <div style="
+          font-family:'Jost',sans-serif;
+          font-size:9px;
+          font-weight:600;
+          color:var(--p1255);
+          letter-spacing:.13em;
+          text-transform:uppercase;
+          margin-top:5px;
+        ">Cobertura por directriz</div>
+      </div>
+
       <div class="sm-kpi-strip" id="smKpis"></div>
       <!-- Program tabs -->
       <div class="sm-prog-tabs" id="smProgTabs"></div>
@@ -1176,7 +1242,7 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
         </div>
         <div class="form-field">
           <label>Entidad Federativa</label>
-          <select id="f_entidad" onchange="markDirty();populateMunicipios();">
+          <select id="f_entidad" onchange="markDirty();populateMunicipios();populatePlanteles();">
             <option value="">Seleccionar…</option>
             <option>Aguascalientes</option>
             <option>Baja California</option>
@@ -1220,7 +1286,7 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
         </div>
         <div class="form-field">
           <label>Subsistema</label>
-          <select id="f_subsistema">
+          <select id="f_subsistema" onchange="markDirty();populatePlanteles();">
             <option value="">Seleccionar…</option>
             <option>BTED</option><option>DGB</option>
             <option>DGETAyCM</option><option>DGETI</option><option>Otro</option>
@@ -1228,7 +1294,9 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
         </div>
         <div class="form-field">
           <label>Plantel</label>
-          <input type="text" id="f_plantel" placeholder="Ej. CBTis 203">
+          <select id="f_plantel" onchange="markDirty()">
+            <option value="">— Seleccione subsistema primero —</option>
+          </select>
         </div>
         <div class="form-field">
           <label>Nombre del Supervisor</label>
@@ -1245,7 +1313,7 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
       <!-- Title above diagnostic (screen only, same format as programs title) -->
       <div class="no-print" style="
         padding:18px 0 10px;
-        text-align:center;
+        text-align:left;
         border-top:1px solid var(--pgryl);
         margin-top:4px;
       ">
@@ -1307,7 +1375,7 @@ table.dir-table td.td-nivel{text-align:center;vertical-align:middle}
       <!-- PROGRAMS SECTION TITLE (screen only) -->
       <div class="no-print" style="
         padding:18px 0 10px;
-        text-align:center;
+        text-align:left;
         border-top:1px solid var(--pgryl);
         margin-top:4px;
       ">
@@ -1533,7 +1601,7 @@ const PROGRAMAS = [
 // ═══════════════════════════════
 //  CONFIGURATION
 // ═══════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbww_voz-Mi7DbVVvxCXQ9UXpS27fcniw0K8475OrQSIaHJpJtm_77dafZktZNWvQ6QV/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYLYOGS-LXjlMMZOXnaTs5f83G4iQfaD3wZseJrYKP7xpy_BS8pW7OtraqEqYcQA7G/exec';
 
 // ═══════════════════════════════
 //  SESSION MANAGEMENT
@@ -1622,6 +1690,34 @@ function getNextId() {
   return String(Math.max(...db.map(r => parseInt(r.id)||0)) + 1);
 }
 loadDB();
+
+async function populatePlanteles(selectedPlantel) {
+  const sel = document.getElementById('f_plantel');
+  if (!sel) return;
+  const entidad   = document.getElementById('f_entidad')?.value   || '';
+  const subsistema = document.getElementById('f_subsistema')?.value || '';
+  if (!subsistema) {
+    sel.innerHTML = '<option value="">— Seleccione subsistema primero —</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Cargando planteles… —</option>';
+  sel.disabled = true;
+  try {
+    const res = await apiCall('getPlanteles', { entidad, subsistema });
+    const planteles = res.planteles || [];
+    if (planteles.length === 0) {
+      sel.innerHTML = '<option value="">— Sin planteles asignados —</option>';
+    } else {
+      sel.innerHTML = '<option value="">— Seleccione plantel —</option>' +
+        planteles.map(p => `<option${p === selectedPlantel ? ' selected' : ''}>${escHtml(p)}</option>`).join('');
+    }
+  } catch(e) {
+    sel.innerHTML = '<option value="">— Error al cargar planteles —</option>';
+    console.warn('populatePlanteles:', e.message);
+  } finally {
+    sel.disabled = false;
+  }
+}
 
 // ═══════════════════════════════
 //  LOGIN / LOGOUT
@@ -1779,6 +1875,7 @@ function showPage(name) {
   if (name==='sumario') {
     populateSmFilters();
     renderSumario();
+    loadCoberturaZona();
   }
   if (name==='login') {
     // Always reset the login form to its initial state
@@ -1836,7 +1933,8 @@ function buildProgramUI() {
     let rows = '';
     prog.directrices.forEach(dir => {
       const fid = `${prog.id}_${dir.id.replace('.','_')}`;
-      const dirTextoEsc = dir.texto.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/'/g,"\\'");
+      // Use escHtml for data attribute (handles both " and ' safely)
+      const dirTextoEsc = escHtml(dir.texto);
       rows += `
         <tr>
           <td class="td-dir">
@@ -1857,7 +1955,8 @@ function buildProgramUI() {
           <td><textarea class="dir-ta" id="com_${fid}" placeholder="• Compromisos asumidos" rows="3" oninput="markDirty()"></textarea></td>
           <td style="vertical-align:middle;text-align:center;padding:8px 6px">
             <button class="ev-btn" id="evbtn_${fid}"
-              onclick="openEvDrawer('${prog.id}','${dir.id}','${dirTextoEsc}')">
+              data-prog="${prog.id}" data-dir="${dir.id}" data-text="${dirTextoEsc}"
+              onclick="openEvDrawerFromBtn(this)">
               📎 <span class="evc" id="evc_${fid}">0</span>
             </button>
           </td>
@@ -1938,7 +2037,9 @@ function newRecord() {
   populateMunicipios();
   document.getElementById('f_municipio').value  = '';
   document.getElementById('f_subsistema').value = '';
-  document.getElementById('f_plantel').value    = '';
+  // Reset plantel dropdown — will populate when subsistema is selected
+  const plantelSel = document.getElementById('f_plantel');
+  if (plantelSel) plantelSel.innerHTML = '<option value="">— Seleccione subsistema primero —</option>';
   // Clear diagnostic fields
   ['d_contextuales','d_servicio','d_indicadores','d_fortalezas',
    'd_oportunidades','d_comentarios'].forEach(id => {
@@ -1984,7 +2085,7 @@ function newRecord() {
   }
 }
 
-function editRecord(id) {
+async function editRecord(id) {
   try {
   const rec = db.find(r => String(r.id)===String(id));
   if (!rec) {
@@ -2004,7 +2105,8 @@ function editRecord(id) {
   document.getElementById('f_entidad').value    = rec.entidad         || '';
   populateMunicipios(rec.municipio || '');
   document.getElementById('f_subsistema').value = rec.subsistema      || '';
-  document.getElementById('f_plantel').value    = rec.plantel         || '';
+  // Restore plantel: populate list first, then set value
+  await populatePlanteles(rec.plantel || '');
   // Restore diagnostic fields
   const diag = rec.diagnostico || {};
   const setD = (id, key) => { const el = document.getElementById(id); if(el) el.value = diag[key] || ''; };
@@ -2091,7 +2193,7 @@ async function saveRecord(thenMenu) {
       pEl.style.borderColor = '#e74c3c';
       pEl.focus();
       setTimeout(()=>{ pEl.style.borderColor = ''; }, 3000);
-      toast('⚠️ Debe ingresar el nombre del Plantel antes de guardar.','error');
+      toast('⚠️ Debe seleccionar el Plantel antes de guardar.','error');
       return;
     }
 
@@ -2269,7 +2371,7 @@ function renderTable() {
         <div class="completion-bar-wrap" title="${pct}% completado">
           <div class="completion-bar" style="width:${pct}%;background:${pct>=66?'#1e5b4f':pct>=33?'#a57f2c':'#9b2247'}"></div>
         </div>
-        <span style="font-size:10px;color:var(--txt2)">${pct}%</span>
+        <span style="font-size:10px;color:var(--txt2)">${typeof pct==='number'?pct.toFixed(2):pct}%</span>
       </td>
       <td class="actions" onclick="event.stopPropagation()">
         <div class="record-actions">
@@ -2285,14 +2387,25 @@ function renderTable() {
 
 function calcCompletion(rec) {
   let total = 0, filled = 0;
+  const diag = rec.diagnostico || {};
+
+  // ── A) 5 fields per directive (42 dirs × 5 = 210) ──────────────────────
   PROGRAMAS.forEach(prog => {
     prog.directrices.forEach(dir => {
-      total++;
       const dd = ((rec.programas||{})[prog.id]?.directrices||{})[dir.id] || {};
-      if (dd.nivelAvance) filled++;
+      const fields = [dd.nivelAvance, dd.estadoSituacion, dd.logros, dd.retos, dd.compromisos];
+      fields.forEach(v => { total++; if (v && String(v).trim()) filled++; });
     });
+    // ── B) Comentarios generales per program (4 programs = 4 fields) ──────
+    const cg = (rec.programas||{})[prog.id]?.comentariosGenerales || '';
+    total++; if (cg.trim()) filled++;
   });
-  return { filled, total, pct: total? Math.round(filled/total*100) : 0 };
+
+  // ── C) 6 diagnostic fields ───────────────────────────────────────────────
+  ['contextuales','servicio','indicadores','fortalezas','oportunidades','comentarios']
+    .forEach(k => { total++; if (diag[k] && String(diag[k]).trim()) filled++; });
+
+  return { filled, total, pct: total ? parseFloat((filled/total*100).toFixed(2)) : 0 };
 }
 
 function deleteFromTable(id) {
@@ -2624,6 +2737,10 @@ loadEvidencias();
 function evKey(recId, progId, dirId) { return recId+'::'+progId+'::'+dirId; }
 function getEvList(recId, progId, dirId) { return evStore[evKey(recId,progId,dirId)]||[]; }
 
+function openEvDrawerFromBtn(btn) {
+  openEvDrawer(btn.dataset.prog, btn.dataset.dir, btn.dataset.text);
+}
+
 function openEvDrawer(progId, dirId, dirText) {
   if (!currentId) {
     showModal('💾','Guarde primero el registro',
@@ -2854,6 +2971,7 @@ function countTotalEvidencias() {
 //  SUMARIO MODULE
 // ══════════════════════════════════════════════
 let smActiveProg = 'p1';
+let coberturaData = []; // cached from loadCoberturaZona, used by renderSumario
 
 function getSmFilteredRecords() {
   const fc = document.getElementById('smFCiclo')?.value      || '';
@@ -2916,6 +3034,7 @@ function resetSmFilters() {
     if(el) el.value='';
   });
   renderSumario();
+  renderCoberturaWrap();
 }
 
 function renderSmChips() {
@@ -2958,19 +3077,68 @@ function renderSmKpis(recs) {
       });
     });
   });
-  document.getElementById('smSubtitle').textContent =
-    `${total} plantel${total!==1?'es':''} · ${totAll-totN} directrices capturadas de ${totAll} posibles`;
+  // ── Subtitle: registros + directrices vs catalog total ──────────────────
+  const capturadas = totAll - totN; // directive slots with nivelAvance set
 
-  // Per-program level-2 percentages
+  // Total possible directives = assigned planteles × 42
+  // Use coberturaData (filtered by active supervisor filter if any)
+  const fvSupKpi = document.getElementById('smFSupervisor')?.value || '';
+  const fvSupKpiNorm = normalize(fvSupKpi);
+  let asignadosKpi = 0;
+  if (coberturaData.length > 0) {
+    coberturaData.forEach(row => {
+      const match = !fvSupKpi || normalize(row.supervisor) === fvSupKpiNorm || normalize(row.codigo) === fvSupKpiNorm;
+      if (match) asignadosKpi += (row.total || 0);
+    });
+  }
+  if (asignadosKpi <= 0) {
+    asignadosKpi = new Set(recs.map(r => r.plantel).filter(Boolean)).size || 1;
+  }
+  const posibles = asignadosKpi * 42;
+
+  // Line 1: registros iniciados
+  const registrosLabel = total === 1
+    ? '1 registro de plantel iniciado'
+    : `${total} registros de plantel iniciados`;
+
+  // Line 2: directrices x / y
+  const directricesLabel = `${capturadas} directri${capturadas===1?'z':'ces'} capturada${capturadas===1?'':'s'} de ${posibles} posibles`;
+
+  const l1 = document.getElementById('smSubLine1');
+  const l2 = document.getElementById('smSubLine2');
+  if (l1) l1.textContent = registrosLabel;
+  if (l2) l2.textContent = '· ' + directricesLabel;
+
+  // Per-program level-2 percentages — denominator: assigned planteles × directives per program
+  // For supervisor filter: use coberturaData catalog total for that supervisor
+  // For plantel/subsistema filters: use unique visible planteles in filtered records
+  // For no filter: use full catalog total (all assigned planteles)
+
+  // Compute denominator base: assigned planteles considering active filters
+  let denominatorBase = asignadosKpi; // already respects supervisor filter + coberturaData
+  const fvPlantel    = document.getElementById('smFPlantel')?.value    || '';
+  const fvSubsistema = document.getElementById('smFSubsistema')?.value || '';
+
+  if (fvPlantel) {
+    // Filtered to a single plantel → denominator base = 1
+    denominatorBase = 1;
+  } else if (fvSubsistema && !fvSupKpi) {
+    // Subsistema filter without supervisor filter:
+    // best available: unique planteles in visible records (honest approximation)
+    denominatorBase = new Set(recs.map(r => r.plantel).filter(Boolean)).size || 1;
+  }
+
   const progPcts = PROGRAMAS.map(prog => {
-    let p2=0, pCap=0;
+    let p2 = 0;
     recs.forEach(r => {
       prog.directrices.forEach(dir => {
         const nv = ((r.programas||{})[prog.id]?.directrices||{})[dir.id]?.nivelAvance;
-        if(nv!==undefined && nv!=='') { pCap++; if(nv==='2') p2++; }
+        if (nv === '2') p2++;
       });
     });
-    return { prog, pct: pCap ? Math.round(p2/pCap*100) : 0 };
+    const denom = denominatorBase * prog.directrices.length;
+    const pct = denom > 0 ? parseFloat((p2 / denom * 100).toFixed(2)) : 0;
+    return { prog, pct };
   });
 
   // Order: icon → "PROGRAMA N" label → percentage → subtitle name (no italic, tab-style)
@@ -2978,7 +3146,7 @@ function renderSmKpis(recs) {
     `<div class="sm-kpi">
       <div style="font-size:18px;line-height:1;margin-bottom:2px">${prog.icon}</div>
       <div class="sm-kpi-lbl" style="margin-bottom:1px">Programa ${prog.num}</div>
-      <div class="sm-kpi-val kv-green">${pct}<span style="font-size:15px;font-weight:500">%</span></div>
+      <div class="sm-kpi-val kv-green">${typeof pct==='number'?pct.toFixed(2):pct}<span style="font-size:15px;font-weight:500">%</span></div>
       <div class="sm-kpi-prog-lbl">${prog.subtitulo.replace(/"/g,'')}</div>
     </div>`
   ).join('');
@@ -3095,7 +3263,26 @@ function buildSmTabs(recs) {
       </div>`;
     });
 
-    const pctCapt = progStats.t ? Math.round((progStats.t-progStats.nN)/progStats.t*100) : 0;
+    // pctCapt: directives with nivel set / (assigned planteles × directives per program)
+    // coberturaData is populated async by loadCoberturaZona(); if empty, use fallback.
+    const fvSup = document.getElementById('smFSupervisor')?.value || '';
+    const fvSupNorm = normalize(fvSup);
+    let assignedPlanteles = 0;
+    if (coberturaData.length > 0) {
+      coberturaData.forEach(row => {
+        // Filter by supervisor selector if active; normalize to handle accent differences
+        const match = !fvSup || normalize(row.supervisor) === fvSupNorm || normalize(row.codigo) === fvSupNorm;
+        if (match) assignedPlanteles += (row.total || 0);
+      });
+    }
+    // Fallback: if coberturaData not loaded yet or gave 0, use unique planteles in visible records
+    if (assignedPlanteles <= 0) {
+      assignedPlanteles = new Set(recs.map(r => r.plantel).filter(Boolean)).size || 1;
+    }
+    const denominator = assignedPlanteles * prog.directrices.length;
+    // numerator = slots where nivelAvance is 0, 1, or 2 (i.e., not empty)
+    const numerator = progStats.n0 + progStats.n1 + progStats.n2;
+    const pctCapt = denominator > 0 ? (numerator / denominator * 100).toFixed(2) : '0.00';
     panel.innerHTML = `
       <div class="sm-panel-header">
         <div>
@@ -3152,6 +3339,89 @@ function printSumario() {
   // Restore only active tab
   document.querySelectorAll('.sm-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('smpanel-'+smActiveProg)?.classList.add('active');
+}
+
+function normalize(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+function renderCoberturaWrap() {
+  const wrap = document.getElementById('smCoberturaWrap');
+  if (!wrap) return;
+  const fvSup = document.getElementById('smFSupervisor')?.value || '';
+  const fvNorm = normalize(fvSup);
+  // Filter coberturaData by active supervisor filter — normalize to handle accent differences
+  const data = fvSup
+    ? coberturaData.filter(r => normalize(r.supervisor) === fvNorm || normalize(r.codigo) === fvNorm)
+    : coberturaData;
+  if (!data.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  const totalAsig = data.reduce((s,r) => s + r.total, 0);
+  const totalIni  = data.reduce((s,r) => s + r.iniciados, 0);
+
+  const barHtml = (pct, small) => {
+    const c = pct >= 80 ? '#1e5b4f' : pct >= 40 ? '#a57f2c' : '#c0392b';
+    const w = small ? '60px' : '80px';
+    const pctStr = typeof pct === 'number' ? pct.toFixed(2) : pct;
+    return `<span class="cob-bar-wrap" style="width:${w}"><span class="cob-bar" style="width:${pct}%;background:${c}"></span></span>`
+         + `<span class="cob-pct" style="color:${c}">${pctStr}%</span>`;
+  };
+
+  const rows = data.map(r => `<tr>
+      <td><strong>${escHtml(r.supervisor)}</strong></td>
+      <td style="text-align:center">${r.total}</td>
+      <td style="text-align:center">${r.iniciados}</td>
+      <td style="text-align:center">${r.concluidos}</td>
+      <td>${barHtml(r.dirCovPct, true)}</td>
+      <td>${barHtml(r.evCovPct, true)}</td>
+    </tr>`).join('');
+
+  const title = currentUser?.rol === 'plantel'
+    ? '📋 Mi Cobertura de Captura'
+    : fvSup
+      ? `📋 Cobertura de Captura — ${escHtml(fvSup)}`
+      : '📋 Cobertura de Captura por Supervisor';
+  const subtitle = currentUser?.rol === 'plantel' || fvSup
+    ? ''
+    : `${totalIni} registros iniciados de ${totalAsig} planteles`;
+
+  wrap.innerHTML = `
+    <div style="background:var(--wh);border:1px solid var(--bdr);border-radius:6px;overflow:hidden;box-shadow:var(--shd)">
+      <div style="background:var(--p627);padding:9px 16px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:var(--fd);font-size:14px;font-weight:700;color:var(--wh);letter-spacing:.04em">${title}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.75);font-weight:500">${subtitle}</div>
+      </div>
+      <table class="cobertura-table">
+        <thead><tr>
+          <th>Supervisor</th>
+          <th style="text-align:center">Planteles asignados</th>
+          <th style="text-align:center">Registros iniciados</th>
+          <th style="text-align:center">Registros concluidos</th>
+          <th>Cobertura por directriz</th>
+          <th>Cobertura por evidencias</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+async function loadCoberturaZona() {
+  const wrap = document.getElementById('smCoberturaWrap');
+  if (!wrap) return;
+  wrap.style.display = 'block';
+  wrap.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--pgry)">Cargando cobertura…</div>';
+  try {
+    const res = await apiCall('getCoberturaZona');
+    const data = res.cobertura || [];
+    coberturaData = data; // cache for renderSumario denominator
+    renderCoberturaWrap(); // render filtered coverage table
+    renderSumario();      // re-render: correct denominator + subtitle posibles
+    if (data.length === 0) { wrap.style.display = 'none'; }
+  } catch(e) {
+    wrap.style.display = 'none';
+    console.warn('loadCoberturaZona:', e.message);
+  }
 }
 
 function exportSumarioCSV() {
