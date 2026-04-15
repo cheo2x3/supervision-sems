@@ -1601,7 +1601,7 @@ const PROGRAMAS = [
 // ═══════════════════════════════
 //  CONFIGURATION
 // ═══════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYLYOGS-LXjlMMZOXnaTs5f83G4iQfaD3wZseJrYKP7xpy_BS8pW7OtraqEqYcQA7G/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxuWfHqTrlOo9lbXpvqBrfAvrWCPash9XS4ez78411DGTa5kJDa_ug5RKVyxpZhRN6h/exec';
 
 // ═══════════════════════════════
 //  SESSION MANAGEMENT
@@ -2599,30 +2599,40 @@ async function syncDBToCloud(records, mode) {
   // Show progress toast
   const toastEl = document.createElement('div');
   toastEl.className = 'toast toast-info';
-  toastEl.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;background:#002f2a;color:#fff;padding:12px 20px;border-radius:8px;font-family:var(--fb);font-size:13px;min-width:280px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.3)';
+  toastEl.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;background:#002f2a;color:#fff;padding:12px 20px;border-radius:8px;font-family:var(--fb);font-size:13px;min-width:300px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.3)';
   toastEl.innerHTML = `⬆ Sincronizando con la nube… <strong>0 / ${total}</strong>`;
   document.body.appendChild(toastEl);
 
   for (const rec of records) {
-    try {
-      // Send as NEW so backend appends without ID conflicts
-      const payload = {...rec, id: 'NEW'};
-      await apiCall('saveRecord', { record: payload });
-      done++;
-    } catch(e) {
-      errors++;
-      console.warn('syncDBToCloud error for', rec.plantel, e.message);
+    const payload = {...rec, id: 'NEW'};
+    let success = false;
+    // Retry up to 3 times per record
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await apiCall('saveRecord', { record: payload });
+        success = true;
+        break;
+      } catch(e) {
+        if (attempt < 3) {
+          // Wait longer before retry
+          await new Promise(r => setTimeout(r, 1000 * attempt));
+        } else {
+          errors++;
+          console.warn('syncDBToCloud failed after 3 attempts:', rec.plantel, e.message);
+        }
+      }
     }
-    toastEl.innerHTML = `⬆ Sincronizando con la nube… <strong>${done} / ${total}</strong>${errors?` (${errors} errores)`:''}`;
-    // Small delay to avoid rate-limiting Apps Script
-    await new Promise(r => setTimeout(r, 300));
+    if (success) done++;
+    toastEl.innerHTML = `⬆ Sincronizando con la nube… <strong>${done} / ${total}</strong>${errors?` · <span style="color:#e6d194">${errors} errores</span>`:''}`;
+    // 600ms between records to respect Apps Script rate limits
+    await new Promise(r => setTimeout(r, 600));
   }
 
   toastEl.style.background = errors ? '#a57f2c' : '#1e5b4f';
   toastEl.innerHTML = errors
-    ? `⚠ Sincronización completada con ${errors} errores. ${done} registros subidos.`
-    : `✅ ${done} registros sincronizados con Google Sheets.`;
-  setTimeout(() => toastEl.remove(), 5000);
+    ? `⚠ ${done} registros sincronizados · ${errors} fallaron (revisa la consola)`
+    : `✅ ${done} de ${total} registros sincronizados con Google Sheets`;
+  setTimeout(() => toastEl.remove(), 6000);
 
   // Reload coverage panel now that Sheets has the data
   if (document.getElementById('smCoberturaWrap')) {
